@@ -1,9 +1,9 @@
 import React from "react";
-import TableAdmin from "../TableStaff";
 import MenuStaff from "../MenuStaff";
 import PaypalStaff from "../PaypalStaff";
 import ReportStaff from "../ReportStaff";
 import { DeskRoomIcon, FoodIcon, ReportIcon } from "../common/icons/icons";
+import TableStaff from "../TableStaff";
 
 export default function DeskRoom() {
   return (
@@ -12,17 +12,21 @@ export default function DeskRoom() {
         <div className="flex gap-2">
           <div className="flex w-[150px] h-[50px] pl-2 items-center gap-2 bg-white rounded-tr-xl rounded-tl-xl">
             <DeskRoomIcon />
-            <h2 className="text-[1.8rem] text-[#182FFF] font-[600]">
+            <h2 className="text-[1.8rem] text-[#182FFF] font-[600] cursor-pointer transition-all">
               Phòng bàn
             </h2>
           </div>
           <div className="flex w-[150px] h-[50px] pl-2 items-center gap-2 ">
             <FoodIcon />
-            <h2 className="text-[1.8rem] text-black font-[600]">Thực đơn</h2>
+            <h2 className="text-[1.8rem] text-white font-[600] cursor-pointer transition-all">
+              Thực đơn
+            </h2>
           </div>
           <div className="flex w-[150px] h-[50px] pl-2 items-center gap-2 ">
             <ReportIcon />
-            <h2 className="text-[1.8rem] text-black font-[600]">Báo cáo</h2>
+            <h2 className="text-[1.8rem] text-white font-[600] cursor-pointer transition-all">
+              Báo cáo
+            </h2>
           </div>
         </div>
         <div className="bg-white h-[88vh] rounded-b-3xl rounded-tr-3xl p-10">
@@ -41,8 +45,8 @@ export default function DeskRoom() {
               Đặt trước: <span className="text-[#24FF00] ml-2">2/32</span>
             </h2>
           </div>
-          <TableAdmin />
-          {/* < MenuStaff/> */}
+          {/* <TableStaff /> */}
+          < MenuStaff/>
           {/* <ReportStaff /> */}
         </div>
       </div>

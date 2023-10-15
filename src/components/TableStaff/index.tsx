@@ -1,7 +1,7 @@
 import React from "react";
 import { TableImage } from "../common/icons/icons";
 
-export default function TableAdmin() {
+export default function TableStaff() {
   return (
     <div className="pt-10 pl-20 grid grid-cols-8 grid-rows-5 gap-20">
       <div>
