@@ -36,7 +36,7 @@ export default function DatePickerStaff() {
           <div className="flex justify-center mt-4">
             <Select
               defaultValue="Tất cả"
-              style={{ width: 170, height: 45 }}
+              style={{ width: 200, height: 45 }}
               onChange={handleChange}
               options={[
                 { value: "Tất cả", label: "Tất cả" },

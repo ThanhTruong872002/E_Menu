@@ -68,7 +68,7 @@ export default function DeskRoom() {
       </div>
       {selected !== "report" && (
         <div className="w-[37%] bg-white h-[88vh] mt-20 rounded-3xl p-10">
-          <PaypalStaff />
+          <PaypalStaff selected={selected} />
         </div>
       )}
     </div>

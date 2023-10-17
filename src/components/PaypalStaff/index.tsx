@@ -1,7 +1,11 @@
 import React from "react";
 import { NotifiIcon, StaffNameIcon, UserIcon } from "../common/icons/icons";
 
-export default function PaypalStaff() {
+interface IPayPalType {
+  selected: string
+}
+
+export default function PaypalStaff({ selected } : IPayPalType) {
   return (
     <div>
       <div className="flex gap-[4.8rem]  mb-20  text-[1.8rem] font-[600]">
@@ -48,7 +52,7 @@ export default function PaypalStaff() {
           <div className="w-full h-[1px] bg-black mt-10"></div>
         </div>
       </div>
-      
+
       <div className="flex justify-between mt-20 text-[2rem]">
         <h2 className="font-[600]">
           Số lượng khách: <span className="font-[500] ml-10">10</span>
@@ -63,10 +67,18 @@ export default function PaypalStaff() {
         <h2>Tên Nhân Viên</h2>
       </div>
       <div className="flex text-[2rem] font-bold gap-6 mt-28">
-        <div className="flex gap-4 items-center w-[50%] bg-[#FFB700] rounded-3xl justify-center">
-          <img src="./images/Average Price.svg" alt="" />
-          <h2>Thanh Toán</h2>
-        </div>
+        {selected === "table" ? (
+          <div className="flex gap-4 items-center w-[50%] bg-[#FFB700] rounded-3xl justify-center">
+            <img src="./images/Average Price.svg" alt="" />
+            <h2>Thanh Toán</h2>
+          </div>
+        ) : (
+          <div className="flex gap-4 items-center w-[50%] bg-[#24FF00] rounded-3xl justify-center">
+            <img src="./images/Food Bar.svg" alt="" />
+            <h2>Đặt Món</h2>
+          </div>
+        )}
+
         <div className="flex gap-4 items-center w-[50%] bg-[#FF0101] rounded-3xl justify-center">
           <NotifiIcon />
           <h2>Thông Báo</h2>
