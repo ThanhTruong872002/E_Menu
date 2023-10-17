@@ -14,7 +14,7 @@ export default function DeskRoom() {
 
   return (
     <div className="flex p-10 bg-[#182FFF] h-[100vh] gap-6">
-      <div className="w-[63%] ">
+      <div className={`${selected === "report" ? "w-[100%]" : "w-[63%]"}`}>
         <div className="flex gap-2">
           <div
             className={`flex w-[150px] h-[50px] pl-2 items-center gap-2 ${
@@ -66,9 +66,11 @@ export default function DeskRoom() {
           {selected === "report" && <ReportStaff />}
         </div>
       </div>
-      <div className="w-[37%] bg-white h-[88vh] mt-20 rounded-3xl p-10">
-        <PaypalStaff />
-      </div>
+      {selected !== "report" && (
+        <div className="w-[37%] bg-white h-[88vh] mt-20 rounded-3xl p-10">
+          <PaypalStaff />
+        </div>
+      )}
     </div>
   );
 }

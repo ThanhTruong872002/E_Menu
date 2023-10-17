@@ -40,18 +40,12 @@ export default function TableStaff() {
     { id: 19, status: "available" },
     { id: 19, status: "available" },
     { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
-    { id: 19, status: "available" },
+
+
   ];
   return (
     <div>
-      <div className="flex gap-6 text-[2rem] font-[500]">
+      <div className="flex gap-10 text-[2rem] font-[500]">
         <h2 className="text-[#182FFF] font-[600]">Tất cả</h2>
         <h2>Lầu 2</h2>
         <h2>Lầu 3</h2>
