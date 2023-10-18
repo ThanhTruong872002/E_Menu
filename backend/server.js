@@ -105,11 +105,17 @@ app.get('/api/roles', (req, res) => {
 });
 
 app.post('/api/addStaff', (req, res) => {
-  const { username, password, fullname, email, phonenumber } = req.body;
+  const { account_id, username, password, fullname, role } = req.body;
+
+  // Kiểm tra xem `role` có phải là một số nguyên không
+  if (!Number.isInteger(role)) {
+    res.status(400).json({ error: 'ID của vai trò phải là một số nguyên' });
+    return;
+  }
 
   // Thực hiện truy vấn SQL để thêm thông tin nhân viên vào cơ sở dữ liệu
-  const sql = 'INSERT INTO staff (account_id, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)';
-  connection.query(sql, [username, password, fullname, email, phonenumber], function(err, results) {
+  const sql = 'INSERT INTO account (account_id, username, password, fullname, role) VALUES ("", ?, ?, ?, ?)';
+  connection.query(sql, [account_id, username, password, fullname, role], function(err, results) {
     if (err) {
       res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
     } else {
@@ -118,6 +124,24 @@ app.post('/api/addStaff', (req, res) => {
   });
 });
 
+// API endpoint để kiểm tra username
+app.get('/api/checkUsername', (req, res) => {
+  const { username } = req.query;
+
+  // Thực hiện truy vấn SQL để kiểm tra username có tồn tại trong cơ sở dữ liệu không
+  const sql = 'SELECT * FROM account WHERE username = ?';
+  connection.query(sql, [username], function(err, results) {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      if (results.length > 0) {
+        res.status(400).json({ error: 'Username đã tồn tại' });
+      } else {
+        res.json({ success: true });
+      }
+    }
+  });
+});
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get('/admin', requireAuth, (req, res) => {

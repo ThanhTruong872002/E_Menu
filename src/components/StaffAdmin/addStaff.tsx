@@ -24,31 +24,48 @@ export default function AddStaff() {
 
   const [roles, setRoles] = useState<IRole[]>([]);
   const [selectedRole, setSelectedRole] = useState<string>('');
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const onSubmit: SubmitHandler<IAddStaffForm> = async (data) => {
     try {
-      await axios.post('http://localhost:4000/api/addStaff', data);
-      console.log('Nhân viên đã được thêm thành công.');
+      // Trước khi thực hiện yêu cầu POST, kiểm tra username
+      const isUsernameValid = await checkUsername(data.username);
+      if (!isUsernameValid) {
+        // Hiển thị thông báo lỗi
+        setSuccessMessage('Username đã bị trùng vui lòng sử dụng Username khác!');
+        return;
+      }
+  
+      // Thực hiện yêu cầu POST để thêm nhân viên
+      const selectedRoleObject = roles.find((role) => role.role_name === selectedRole);
+      if (selectedRoleObject) {
+        const selectedRoleID = selectedRoleObject.role_id;
+        await axios.post('http://localhost:4000/api/addStaff', { ...data, role: selectedRoleID });
+        setSuccessMessage('Nhân viên đã được thêm thành công.');
+      }
     } catch (error) {
       console.error('Lỗi khi thêm nhân viên:', error);
     }
   };
-
-  const fetchRoles = async () => {
+  
+  const checkUsername = async (username: string) => {
     try {
-      const response = await axios.get<IRole[]>('http://localhost:4000/api/roles');
-      if (Array.isArray(response.data)) {
-        setRoles(response.data);
-      } else {
-        console.log('Không có dữ liệu vai trò từ máy chủ.');
-      }
+      const response = await axios.get(`http://localhost:4000/api/checkUsername?username=${username}`);
+      return response.data.success;
     } catch (error) {
-      console.error('Lỗi khi lấy dữ liệu vai trò từ máy chủ: ', error);
+      console.error('Lỗi khi kiểm tra username:', error);
+      return false;
     }
   };
-
+  
   useEffect(() => {
-    fetchRoles();
+    axios.get('http://localhost:4000/api/roles')
+      .then(response => {
+        setRoles(response.data.roles);
+      })
+      .catch(error => {
+        console.error('Lỗi khi lấy danh sách vai trò:', error);
+      });
   }, []);
 
   return (
@@ -115,23 +132,34 @@ export default function AddStaff() {
             </div>
             <div className="flex items-center">
               <h2 className="w-[170px]">Role :</h2>
-              <label>
-                <select
-                  className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                >
-                  <option value="">Select a Role</option>
-                  {roles.map((role) => (
-                    <option key={role.role_id} value={role.role_name}>
-                      {role.role_name}
-                    </option>
-                  ))}
-                </select>
-                <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
-                  {errors.role?.message}
-                </div>
-              </label>
+              <div className="flex items-center">
+                {roles.length > 0 ? (
+                  <label>
+                    <select
+                      className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                      value={selectedRole}
+                      onChange={(e) => {
+                        const selectedValue = e.target.value;
+                        setSelectedRole(selectedValue);
+                        const selectedRoleId = roles.find((role) => role.role_name === selectedValue)?.role_id;
+                        console.log(`Selected Role ID: ${selectedRoleId}`);
+                      }}
+                    >
+                      <option value="">Chọn vai trò</option>
+                      {roles.map((role) => (
+                        <option key={role.role_id} value={role.role_name}>
+                          {role.role_name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
+                      {errors.role && <span>{errors.role.message}</span>}
+                    </div>
+                  </label>
+                ) : (
+                  <p>Loading roles...</p>
+                )}
+              </div>
             </div>
             <div className="flex items-center mt-20">
               <h2 className="w-[170px]">Operation:</h2>
@@ -141,6 +169,11 @@ export default function AddStaff() {
                 </button>
               </label>
             </div>
+            {successMessage && (
+              <div className="text-green-600 font-bold text-xl mt-4">
+                {successMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>
