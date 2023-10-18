@@ -9,8 +9,9 @@ import HomeAdmin from "../components/HomeAdmin";
 import AddTable from "../components/TableAdmin/addTable";
 import Table from "../components/TableAdmin/table";
 import Manager from "../pages/staff";
+import PrivateRoute from './PrivateRoute';
 
-export default function useRouterElement() {
+export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }) {
   const routerElement = useRoutes([
     {
       path: "/",
@@ -18,36 +19,51 @@ export default function useRouterElement() {
     },
     {
       path: "/admin",
-      element: <HomeAdmin />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<HomeAdmin />} />
+      ),
     },
     {
       path: "/admin/staff",
-      element: <Staff />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Staff />} />
+      ),
     },
     {
       path: "/admin/addstaff",
-      element: <AddStaff />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddStaff />} />
+      ),
     },
     {
       path: "/admin/menu",
-      element: <Menu />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Menu />} />
+      ),
     },
     {
       path: "/admin/addmenu",
-      element: <AddMenu />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddMenu />} />
+      ),
     },
     {
       path: "/admin/table",
-      element: <Table />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Table />} />
+      ),
     },
     {
       path: "/admin/addtable",
-      element: <AddTable />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddTable />} />
+      ),
     },
     {
-      path:"/manager",
-      element: <Manager/>
-    }
+      path: "/manager",
+      element: <Manager />,
+    },
   ]);
+
   return routerElement;
 }

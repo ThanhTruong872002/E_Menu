@@ -6,53 +6,41 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
 
-const TABLE_HEAD = [
-  "Tài khoản",
-  "Mật khẩu",
-  "Họ Tên",
-  "Email",
-  "SĐT",
-  "Thao Tác",
-];
+const TABLE_HEAD = ['Tài khoản', 'Mật khẩu', 'Họ Tên', 'Vai trò', 'Thao Tác'];
 
-export interface User {
-  taiKhoan: string;
-  matKhau: string;
-  email: string;
-  soDt: string;
-  maNhom: string | null;
-  maLoaiNguoiDung: string;
-  hoTen: string;
+// Định nghĩa kiểu dữ liệu cho danh sách tài khoản
+interface User {
+  account_id: string;
+  username: string;
+  password: string;
+  fullname: string;
+  role_name: string;
 }
 
 export default function Staff() {
   const navigate = useNavigate();
-
-  const [listUsers, setListUsers] = useState<User[]>([
-    {
-      taiKhoan: "",
-      matKhau: "",
-      email: "",
-      soDt: "",
-      maNhom: null,
-      maLoaiNguoiDung: "",
-      hoTen: "",
-    },
-  ]);
+  const [listUsers, setListUsers] = useState<User[]>([]);
 
   const getListUsers = async () => {
-    const res = await axios.get(
-      `https://movie0706.cybersoft.edu.vn/api/QuanLyNguoiDung/LayDanhSachNguoiDungPhanTrang?MaNhom=GP01&soTrang=1&soPhanTuTrenTrang=20`
-    );
-    if (res) {
-      console.log(res.data);
-      setListUsers(res.data.items);
+    try {
+      // Gọi yêu cầu GET đến tuyến đường API đã tạo trên máy chủ
+      const response = await axios.get('http://localhost:4000/api/accounts-with-roles');
+
+      if (response.data.accounts) {
+        // Lấy dữ liệu thành công, cập nhật danh sách người dùng
+        setListUsers(response.data.accounts);
+      } else {
+        console.log('Không có dữ liệu người dùng từ máy chủ.');
+      }
+    } catch (error) {
+      console.error('Lỗi khi lấy dữ liệu từ máy chủ: ', error);
     }
-  };
+  }
 
   useEffect(() => {
     getListUsers();
   }, []);
+
 
   return (
     <Admin>
@@ -103,27 +91,22 @@ export default function Staff() {
                 <tr className="even:bg-blue-gray-50/50 leading-10 ">
                   <td className="p-4">
                     <Typography color="blue-gray" className="font-normal ">
-                      {users.taiKhoan}
+                      {users.username}
                     </Typography>
                   </td>
                   <td className="p-4">
                     <Typography color="blue-gray" className="font-normal">
-                      {users.matKhau}
+                      {users.password}
                     </Typography>
                   </td>
                   <td className="p-4">
                     <Typography color="blue-gray" className="font-normal">
-                      {users.hoTen}
+                      {users.fullname}
                     </Typography>
                   </td>
                   <td className="p-4">
                     <Typography color="blue-gray" className="font-normal">
-                      {users.email}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {users.soDt}
+                      {users.role_name}
                     </Typography>
                   </td>
                   <td className="p-4">

@@ -30,6 +30,17 @@ connection.connect(function(err) {
   }
 });
 
+// Middleware kiểm tra xác thực trước khi xử lý bất kỳ tuyến đường bảo mật nào
+function requireAuth(req, res, next) {
+  if (req.isAuthenticated()) {
+    // Nếu người dùng đã đăng nhập, cho phép họ tiếp tục
+    next();
+  } else {
+    // Nếu người dùng chưa đăng nhập, gửi lỗi hoặc chuyển hướng đến trang đăng nhập
+    res.status(401).json({ error: 'Bạn chưa đăng nhập' });
+  }
+}
+
 // Định nghĩa tuyến đường để truy vấn dữ liệu từ cơ sở dữ liệu
 app.get('/api/account', (req, res) => {
   const sql = "SELECT * FROM account";
@@ -66,6 +77,52 @@ app.post('/api/account', (req, res) => {
   });
 });
 
+// Định nghĩa tuyến đường API để lấy thông tin tài khoản kết hợp với vai trò
+app.get('/api/accounts-with-roles', (req, res) => {
+  const sql = `
+    SELECT account.account_id, account.username, account.password, account.fullname, role.role_name
+    FROM account
+    INNER JOIN role ON account.role = role.role_id`;
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      res.json({ accounts: results });
+    }
+  });
+});
+
+app.get('/api/roles', (req, res) => {
+  const sql = 'SELECT role_id, role_name FROM role';
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      res.json({ roles: results });
+    }
+  });
+});
+
+app.post('/api/addStaff', (req, res) => {
+  const { username, password, fullname, email, phonenumber } = req.body;
+
+  // Thực hiện truy vấn SQL để thêm thông tin nhân viên vào cơ sở dữ liệu
+  const sql = 'INSERT INTO staff (account_id, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)';
+  connection.query(sql, [username, password, fullname, email, phonenumber], function(err, results) {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      res.json({ success: true, message: 'Thêm nhân viên thành công' });
+    }
+  });
+});
+
+
+// Bảo vệ tuyến đường /admin bằng middleware requireAuth
+app.get('/admin', requireAuth, (req, res) => {
+  // Xử lý trang quản trị ở đây
+});
 
 // Lắng nghe máy chủ trên cổng 4000
 const port = 4000;

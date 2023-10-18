@@ -1,9 +1,9 @@
-import { useState } from "react";
+import React, { useState, FormEvent } from 'react';
 import Button from "../common/butoons/button";
-import { BagIcon, PassIcon, UserIcon } from "../common/icons/icons";
+import { BagIcon } from "../common/icons/icons";
+import Input from "../common/input/input";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { rules } from "../../utils/rules";
+import axios from 'axios';
 
 interface IFormLogin {
   username: string;
@@ -12,29 +12,49 @@ interface IFormLogin {
 
 export default function Login() {
   const navigate = useNavigate();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<IFormLogin>();
-
-  const onSubmit = handleSubmit((data) => {
-    if (
-      data.username === "Thanhtruong02" &&
-      data.password === "Thanhtruong@02"
-    ) {
-      navigate("/admin");
-    }if (data.username === "Thanhtruong02" && data.password === "Thanhtruong@022")
-     {
-      navigate("/manager")
-    }
-    console.log(data);
+  const [formLogin, setFormLogin] = useState<IFormLogin>({
+    username: '',
+    password: '',
   });
 
+  const [loginSuccess, setLoginSuccess] = useState<boolean | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://localhost:4000/api/account', formLogin);
+      console.log("Response from server:", response.data); 
+      if (response.data.success) {
+        const userRole = response.data.role;
+        console.log("User Role:", userRole); // In ra giá trị role để kiểm tra
+        if (userRole === 1) {
+          // Đăng nhập thành công và có vai trò ADMIN, thực hiện chuyển hướng
+          setLoginSuccess(true);
+          navigate("/admin");
+        } else if(userRole === 2) {
+          // Đăng nhập thành công và có vai trò là cashier, thực hiện chuyển hướng
+          setLoginSuccess(true);
+          navigate("/cashier")
+        }
+        else{
+          // Đăng nhập thành công và có vai trò là manager, thực hiện chuyển hướng
+          setLoginSuccess(true);
+          navigate("/manager")
+        }
+      } else {
+        // Đăng nhập thất bại
+        setLoginSuccess(false);
+        setLoginError("Đăng nhập thất bại. Vui lòng kiểm tra tên người dùng và mật khẩu của bạn.");
+      }
+    } catch (error) {
+      console.error('Lỗi khi gửi yêu cầu đăng nhập:', error);
+    }
+  };
+
   return (
-    <div className=" flex h-[100vh]">
-      <div className="w-[50%] flex flex-col items-center justify-center text-center bg-[#FAFAFD] ">
+    <div className="flex h-[100vh]">
+      <div className="w-[50%] flex flex-col items-center justify-center text-center bg-[#FAFAFD]">
         <div className="w-[500px] h-[400px]">
           <img src="./images/Images.svg" alt="" className="block" />
         </div>
@@ -51,55 +71,24 @@ export default function Login() {
             your previously saved all information.
           </p>
         </div>
-        <form className="mt-[60px] flex flex-col gap-12" onSubmit={onSubmit}>
-          <div>
-            <div className="flex justify-between items-center px-4 w-[460px] h-[50px] border-[1px] border-solid border-[#ccc] rounded-[10px] ">
-              <input
-                className="w-[436px] h-[26px] outline-none"
-                type="text"
-                placeholder="Username"
-                {...register("username", rules.username)}
-              />
-              <UserIcon />
-            </div>
-            <div className="mt-4 text-red-600 min-h-[1.25rem] text-lg">
-              {errors.username?.message}
-            </div>
-          </div>
-
-          <div>
-            <div className="flex justify-between items-center px-4 w-[460px] h-[50px] border-[1px] border-solid border-[#ccc] rounded-[10px] ">
-              <input
-                className="w-[436px] h-[26px] outline-none"
-                type="password"
-                placeholder="Password"
-                {...register("password", rules.password)}
-              />
-              <PassIcon />
-            </div>
-            <div className="mt-4 text-red-600 min-h-[1.25rem] text-lg">
-              {errors.password?.message}
-            </div>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex gap-3">
-              <input type="checkbox" />
-              <p className="text-[1.5rem] font-[500] text-[#9E9DA8] ">
-                Set as default card
-              </p>
-            </div>
-            <p className="text-[1.5rem] font-[500] text-[#0071DC]">
-              Recovery Password
-            </p>
-          </div>
-          <div>
-            <Button login="login">Login</Button>
-          </div>
+        <form className="mt-[60px] flex flex-col gap-12" onSubmit={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Username"
+            value={formLogin.username}
+            onChange={(e) => setFormLogin({ ...formLogin, username: e.target.value })}
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={formLogin.password}
+            onChange={(e) => setFormLogin({ ...formLogin, password: e.target.value })}
+          />
+          {loginSuccess === false && (
+            <p className="text-red-600 min-h-[1.25rem] text-lg">{loginError}</p>
+          )}
+          <Button login="login">Login</Button>
         </form>
-        <div className="flex gap-4 font-[400] text-[1.8rem] mt-32">
-          <p className="text-[#9E9DA8]">Don’t have an account yet?</p>
-          <p className="text-[#0071DC]">Sign Up</p>
-        </div>
       </div>
     </div>
   );
