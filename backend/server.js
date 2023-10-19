@@ -7,7 +7,7 @@ const app = express();
 
 // Sử dụng middleware cors với tùy chọn để cho phép truy cập từ tên miền frontend
 const corsOptions = {
-  origin: 'http://localhost:3000', // Tên miền frontend của bạn
+  origin: 'http://localhost:3000', // Tên miền frontend
   optionsSuccessStatus: 200, // Mã trạng thái thành công cho tùy chọn preflight
 };
 
@@ -114,7 +114,7 @@ app.post('/api/addStaff', (req, res) => {
   }
 
   // Thực hiện truy vấn SQL để thêm thông tin nhân viên vào cơ sở dữ liệu
-  const sql = 'INSERT INTO account (account_id, username, password, fullname, role) VALUES ("", ?, ?, ?, ?)';
+  const sql = 'INSERT INTO account (account_id, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)';
   connection.query(sql, [account_id, username, password, fullname, role], function(err, results) {
     if (err) {
       res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
@@ -142,6 +142,53 @@ app.get('/api/checkUsername', (req, res) => {
     }
   });
 });
+
+// Tuyến đường API để xóa tài khoản bằng username
+app.delete('/api/deleteAccount/:username', (req, res) => {
+  const username = req.params.username;
+
+  const sql = 'DELETE FROM account WHERE username = ?';
+
+  connection.query(sql, [username], function(err, result) {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi khi xóa tài khoản' });
+    } else {
+      res.json({ success: true, message: 'Xóa tài khoản thành công' });
+    }
+  });
+});
+
+// Định nghĩa tuyến đường API để lấy thông tin tài khoản dựa trên username
+app.get('/api/getAccount/:username', (req, res) => {
+  const username = req.params.username;
+  const sql = 'SELECT * FROM account WHERE username = ?';
+  connection.query(sql, [username], function(err, results) {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      if (results.length > 0) {
+        res.json({ account: results[0] });
+      } else {
+        res.status(404).json({ error: 'Không tìm thấy tài khoản' });
+      }
+    }
+  });
+});
+
+app.put('/api/updateAccount/:username', (req, res) => {
+  const username = req.params.username;
+  const { password, fullname, role } = req.body;
+  // Thực hiện truy vấn SQL để cập nhật thông tin tài khoản
+  const sql = 'UPDATE account SET password = ?, fullname = ?, role = ? WHERE username = ?';
+  connection.query(sql, [password, fullname, role, username], function(err, result) {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi khi cập nhật tài khoản' });
+    } else {
+      res.json({ success: true, message: 'Cập nhật tài khoản thành công' });
+    }
+  });
+});
+
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get('/admin', requireAuth, (req, res) => {

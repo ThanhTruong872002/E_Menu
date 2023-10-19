@@ -10,6 +10,7 @@ import AddTable from "../components/TableAdmin/addTable";
 import Table from "../components/TableAdmin/table";
 import Manager from "../pages/staff";
 import PrivateRoute from './PrivateRoute';
+import EditStaff from "../components/StaffAdmin/editStaff"; // Import coonent EditStaffmp
 
 export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }) {
   const routerElement = useRoutes([
@@ -62,6 +63,12 @@ export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }
     {
       path: "/manager",
       element: <Manager />,
+    },
+    {
+      path: "/admin/editstaff/:username", // Định nghĩa một route mới cho EditStaff
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<EditStaff />} />
+      ),
     },
   ]);
 
