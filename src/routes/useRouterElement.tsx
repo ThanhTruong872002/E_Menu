@@ -9,11 +9,13 @@ import HomeAdmin from "../components/HomeAdmin";
 import AddTable from "../components/TableAdmin/addTable";
 import Table from "../components/TableAdmin/table";
 import Manager from "../pages/staff";
+import Customers from "../pages/customers/customer";
+import CustomerLayout from "../components/Layouts/CustomerLayout/customerLayout";
 
 export default function useRouterElement() {
   const routerElement = useRoutes([
     {
-      path: "/",
+      path: "/login",
       element: <Login />,
     },
     {
@@ -45,9 +47,17 @@ export default function useRouterElement() {
       element: <AddTable />,
     },
     {
-      path:"/manager",
-      element: <Manager/>
-    }
+      path: "/manager",
+      element: <Manager />,
+    },
+    {
+      path: "/",
+      element: (
+        <CustomerLayout>
+          <Customers />
+        </CustomerLayout>
+      ),
+    },
   ]);
   return routerElement;
 }

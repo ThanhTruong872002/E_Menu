@@ -5,12 +5,13 @@ import "./button.css"
 interface IButtons {
   children: ReactNode
   login?: string
+  bookTable?:string
 }
 
-const Button: FC<IButtons> = ({ login, children }) => {
-  const classes = login
+const Button: FC<IButtons> = ({ login, children, bookTable }) => {
+  const classes = login || bookTable
 
-  return <button className={classes} >{children}</button>;
+  return <button  className={classes}>{children}</button>;
 };
 
 
