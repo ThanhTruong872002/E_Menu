@@ -1,91 +1,78 @@
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, Typography } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
-import Admin from "../../pages/admin";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { Card, Typography } from '@material-tailwind/react';
+import { useNavigate } from 'react-router-dom';
+import Admin from '../../pages/admin';
 
-const TABLE_HEAD = [
-  "Image",
-  "FoodName",
-  "Decription",
-  "Price",
-  "Type",
-  "Operation",
-];
+interface MenuData {
+  Image: string;
+  menu_item_name: string;
+  Description: string;
+  Price: string;
+  category_name: string;
+}
 
-const LIST_MENU = [
-  {
-    foodname: "The Burger",
-    decription: "delivery fee",
-    price: "20.000đ",
-    type: "Buger",
-  },
-  {
-    foodname: "Pizza Hut",
-    decription: "delivery fee",
-    price: "100.000đ",
-    type: "Pizza",
-  },
-  {
-    foodname: "The Burger",
-    decription: "delivery fee",
-    price: "20.000đ",
-    type: "Fast Food",
-  },
-  {
-    foodname: "The Burger",
-    decription: "delivery fee",
-    price: "20.000đ",
-    type: "Buger",
-  },
-  {
-    foodname: "The Burger",
-    decription: "delivery fee",
-    price: "20.000đ",
-    type: "Buger",
-  },
-];
+const menuDividerStyle = {
+  borderTop: '1px solid #ccc',
+  width: '100%',
+};
 
-export default function Menu() {
+const Menu: React.FC = () => {
   const navigate = useNavigate();
+  const [menuData, setMenuData] = useState<MenuData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMenuData = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/menu');
+        setMenuData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching menu data:', error);
+      }
+    };
+
+    fetchMenuData();
+  }, []);
 
   return (
     <Admin>
       <div>
-        <h2 className="text-[3rem] font-[600] mt-6 ">Manager Menus</h2>
+        <h2 className="text-[3rem] font-[600] mt-6">Menu Management</h2>
         <div className="flex justify-between mt-20 mb-10">
-          {" "}
           <button
-            onClick={() => navigate("/admin/addmenu")}
+            onClick={() => navigate('/admin/addmenu')}
             className="w-[170px] h-[40px] cursor-pointer font-[500] border-[1px] border-solid border-[#ccc] p-3"
           >
-            Add dishes
+            Add Dish
           </button>
           <div className="flex items-center">
             <input
               className="w-[325px] h-[48px] border-[1px] border-solid border-[#ccc] p-3 border-r-0"
               type="text"
-              placeholder="Search for food"
+              placeholder="Search for a food item"
             />
             <div className="flex justify-center items-center text-white w-[50px] h-[50px] bg-[#1890FF]">
               <FontAwesomeIcon icon={faSearch} />
             </div>
           </div>
         </div>
-
-        <Card className=" w-full h-[70vh] overflow-y-scroll">
-          <table className="w-full min-w-max table-auto text-left text-[1.8rem] ">
+        <Card className="w-full h-[70vh] overflow-y-scroll">
+          <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
             <thead className="sticky top-0 z-50">
               <tr>
-                {TABLE_HEAD.map((head) => (
+                {['Image', 'Food Name', 'Description', 'Price', 'Category', 'Action'].map((head, index) => (
                   <th
-                    key={head}
-                    className="border-b border-blue-gray-200  py-8 px-4 bg-gray-200"
+                    key={index}
+                    className="border-b border-blue-gray-200 py-8 px-4 bg-gray-200"
                   >
                     <Typography
                       variant="small"
                       color="blue-gray"
-                      className="font-normal text-[1.8rem] leading-none "
+                      className="font-normal text-[1.8rem] leading-none"
                     >
                       {head}
                     </Typography>
@@ -94,53 +81,53 @@ export default function Menu() {
               </tr>
             </thead>
             <tbody className="overflow-y-scroll">
-              {LIST_MENU.map((menuItem) => (
-                <tr className="even:bg-blue-gray-50/50 leading-10 ">
-                  <td className="p-4">
-                    <Typography
-                      color="blue-gray"
-                      className="font-normal flex items-center"
-                    >
-                      <img
-                        src="https://th.bing.com/th/id/OIP.wAoFxRe0OdQUw8jQhce2ewHaJ4?pid=ImgDet&rs=1"
-                        alt=""
-                        className="w-[100px] h-[100px] translate-y-[40px]"
-                      />
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-medium">
-                      {menuItem.foodname}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {menuItem.decription}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {menuItem.price}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {menuItem.type}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-medium">
-                      <div className="flex gap-6 ">
-                        <span className="text-[#1890ff] cursor-pointer">
-                          Edit
-                        </span>
-                        <span className="text-[#ff4f4f] cursor-pointer">
-                          Remove
-                        </span>
-                      </div>
-                    </Typography>
-                  </td>
-                </tr>
+              {menuData.map((menuItem, index) => (
+                <React.Fragment key={index}>
+                  <tr
+                    className={index % 2 === 0 ? 'even:bg-blue-gray-50/50 leading-10' : 'odd:bg-blue-gray-50/50 leading-10'}
+                  >
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-normal flex items-center">
+                        <img
+                          src={menuItem.Image}
+                          alt={menuItem.menu_item_name}
+                          className="w-[100px] h-[100px] translate-y-[40px]"
+                        />
+                      </Typography>
+                    </td>
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-medium">
+                        {menuItem.menu_item_name}
+                      </Typography>
+                    </td>
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-normal" style={{ maxWidth: '200px' }}>
+                        {menuItem.Description}
+                      </Typography>
+                    </td>
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-normal">
+                        {menuItem.Price}
+                      </Typography>
+                    </td>
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-normal">
+                        {menuItem.category_name}
+                      </Typography>
+                    </td>
+                    <td className="p-4">
+                      <Typography color="blue-gray" className="font-medium">
+                        <div className="flex gap-6">
+                          <span className="text-[#1890ff] cursor-pointer">Edit</span>
+                          <span className="text-[#ff4f4f] cursor-pointer">Delete</span>
+                        </div>
+                      </Typography>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colSpan={6} style={menuDividerStyle}></td>
+                  </tr>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
@@ -148,4 +135,6 @@ export default function Menu() {
       </div>
     </Admin>
   );
-}
+};
+
+export default Menu;

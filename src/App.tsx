@@ -1,14 +1,14 @@
 import React from 'react';
-import './App.css';
-import useRouterElement from './routes/useRouterElement';
+import useRouterElement from './routes/useRouterElement'; // Đảm bảo bạn đã import useRouterElement
 
 function App() {
-  const routerElement = useRouterElement();
+  const isLoggedIn = true; // Thay thế bằng trạng thái xác thực thực tế
+  const routes = useRouterElement({ isLoggedIn }); // Truyền isLoggedIn vào useRouterElement
 
   return (
-    <>
-      <div>{routerElement}</div>
-    </>
+    <div>
+      {routes}
+    </div>
   );
 }
 

@@ -1,58 +1,88 @@
-import { Card, Typography } from "@material-tailwind/react";
-import { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Admin from "../../pages/admin";
+import unidecode from "unidecode"; // Import thư viện unidecode
 
-const TABLE_HEAD = [
-  "Tài khoản",
-  "Mật khẩu",
-  "Họ Tên",
-  "Email",
-  "SĐT",
-  "Thao Tác",
-];
+const TABLE_HEAD = ["Tài khoản", "Mật khẩu", "Họ Tên", "Vai trò", "Thao Tác"];
 
-export interface User {
-  taiKhoan: string;
-  matKhau: string;
-  email: string;
-  soDt: string;
-  maNhom: string | null;
-  maLoaiNguoiDung: string;
-  hoTen: string;
+interface User {
+  account_id: string;
+  username: string;
+  password: string;
+  fullname: string;
+  role_name: string;
 }
 
 export default function Staff() {
   const navigate = useNavigate();
+  const [listUsers, setListUsers] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLastAdmin, setIsLastAdmin] = useState(false);
 
-  const [listUsers, setListUsers] = useState<User[]>([
-    {
-      taiKhoan: "",
-      matKhau: "",
-      email: "",
-      soDt: "",
-      maNhom: null,
-      maLoaiNguoiDung: "",
-      hoTen: "",
-    },
-  ]);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
   const getListUsers = async () => {
-    const res = await axios.get(
-      `https://movie0706.cybersoft.edu.vn/api/QuanLyNguoiDung/LayDanhSachNguoiDungPhanTrang?MaNhom=GP01&soTrang=1&soPhanTuTrenTrang=20`
-    );
-    if (res) {
-      console.log(res.data);
-      setListUsers(res.data.items);
+    try {
+      const response = await axios.get(
+        "http://localhost:4000/api/accounts-with-roles"
+      );
+
+      if (response.data.accounts) {
+        setListUsers(response.data.accounts);
+
+        // Kiểm tra nếu chỉ còn một tài khoản admin
+        const adminCount = response.data.accounts.filter(
+          (user: User) => user.role_name === "admin"
+        ).length;
+        setIsLastAdmin(adminCount === 1);
+      } else {
+        console.log("Không có dữ liệu người dùng từ máy chủ.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu từ máy chủ: ", error);
     }
+  };
+
+  const handleRemoveAccount = (username: string) => {
+    // Kiểm tra xem tài khoản đang được xóa có phải là tài khoản admin duy nhất hay không
+    if (isLastAdmin) {
+      console.error("Không thể xóa tài khoản admin duy nhất.");
+      return;
+    }
+
+    axios
+      .delete(`http://localhost:4000/api/deleteAccount/${username}`)
+      .then((response) => {
+        console.log("Tài khoản đã được xóa thành công.");
+        getListUsers(); // Tải lại danh sách tài khoản sau khi xóa
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa tài khoản:", error);
+      });
+  };
+
+  const handleEditAccount = (user: User) => {
+    // Chuyển tới trang chỉnh sửa và truyền thông tin tài khoản
+    navigate(`/admin/editstaff/${user.username}`, { state: { user } });
   };
 
   useEffect(() => {
     getListUsers();
   }, []);
+
+  const filteredUsers = listUsers.filter((user) => {
+    // Loại bỏ dấu trong cả họ tên của người dùng và chuỗi tìm kiếm
+    const fullNameWithoutDiacritics = unidecode(user.fullname).toLowerCase();
+    const searchQueryWithoutDiacritics = unidecode(searchQuery).toLowerCase();
+
+    // Kiểm tra xem họ tên có chứa chuỗi tìm kiếm
+    return fullNameWithoutDiacritics.includes(searchQueryWithoutDiacritics);
+  });
 
   return (
     <Admin>
@@ -64,85 +94,64 @@ export default function Staff() {
             onClick={() => navigate("/admin/addstaff")}
             className="w-[170px] h-[40px] cursor-pointer font-[500] border-[1px] border-solid border-[#ccc] p-3"
           >
-            Add staff
+            Add Account
           </button>
           <div className="flex items-center">
             <input
               className="w-[325px] h-[48px] border-[1px] border-solid border-[#ccc] p-3 border-r-0"
               type="text"
-              placeholder="Search for account"
+              placeholder="Tìm kiếm theo họ tên"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
             <div className="flex justify-center items-center text-white w-[50px] h-[50px] bg-[#1890FF]">
               <FontAwesomeIcon icon={faSearch} />
             </div>
           </div>
         </div>
-
-        <Card className=" w-full h-[66vh] overflow-y-scroll">
-          <table className="w-full min-w-max table-auto text-left text-[1.8rem] ">
-            <thead className="sticky top-0 ">
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-b border-blue-gray-200  py-8 px-4 bg-gray-200"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal text-[1.8rem] leading-none "
-                    >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="overflow-y-scroll">
-              {listUsers.map((users) => (
-                <tr className="even:bg-blue-gray-50/50 leading-10 ">
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal ">
-                      {users.taiKhoan}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {users.matKhau}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {users.hoTen}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {users.email}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-normal">
-                      {users.soDt}
-                    </Typography>
-                  </td>
-                  <td className="p-4">
-                    <Typography color="blue-gray" className="font-medium">
-                      <div className="flex gap-6 ">
-                        <span className="text-[#1890ff] cursor-pointer">
-                          Edit
-                        </span>
-                        <span className="text-[#ff4f4f] cursor-pointer">
-                          Remove
-                        </span>
-                      </div>
-                    </Typography>
-                  </td>
-                </tr>
+        <table className="w-full min-w-max table-auto text-left text-[1.8rem] ">
+          <thead className="sticky top-0 ">
+            <tr>
+              {TABLE_HEAD.map((head) => (
+                <th
+                  key={head}
+                  className="border-b border-blue-gray-200  py-8 px-4 bg-gray-200"
+                >
+                  {head}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </Card>
+            </tr>
+          </thead>
+          <tbody className="overflow-y-scroll">
+            {filteredUsers.map((user) => (
+              <tr
+                key={user.username}
+                className="even:bg-blue-gray-50/50 leading-10"
+              >
+                <td className="p-4">{user.username}</td>
+                <td className="p-4">{user.password}</td>
+                <td className="p-4">{user.fullname}</td>
+                <td className="p-4">{user.role_name}</td>
+                <td className="p-4">
+                  <div className="flex gap-6">
+                    <span
+                      className="text-[#1890ff] cursor-pointer"
+                      onClick={() => handleEditAccount(user)}
+                    >
+                      Edit
+                    </span>
+                    <span
+                      className="text-[#ff4f4f] cursor-pointer"
+                      onClick={() => handleRemoveAccount(user.username)}
+                    >
+                      Remove
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </Admin>
   );

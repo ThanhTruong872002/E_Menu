@@ -5,46 +5,55 @@ import Staff from "../components/StaffAdmin/staff";
 import Menu from "../components/MenuAdmin/menu";
 import AddStaff from "../components/StaffAdmin/addStaff";
 import AddMenu from "../components/MenuAdmin/addMenu";
-import HomeAdmin from "../components/HomeAdmin";
 import AddTable from "../components/TableAdmin/addTable";
 import Table from "../components/TableAdmin/table";
 import Manager from "../pages/staff";
 import Customers from "../pages/customers/customer";
 import CustomerLayout from "../components/Layouts/CustomerLayout/customerLayout";
+import PrivateRoute from "./PrivateRoute";
+import EditStaff from "../components/StaffAdmin/editStaff";
 
-export default function useRouterElement() {
+export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }) {
   const routerElement = useRoutes([
     {
       path: "/login",
       element: <Login />,
     },
     {
-      path: "/admin",
-      element: <HomeAdmin />,
-    },
-    {
       path: "/admin/staff",
-      element: <Staff />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Staff />} />
+      ),
     },
     {
       path: "/admin/addstaff",
-      element: <AddStaff />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddStaff />} />
+      ),
     },
     {
       path: "/admin/menu",
-      element: <Menu />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Menu />} />
+      ),
     },
     {
       path: "/admin/addmenu",
-      element: <AddMenu />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddMenu />} />
+      ),
     },
     {
       path: "/admin/table",
-      element: <Table />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<Table />} />
+      ),
     },
     {
       path: "/admin/addtable",
-      element: <AddTable />,
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<AddTable />} />
+      ),
     },
     {
       path: "/manager",
@@ -56,8 +65,14 @@ export default function useRouterElement() {
         <CustomerLayout>
           <Customers />
         </CustomerLayout>
+      )},
+      {
+         path: "/admin/editstaff/:username", // Định nghĩa một route mới cho EditStaff
+      element: (
+        <PrivateRoute isLoggedIn={isLoggedIn} element={<EditStaff />} />
       ),
     },
   ]);
+
   return routerElement;
 }
