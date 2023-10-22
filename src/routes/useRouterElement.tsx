@@ -5,7 +5,6 @@ import Staff from "../components/StaffAdmin/staff";
 import Menu from "../components/MenuAdmin/menu";
 import AddStaff from "../components/StaffAdmin/addStaff";
 import AddMenu from "../components/MenuAdmin/addMenu";
-import HomeAdmin from "../components/HomeAdmin";
 import AddTable from "../components/TableAdmin/addTable";
 import Table from "../components/TableAdmin/table";
 import Manager from "../pages/staff";
@@ -17,12 +16,6 @@ export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }
     {
       path: "/",
       element: <Login />,
-    },
-    {
-      path: "/admin",
-      element: (
-        <PrivateRoute isLoggedIn={isLoggedIn} element={<HomeAdmin />} />
-      ),
     },
     {
       path: "/admin/staff",

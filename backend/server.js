@@ -2,8 +2,16 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const multer = require('multer');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const app = express();
+const fs = require('fs');
+
+const imageUploadPath = path.join(__dirname, 'images');
+if (!fs.existsSync(imageUploadPath)) {
+  fs.mkdirSync(imageUploadPath);
+}
 
 // Sử dụng middleware cors với tùy chọn để cho phép truy cập từ tên miền frontend
 const corsOptions = {
@@ -41,6 +49,30 @@ function requireAuth(req, res, next) {
   }
 }
 
+// Thiết lập lưu trữ tệp tải lên bằng multer
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Chọn thư mục lưu trữ tùy theo loại tệp
+    if (file.fieldname === 'image') {
+      cb(null, 'uploads/images/');
+    } else if (file.fieldname === 'otherImage') {
+      cb(null, 'uploads/images/');
+    } else {
+      cb(null, 'uploads/images/');
+    }
+  },
+  filename: (req, file, cb) => {
+    // Tạo tên tệp định danh bằng thời gian và định dạng tệp
+    const extension = path.extname(file.originalname);
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+  },
+});
+
+const upload = multer({ storage });
+
 // Định nghĩa tuyến đường để truy vấn dữ liệu từ cơ sở dữ liệu
 app.get('/api/account', (req, res) => {
   const sql = "SELECT * FROM account";
@@ -76,6 +108,7 @@ app.post('/api/account', (req, res) => {
     }
   });
 });
+
 
 // Định nghĩa tuyến đường API để lấy thông tin tài khoản kết hợp với vai trò
 app.get('/api/accounts-with-roles', (req, res) => {
@@ -186,6 +219,98 @@ app.put('/api/updateAccount/:username', (req, res) => {
     } else {
       res.json({ success: true, message: 'Cập nhật tài khoản thành công' });
     }
+  });
+});
+
+app.get('/api/menu', (req, res) => {
+  const sql = `
+    SELECT menu.menu_item_name, menu.Description, menu.Price, menu.Image, foodcategor.category_name
+    FROM menu
+    INNER JOIN foodCategor ON menu.category_id = foodcategor.category_id
+  `;
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Định nghĩa tuyến đường API để lấy danh sách các loại
+app.get('/api/types', (req, res) => {
+  const sql = 'SELECT * FROM foodcategor'; 
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+app.post("/api/uploadImage", upload.single("image"), (req, res) => {
+  const imageName = req.file.originalname; // Lấy tên tệp ảnh từ req.file
+
+  // Tạo URL cho ảnh
+  const imageURL = `/images/${imageName}`; // Tạo URL dưới dạng /images/tên-ảnh
+
+  // Trả về URL của ảnh trong phản hồi
+  res.json({ imageURL });
+});
+
+app.post("/api/uploadImage", upload.single("image"), (req, res) => {
+  const imageName = req.file.originalname; // Lấy tên tệp ảnh từ req.file
+
+  // Tạo URL cho ảnh
+  const imageURL = `/images/${imageName}`; // Tạo URL dưới dạng /images/tên-ảnh
+
+  // Trả về URL của ảnh trong phản hồi
+  res.json({ imageURL });
+});
+
+
+// Định nghĩa tuyến đường API để thêm món ăn
+app.post("/api/addDish", upload.single("image"), (req, res) => {
+  const { menu_item_name, Description, Price, category_id } = req.body;
+
+  const imageFilename = req.file.filename;
+
+  // Thêm thông tin món ăn và tên tệp ảnh vào cơ sở dữ liệu
+  const sql = 'INSERT INTO menu (menu_item_name, Description, Price, category_id, Image) VALUES (?, ?, ?, ?, ?)';
+  connection.query(sql, [menu_item_name, Description, Price, category_id, imageFilename], function (err, result) {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Lỗi khi lưu món ăn vào cơ sở dữ liệu",
+        error: err.message,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Món ăn đã được thêm thành công",
+    });
+  });
+});
+
+app.post('/api/uploadImage', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({
+      success: false,
+      message: 'Vui lòng tải lên một tệp ảnh',
+    });
+  }
+
+  // Đường dẫn đến tệp ảnh đã tải lên
+  const imagePath = req.file.path;
+
+  // Trả về URL hoặc thông tin về tệp ảnh đã tải lên
+  res.status(200).json({
+    success: true,
+    message: 'Tải ảnh lên thành công',
+    imageURL: imagePath,
   });
 });
 

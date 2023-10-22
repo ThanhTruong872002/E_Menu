@@ -31,7 +31,7 @@ export default function Login() {
         if (userRole === 1) {
           // Đăng nhập thành công và có vai trò ADMIN, thực hiện chuyển hướng
           setLoginSuccess(true);
-          navigate("/admin");
+          navigate("/admin/staff");
         } else if(userRole === 2) {
           // Đăng nhập thành công và có vai trò là cashier, thực hiện chuyển hướng
           setLoginSuccess(true);

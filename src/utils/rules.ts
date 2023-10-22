@@ -8,7 +8,7 @@ type Rules = {
     | "phonenumber"
     | "fullname"
     | "foodname"
-    | "decription"
+    | "description"
     | "price"
     | "type"]?: RegisterOptions;
 };
@@ -70,7 +70,7 @@ export const rules: Rules = {
       message: "Foodname is required",
     },
   },
-  decription: {
+  description: {
     required: {
       value:true,
       message: "Decription is required"

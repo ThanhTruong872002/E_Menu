@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Admin from "../../pages/admin";
-import unidecode from "unidecode";
+import unidecode from "unidecode"; // Import thư viện unidecode
 
 const TABLE_HEAD = ['Tài khoản', 'Mật khẩu', 'Họ Tên', 'Vai trò', 'Thao Tác'];
 
@@ -20,6 +20,7 @@ export default function Staff() {
   const navigate = useNavigate();
   const [listUsers, setListUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLastAdmin, setIsLastAdmin] = useState(false);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -31,6 +32,10 @@ export default function Staff() {
 
       if (response.data.accounts) {
         setListUsers(response.data.accounts);
+
+        // Kiểm tra nếu chỉ còn một tài khoản admin
+        const adminCount = response.data.accounts.filter((user: User) => user.role_name === 'admin').length;
+        setIsLastAdmin(adminCount === 1);
       } else {
         console.log('Không có dữ liệu người dùng từ máy chủ.');
       }
@@ -40,6 +45,12 @@ export default function Staff() {
   }
 
   const handleRemoveAccount = (username: string) => {
+    // Kiểm tra xem tài khoản đang được xóa có phải là tài khoản admin duy nhất hay không
+    if (isLastAdmin) {
+      console.error("Không thể xóa tài khoản admin duy nhất.");
+      return;
+    }
+
     axios.delete(`http://localhost:4000/api/deleteAccount/${username}`)
       .then(response => {
         console.log('Tài khoản đã được xóa thành công.');

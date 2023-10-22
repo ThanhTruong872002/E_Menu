@@ -28,10 +28,7 @@ export default function SideBar({
           <div className="flex flex-col gap-16 mt-20">
             <div
               onClick={() => navigate("/admin")}
-              className="flex ml-4 gap-10 items-center cursor-pointer h-[54px] justify-center hover:bg-[#1890ff]"
             >
-              <HomeIcon />
-              <h2 className="text-[2rem] text-white">Home</h2>
             </div>
             <div
               onClick={() => navigate("/admin/staff")}
