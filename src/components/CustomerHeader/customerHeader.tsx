@@ -1,7 +1,10 @@
-import React from 'react'
-import Button from '../common/butoons/button'
+import React from "react";
+import Button from "../common/butoons/button";
+import { useNavigate } from "react-router-dom";
 
 export default function CustomerHeader() {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-[#FFFAE3]">
       <div className="w-[90%] mx-auto flex justify-between items-center py-10 ">
@@ -14,7 +17,7 @@ export default function CustomerHeader() {
             <li className="cursor-pointer">Contact</li>
           </ul>
         </div>
-        <div>
+        <div onClick={() => navigate("/customer/booktable")}>
           <Button bookTable="bookTable">Book A Table</Button>
         </div>
       </div>

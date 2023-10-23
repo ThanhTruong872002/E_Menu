@@ -12,6 +12,7 @@ import Customers from "../pages/customers/customer";
 import CustomerLayout from "../components/Layouts/CustomerLayout/customerLayout";
 import PrivateRoute from "./PrivateRoute";
 import EditStaff from "../components/StaffAdmin/editStaff";
+import BookTable from "../components/BookTable/bookTable";
 
 export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }) {
   const routerElement = useRoutes([
@@ -71,7 +72,13 @@ export default function useRouterElement({ isLoggedIn }: { isLoggedIn: boolean }
       element: (
         <PrivateRoute isLoggedIn={isLoggedIn} element={<EditStaff />} />
       ),
-    },
+    }, 
+    {
+      path: "/customer/booktable",
+      element: (<CustomerLayout>
+        <BookTable/>
+      </CustomerLayout>)
+    }
   ]);
 
   return routerElement;
