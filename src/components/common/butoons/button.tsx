@@ -6,7 +6,8 @@ interface IButtons {
   children: ReactNode;
   login?: string;
   bookTable?: string;
-  bookTableSubmit?: string | undefined
+  bookTableSubmit?: string | undefined;
+  customerMenu?: string
 }
 
 const Button: FC<IButtons> = ({
@@ -14,8 +15,9 @@ const Button: FC<IButtons> = ({
   children,
   bookTable,
   bookTableSubmit,
+  customerMenu,
 }) => {
-  const classes = login || bookTable || bookTableSubmit;
+  const classes = login || bookTable || bookTableSubmit || customerMenu;
 
   return <button className={classes}>{children}</button>;
 };

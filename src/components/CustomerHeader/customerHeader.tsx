@@ -13,7 +13,12 @@ export default function CustomerHeader() {
           <ul className="flex gap-10 font-500 ">
             <li className="cursor-pointer">Home</li>
             <li className="cursor-pointer">About</li>
-            <li className="cursor-pointer">Menu</li>
+            <li
+              className="cursor-pointer"
+              onClick={() => navigate("/customer/menu")}
+            >
+              Menu
+            </li>
             <li className="cursor-pointer">Contact</li>
           </ul>
         </div>
