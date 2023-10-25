@@ -1,17 +1,15 @@
-import React from "react";
-
 export default function Footer() {
   return (
-    <div className="bg-[#FFFAE3] py-28">
+    <div className="bg-[#FFFAE3] py-14 ">
       <div className="w-[90%] mx-auto ">
-        <div className="flex gap-[135px]">
-          <div>
-            <img src="./images/Logo.svg" alt="" />
-            <p className="w-[293px] text-[1.6rem] font-[400] mb-[30px] mt-6 leading-[24px]">
+        <div className="flex justify-between gap-16 flex-col lg:flex-row ">
+          <div className="text-center lg:text-start">
+            <img src="./images/Logo.svg" alt="" className="mx-auto lg:mx-0"/>
+            <p className="w-full lg:w-[293px] text-[1.6rem] font-[400] mb-[30px] mt-6 leading-[24px]">
               In the new era of technology we look a in the future with
               certainty and pride to for our company and.
             </p>
-            <ul className="flex gap-4">
+            <ul className="flex gap-4 justify-center lg:justify-start">
               <li>
                 <img src="./images/social-1.svg" alt="" />
               </li>
@@ -26,29 +24,31 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          <div>
-            <h2 className="font-[600] mb-16">Pages</h2>
-            <ul className="flex flex-col gap-10">
-              <li>Home</li>
-              <li>About</li>
-              <li>Menu</li>
-              <li>Pricing</li>
-              <li>Blog</li>
-              <li>Contact</li>
-              <li>Delivery</li>
-            </ul>
-          </div>
-          <div>
-            <h2 className="font-[600] mb-16">Utility Pages</h2>
-            <ul className="flex flex-col gap-10">
-              <li>Start Here</li>
-              <li>Styleguide</li>
-              <li>Password Protected</li>
-              <li>404 Not Found</li>
-              <li>Licenses</li>
-              <li>Changelog</li>
-              <li>View More</li>
-            </ul>
+          <div className="flex justify-around lg:flex-row lg:flex lg:gap-[150px]">
+            <div>
+              <h2 className="font-[600] mb-16">Pages</h2>
+              <ul className="flex flex-col gap-10">
+                <li>Home</li>
+                <li>About</li>
+                <li>Menu</li>
+                <li>Pricing</li>
+                <li>Blog</li>
+                <li>Contact</li>
+                <li>Delivery</li>
+              </ul>
+            </div>
+            <div>
+              <h2 className="font-[600] mb-16">Utility Pages</h2>
+              <ul className="flex flex-col gap-10">
+                <li>Start Here</li>
+                <li>Styleguide</li>
+                <li>Password Protected</li>
+                <li>404 Not Found</li>
+                <li>Licenses</li>
+                <li>Changelog</li>
+                <li>View More</li>
+              </ul>
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

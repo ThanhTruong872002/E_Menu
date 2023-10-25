@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function CustomerHero() {
   return (
     <div className="relative">
@@ -8,7 +6,12 @@ export default function CustomerHero() {
         alt=""
         className="w-full mx-auto text-center "
       />
-      <img src="./images/title.svg" alt="" className="absolute top-[20%] left-[30%]" />
+      <img
+        src="./images/title.svg"
+        alt=""
+        className="absolute top-[20%] left-[30%]"
+        style={{maxWidth: "50%"}}
+      />
     </div>
   );
 }
