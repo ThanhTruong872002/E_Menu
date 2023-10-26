@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import Button from "../common/butoons/button";
 import { useNavigate } from "react-router-dom";
-
 export default function CustomerHeader() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -15,19 +14,20 @@ export default function CustomerHeader() {
   return (
     <div className="bg-[#FFFAE3] relative">
       <div className="w-full lg:w-[90%] mx-auto flex justify-between items-center py-5 md:py-10 ">
-       <div className="w-[140px] h-[30px] lg:w-[170px] lg:h-full">
-          <img
-            src="./images/Logo.svg"
-            alt=""
-            className="mb-4 md:mb-0 pl-10 "
-          />
-       </div>
-        <div className="mb-4 md:mb-0 hidden md:flex">
-          <ul className="flex gap-10 font-500 ">
+        <div className="w-[140px] h-[30px] lg:w-[170px] lg:h-full">
+          <img src="./images/Logo.svg" alt="" className="pl-10" />
+        </div>
+        <div className="mb-4 md:mb-0 hidden md:flex text-[2rem]">
+          <ul className="flex gap-10 font-medium font-sans ">
             <li className="cursor-pointer" onClick={() => navigate("/")}>
               Home
             </li>
-            <li className="cursor-pointer">About</li>
+            <li
+              className="cursor-pointer"
+              onClick={() => navigate("/customer/about")}
+            >
+              About
+            </li>
             <li
               className="cursor-pointer"
               onClick={() => navigate("/customer/menu")}
@@ -50,7 +50,12 @@ export default function CustomerHeader() {
                 <li className="cursor-pointer" onClick={() => navigate("/")}>
                   Home
                 </li>
-                <li className="cursor-pointer">About</li>
+                <li
+                  className="cursor-pointer"
+                  onClick={() => navigate("/customer/about")}
+                >
+                  About
+                </li>
                 <li
                   className="cursor-pointer"
                   onClick={() => {

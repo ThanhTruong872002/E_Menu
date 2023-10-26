@@ -9,8 +9,8 @@ export default function CustomerHero() {
       <img
         src="./images/title.svg"
         alt=""
-        className="absolute top-[20%] left-[30%]"
-        style={{maxWidth: "50%"}}
+        className="absolute top-[20%] left-[23%] lg:left-[30%]"
+        style={{maxWidth: "55%"}}
       />
     </div>
   );

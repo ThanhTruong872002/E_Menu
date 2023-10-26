@@ -14,6 +14,7 @@ import PrivateRoute from "./PrivateRoute";
 import EditStaff from "../components/StaffAdmin/editStaff";
 import BookTable from "../components/BookTable/bookTable";
 import CustomerMenu from "../components/CustomerMenu/customerMenu";
+import CustomerAbout from "../components/CustomerAbout";
 
 export default function useRouterElement({ 
   isLoggedIn,
@@ -78,6 +79,14 @@ export default function useRouterElement({
       element: (
         <CustomerLayout>
           <CustomerMenu />
+        </CustomerLayout>
+      ),
+    },
+    {
+      path: "/customer/about",
+      element: (
+        <CustomerLayout>
+          <CustomerAbout />
         </CustomerLayout>
       ),
     },

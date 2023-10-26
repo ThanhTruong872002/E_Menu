@@ -24,8 +24,8 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          <div className="flex justify-around lg:flex-row lg:flex lg:gap-[150px]">
-            <div>
+          <div className="flex justify-center lg:flex-row lg:flex lg:gap-[150px]">
+            <div className="w-[120px]">
               <h2 className="font-[600] mb-16">Pages</h2>
               <ul className="flex flex-col gap-10">
                 <li>Home</li>
@@ -37,12 +37,12 @@ export default function Footer() {
                 <li>Delivery</li>
               </ul>
             </div>
-            <div>
+            <div className="w-[120px]">
               <h2 className="font-[600] mb-16">Utility Pages</h2>
               <ul className="flex flex-col gap-10">
                 <li>Start Here</li>
                 <li>Styleguide</li>
-                <li>Password Protected</li>
+                <li>Password </li>
                 <li>404 Not Found</li>
                 <li>Licenses</li>
                 <li>Changelog</li>
