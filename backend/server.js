@@ -50,8 +50,6 @@ function requireAuth(req, res, next) {
 }
 
 // Thiết lập lưu trữ tệp tải lên bằng multer
-
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Chọn thư mục lưu trữ tùy theo loại tệp
@@ -127,7 +125,6 @@ app.get('/api/accounts-with-roles', (req, res) => {
 
 app.get('/api/roles', (req, res) => {
   const sql = 'SELECT role_id, role_name FROM role';
-
   connection.query(sql, (err, results) => {
     if (err) {
       res.status(500).json({ error: 'Lỗi truy vấn cơ sở dữ liệu' });
@@ -314,6 +311,60 @@ app.post('/api/uploadImage', upload.single('image'), (req, res) => {
   });
 });
 
+app.get('/api/locations', (req, res) => {
+  const sql = 'SELECT location_id, location_name FROM locationtable';
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+const appDomain = 'http://localhost:3000/menu';
+
+// Định nghĩa tuyến đường API để thêm bàn
+app.post('/api/tables', (req, res) => {
+  const { table_name, seat_capacity, location, status } = req.body;
+
+  // Thực hiện truy vấn SQL để thêm thông tin bàn vào cơ sở dữ liệu
+  const sql = 'INSERT INTO tableid (table_name, seat_capacity, location, status) VALUES (?, ?, ?, ?)';
+  connection.query(sql, [table_name, seat_capacity, location, status], function(err, result) {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: 'Lỗi khi thêm bàn vào cơ sở dữ liệu',
+        error: err.message,
+      });
+    }
+
+    // Trả về thông tin bàn và table_id
+    const tableId = result.insertId;
+
+    // Tạo mã QR code từ table_id
+    const qrCode = `http://localhost:3000/menu/tables/${tableId}`;
+
+    // Cập nhật cơ sở dữ liệu với mã QR code
+    const updateQrCodeSql = 'UPDATE tableid SET qr_code = ? WHERE table_id = ?';
+    connection.query(updateQrCodeSql, [qrCode, tableId], function(updateErr, updateResult) {
+      if (updateErr) {
+        return res.status(500).json({
+          success: false,
+          message: 'Lỗi khi cập nhật mã QR code',
+          error: updateErr.message,
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Thêm bàn thành công',
+        table_id: tableId,
+        qr_code: qrCode,
+      });
+    });
+  });
+});
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get('/admin', requireAuth, (req, res) => {
