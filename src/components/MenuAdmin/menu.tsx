@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { Card, Typography } from '@material-tailwind/react';
-import { useNavigate } from 'react-router-dom';
-import Admin from '../../pages/admin';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Card, Typography } from "@material-tailwind/react";
+import { useNavigate } from "react-router-dom";
+import Admin from "../../pages/admin";
 
 interface MenuData {
   Image: string;
@@ -15,8 +15,8 @@ interface MenuData {
 }
 
 const menuDividerStyle = {
-  borderTop: '1px solid #ccc',
-  width: '100%',
+  borderTop: "1px solid #ccc",
+  width: "100%",
 };
 
 const Menu: React.FC = () => {
@@ -27,11 +27,11 @@ const Menu: React.FC = () => {
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/menu');
+        const response = await axios.get("http://localhost:4000/api/menu");
         setMenuData(response.data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching menu data:', error);
+        console.error("Error fetching menu data:", error);
       }
     };
 
@@ -44,7 +44,7 @@ const Menu: React.FC = () => {
         <h2 className="text-[3rem] font-[600] mt-6">Menu Management</h2>
         <div className="flex justify-between mt-20 mb-10">
           <button
-            onClick={() => navigate('/admin/addmenu')}
+            onClick={() => navigate("/admin/addmenu")}
             className="w-[170px] h-[40px] cursor-pointer font-[500] border-[1px] border-solid border-[#ccc] p-3"
           >
             Add Dish
@@ -64,7 +64,14 @@ const Menu: React.FC = () => {
           <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
             <thead className="sticky top-0 z-50">
               <tr>
-                {['Image', 'Food Name', 'Description', 'Price', 'Category', 'Action'].map((head, index) => (
+                {[
+                  "Image",
+                  "Food Name",
+                  "Description",
+                  "Price",
+                  "Category",
+                  "Action",
+                ].map((head, index) => (
                   <th
                     key={index}
                     className="border-b border-blue-gray-200 py-8 px-4 bg-gray-200"
@@ -84,12 +91,19 @@ const Menu: React.FC = () => {
               {menuData.map((menuItem, index) => (
                 <React.Fragment key={index}>
                   <tr
-                    className={index % 2 === 0 ? 'even:bg-blue-gray-50/50 leading-10' : 'odd:bg-blue-gray-50/50 leading-10'}
+                    className={
+                      index % 2 === 0
+                        ? "even:bg-blue-gray-50/50 leading-10"
+                        : "odd:bg-blue-gray-50/50 leading-10"
+                    }
                   >
                     <td className="p-4">
-                      <Typography color="blue-gray" className="font-normal flex items-center">
+                      <Typography
+                        color="blue-gray"
+                        className="font-normal flex items-center"
+                      >
                         <img
-                          src={menuItem.Image}
+                          src={`http://localhost:4000/uploads${menuItem.Image}`}
                           alt={menuItem.menu_item_name}
                           className="w-[100px] h-[100px] translate-y-[40px]"
                         />
@@ -101,7 +115,11 @@ const Menu: React.FC = () => {
                       </Typography>
                     </td>
                     <td className="p-4">
-                      <Typography color="blue-gray" className="font-normal" style={{ maxWidth: '200px' }}>
+                      <Typography
+                        color="blue-gray"
+                        className="font-normal"
+                        style={{ maxWidth: "200px" }}
+                      >
                         {menuItem.Description}
                       </Typography>
                     </td>
@@ -118,8 +136,12 @@ const Menu: React.FC = () => {
                     <td className="p-4">
                       <Typography color="blue-gray" className="font-medium">
                         <div className="flex gap-6">
-                          <span className="text-[#1890ff] cursor-pointer">Edit</span>
-                          <span className="text-[#ff4f4f] cursor-pointer">Delete</span>
+                          <span className="text-[#1890ff] cursor-pointer">
+                            Edit
+                          </span>
+                          <span className="text-[#ff4f4f] cursor-pointer">
+                            Delete
+                          </span>
                         </div>
                       </Typography>
                     </td>

@@ -4,6 +4,7 @@ import { Select, Button, message } from "antd";
 import Admin from "../../pages/admin";
 import axios from "axios";
 import { rules } from "../../utils/rules";
+import { config } from "process";
 
 interface IAddMenuForm {
   menu_item_name: string;
@@ -41,6 +42,7 @@ export default function AddMenu() {
       // Tải ảnh lên máy chủ và nhận URL của ảnh
       const imageFormData = new FormData();
       imageFormData.append("image", selectedImage);
+
       axios
         .post("http://localhost:4000/api/uploadImage", imageFormData) // Thay đổi URL thành API của bạn
         .then((response) => {
@@ -48,9 +50,12 @@ export default function AddMenu() {
             // Gán URL của ảnh vào trường image trong dữ liệu món ăn
             formData.append("image", response.data.imageURL);
 
-            // Gửi dữ liệu món ăn đã cập nhật lên API /api/addDish
+            const config = {
+              headers: { "Content-Type": "application/json" },
+            };
+
             axios
-              .post("http://localhost:4000/api/addDish", formData) // Thay đổi URL thành API của bạn
+              .post("http://localhost:4000/api/addDish", formData, config) // Thay đổi URL thành API của bạn
               .then((response) => {
                 if (response.data.success) {
                   message.success(response.data.message);
@@ -82,10 +87,14 @@ export default function AddMenu() {
   const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
+
       setSelectedImage(selectedFile);
 
       const imageUrl = URL.createObjectURL(selectedFile);
       setImagePreview(imageUrl);
+      console.log(selectedFile);
+    } else {
+      message.error("Chưa chọn ảnh");
     }
   };
 
@@ -174,7 +183,10 @@ export default function AddMenu() {
                   }}
                 >
                   {categoryData?.map((category) => (
-                    <Select.Option key={category.category_id} value={category.category_id}>
+                    <Select.Option
+                      key={category.category_id}
+                      value={category.category_id}
+                    >
                       {category.category_name}
                     </Select.Option>
                   ))}
