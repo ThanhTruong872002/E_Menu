@@ -14,7 +14,7 @@ export default function CustomerContent() {
               className="w-[600px] h-[560px] object-cover rounded-2xl"
             />
           </LazyLoad>
-          <div className="absolute -bottom-[10%] left-[20%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
+          <div className="absolute -bottom-[10%] left-[20%] xl:bottom-[10%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
             <h2 className="font-sans text-[2.4rem] font-bold mb-[45px] text-white">
               Come and visit us
             </h2>
@@ -51,7 +51,7 @@ export default function CustomerContent() {
           </h4>
         </div>
       </div>
-      <div className="mt-[120px] flex justify-between items-center  gap-20">
+      <div className="mt-[120px] flex justify-between xl:justify-around items-center  gap-20">
         <div>
           <h2 className="font-playfair text-[5.5rem] font-[500] max-w-[557px] text-[#2C2F24]">
             A little information for our valuable guest
@@ -142,11 +142,13 @@ export default function CustomerContent() {
               was the highlight of our evening. Highly recommended.
             </p>
             <div className="flex gap-4 mt-28  items-center">
-              <img
-                src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=1780&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-                className="w-[70px] h-[70px] object-cover rounded-[50%]"
-              />
+             <LazyLoad>
+                <img
+                  src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=1780&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt=""
+                  className="w-[70px] h-[70px] object-cover rounded-[50%]"
+                />
+             </LazyLoad>
               <div>
                 <h4 className="font-bold text-[1.6rem]">Sophire Robson</h4>
                 <p className="font-sans font-[400] mt-2">Los Angeles, CA</p>
@@ -163,11 +165,13 @@ export default function CustomerContent() {
               dinner. Each dish was prepared and beautifully presented.
             </p>
             <div className="flex gap-4 mt-28  items-center">
-              <img
-                src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt=""
-                className="w-[70px] h-[70px] object-cover rounded-[50%]"
-              />
+          <LazyLoad>
+                <img
+                  src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt=""
+                  className="w-[70px] h-[70px] object-cover rounded-[50%]"
+                />
+          </LazyLoad>
               <div>
                 <h4 className="font-bold text-[1.6rem]">Sophire Robson</h4>
                 <p className="font-sans font-[400] mt-2">Los Angeles, CA</p>

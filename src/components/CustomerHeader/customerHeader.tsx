@@ -34,7 +34,12 @@ export default function CustomerHeader() {
             >
               Menu
             </li>
-            <li className="cursor-pointer">Contact</li>
+            <li
+              className="cursor-pointer"
+              onClick={() => navigate("/customer/contact")}
+            >
+              Contact
+            </li>
           </ul>
         </div>
         <div className="md:hidden px-10 relative">
@@ -65,7 +70,12 @@ export default function CustomerHeader() {
                 >
                   Menu
                 </li>
-                <li className="cursor-pointer">Contact</li>
+                <li
+                  className="cursor-pointer"
+                  onClick={() => navigate("/customer/contact")}
+                >
+                  Contact
+                </li>
               </ul>
             </div>
           )}

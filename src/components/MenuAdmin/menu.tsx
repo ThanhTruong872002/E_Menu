@@ -105,7 +105,7 @@ const Menu: React.FC = () => {
                         <img
                           src={`http://localhost:4000/uploads${menuItem.Image}`}
                           alt={menuItem.menu_item_name}
-                          className="w-[100px] h-[100px] translate-y-[40px]"
+                          className="w-[100px] h-[100px] translate-y-[20px]"
                         />
                       </Typography>
                     </td>

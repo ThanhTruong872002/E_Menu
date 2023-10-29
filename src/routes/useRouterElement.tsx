@@ -15,6 +15,8 @@ import EditStaff from "../components/StaffAdmin/editStaff";
 import BookTable from "../components/BookTable/bookTable";
 import CustomerMenu from "../components/CustomerMenu/customerMenu";
 import CustomerAbout from "../components/CustomerAbout";
+import CustomerMenuQR from "../components/CustomerMenuQR";
+import CustomerContact from "../components/CustomerContact";
 
 export default function useRouterElement({ 
   isLoggedIn,
@@ -89,6 +91,18 @@ export default function useRouterElement({
           <CustomerAbout />
         </CustomerLayout>
       ),
+    },
+    {
+      path: "/customer/contact",
+      element: (
+        <CustomerLayout>
+          <CustomerContact />
+        </CustomerLayout>
+      ),
+    },
+    {
+      path: "/customer/menuqr",
+      element: <CustomerMenuQR />,
     },
   ]);
 
