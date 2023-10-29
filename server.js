@@ -7,8 +7,6 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
-const LoginController = require('./controllers/loginController');
-const StaffController = require('./controllers/staffController');
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -55,13 +53,6 @@ function requireAuth(req, res, next) {
   }
 }
 
-app.post("/api/account", LoginController.login);
-
-app.get("/api/accounts-with-roles", StaffController.getAllStaff);
-
-app.delete("/api/deleteAccount/:username", StaffController.deleteStaff);
-
-
 // Thiết lập lưu trữ tệp tải lên bằng multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -83,6 +74,61 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
+// Định nghĩa tuyến đường để truy vấn dữ liệu từ cơ sở dữ liệu
+app.get("/api/account", (req, res) => {
+  const sql = "SELECT * FROM account";
+  connection.query(sql, function (err, results) {
+    if (err) {
+      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
+    } else {
+      res.json({ account: results });
+    }
+  });
+});
+
+// Định nghĩa tuyến đường POST để kiểm tra đăng nhập
+app.post("/api/account", (req, res) => {
+  // Lấy dữ liệu từ yêu cầu POST
+  const { username, password } = req.body;
+
+  // Thực hiện kiểm tra đăng nhập
+  const sql = `SELECT * FROM account WHERE username = ? AND password = ?`;
+  connection.query(sql, [username, password], function (err, results) {
+    if (err) {
+      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
+    } else {
+      if (results.length > 0) {
+        // cột role trong cơ sở dữ liệu lưu trữ vai trò
+        const userRole = results[0].role;
+        // Tìm thấy người dùng, đăng nhập thành công
+        res.json({
+          success: true,
+          message: "Đăng nhập thành công",
+          role: userRole,
+        });
+      } else {
+        // Không tìm thấy người dùng, đăng nhập không thành công
+        res.json({ success: false, message: "Đăng nhập thất bại" });
+      }
+    }
+  });
+});
+
+// Định nghĩa tuyến đường API để lấy thông tin tài khoản kết hợp với vai trò
+app.get("/api/accounts-with-roles", (req, res) => {
+  const sql = `
+    SELECT account.account_id, account.username, account.password, account.fullname, role.role_name
+    FROM account
+    INNER JOIN role ON account.role = role.role_id`;
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
+    } else {
+      res.json({ accounts: results });
+    }
+  });
+});
 
 app.get("/api/roles", (req, res) => {
   const sql = "SELECT role_id, role_name FROM role";
@@ -120,9 +166,6 @@ app.post("/api/addStaff", (req, res) => {
   );
 });
 
-
-
-
 // API endpoint để kiểm tra username
 app.get("/api/checkUsername", (req, res) => {
   const { username } = req.query;
@@ -138,6 +181,21 @@ app.get("/api/checkUsername", (req, res) => {
       } else {
         res.json({ success: true });
       }
+    }
+  });
+});
+
+// Tuyến đường API để xóa tài khoản bằng username
+app.delete("/api/deleteAccount/:username", (req, res) => {
+  const username = req.params.username;
+
+  const sql = "DELETE FROM account WHERE username = ?";
+
+  connection.query(sql, [username], function (err, result) {
+    if (err) {
+      res.status(500).json({ error: "Lỗi khi xóa tài khoản" });
+    } else {
+      res.json({ success: true, message: "Xóa tài khoản thành công" });
     }
   });
 });
