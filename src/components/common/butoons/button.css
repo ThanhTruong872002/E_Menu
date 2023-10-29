@@ -57,3 +57,31 @@
     background: #AD343E;
     color: white;
 }
+
+.buttonQr {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #F3F1F1;
+    min-width: 70px;
+    height: 30px;
+    font-size: 1.3rem;
+    font-weight: 400;
+}
+
+
+.selectMenuQR {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #008C8C;
+    min-width: 70px;
+    height: 30px;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: white;
+}
