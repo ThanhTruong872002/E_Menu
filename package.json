@@ -60,7 +60,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-lazyload": "^3.2.2",
+    "@types/react-lazyload": "^3.1.11",
     "@types/unidecode": "^0.1.2",
     "@types/uuid": "^9.0.6",
     "tailwindcss": "^3.3.3"
