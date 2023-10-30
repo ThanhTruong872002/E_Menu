@@ -1,19 +1,16 @@
 import React from "react";
 import { CallIcon, LetterIcon, LocationIcon } from "../common/icons/icons";
-import LazyLoad from "react-lazyload";
 
 export default function CustomerContent() {
   return (
     <div className="py-[100px] w-[90%] mx-auto ">
       <div className="flex justify-between items-center  gap-20">
         <div className="mb-[100px] ">
-          <LazyLoad>
-            <img
-              src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=1980&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt="no img"
-              className="w-[600px] h-[560px] object-cover rounded-2xl"
-            />
-          </LazyLoad>
+          <img
+            src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=1980&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="no img"
+            className="w-[600px] h-[560px] object-cover rounded-2xl"
+          />
           <div className="absolute -bottom-[10%] left-[20%] xl:bottom-[10%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
             <h2 className="font-sans text-[2.4rem] font-bold mb-[45px] text-white">
               Come and visit us
@@ -97,13 +94,11 @@ export default function CustomerContent() {
           </div>
         </div>
         <div>
-          <LazyLoad>
-            <img
-              src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              alt=""
-              className="w-[555px] h-[680px] object-cover rounded-2xl"
-            />
-          </LazyLoad>
+          <img
+            src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt=""
+            className="w-[555px] h-[680px] object-cover rounded-2xl"
+          />
         </div>
       </div>
       <div className="mt-[120px] flex flex-col justify-between items-center  gap-20">
@@ -142,13 +137,11 @@ export default function CustomerContent() {
               was the highlight of our evening. Highly recommended.
             </p>
             <div className="flex gap-4 mt-28  items-center">
-             <LazyLoad>
-                <img
-                  src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=1780&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt=""
-                  className="w-[70px] h-[70px] object-cover rounded-[50%]"
-                />
-             </LazyLoad>
+              <img
+                src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=1780&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt=""
+                className="w-[70px] h-[70px] object-cover rounded-[50%]"
+              />
               <div>
                 <h4 className="font-bold text-[1.6rem]">Sophire Robson</h4>
                 <p className="font-sans font-[400] mt-2">Los Angeles, CA</p>
@@ -165,13 +158,11 @@ export default function CustomerContent() {
               dinner. Each dish was prepared and beautifully presented.
             </p>
             <div className="flex gap-4 mt-28  items-center">
-          <LazyLoad>
-                <img
-                  src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt=""
-                  className="w-[70px] h-[70px] object-cover rounded-[50%]"
-                />
-          </LazyLoad>
+              <img
+                src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt=""
+                className="w-[70px] h-[70px] object-cover rounded-[50%]"
+              />
               <div>
                 <h4 className="font-bold text-[1.6rem]">Sophire Robson</h4>
                 <p className="font-sans font-[400] mt-2">Los Angeles, CA</p>
