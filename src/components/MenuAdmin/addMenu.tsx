@@ -5,6 +5,7 @@ import Admin from "../../pages/admin";
 import axios from "axios";
 import { rules } from "../../utils/rules";
 import { config } from "process";
+import { useNavigate } from "react-router-dom";
 
 interface IAddMenuForm {
   menu_item_name: string;
@@ -30,6 +31,8 @@ export default function AddMenu() {
   const [categoryData, setCategoryData] = useState<Category[] | undefined>();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const navigate = useNavigate()
 
   const onSubmit = handleSubmit((data) => {
     const formData = new FormData();
@@ -77,7 +80,6 @@ export default function AddMenu() {
       message.error("Chưa chọn ảnh.");
     }
   });
-
   useEffect(() => {
     axios.get("http://localhost:4000/api/types").then((response) => {
       setCategoryData(response.data);

@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Admin from "../../pages/admin";
-import unidecode from "unidecode"; // Import thư viện unidecode
+import unidecode from "unidecode";
 
-const TABLE_HEAD = ["Tài khoản", "Mật khẩu", "Họ Tên", "Vai trò", "Thao Tác"];
+const TABLE_HEAD = ["Tài khoản", "Họ Tên", "Vai trò", "Thao Tác"];
 
 interface User {
   account_id: string;
   username: string;
-  password: string;
   fullname: string;
   role_name: string;
 }
@@ -31,12 +30,10 @@ export default function Staff() {
       const response = await axios.get(
         "http://localhost:4000/api/accounts-with-roles"
       );
+      if (response.data.staff) {
+        setListUsers(response.data.staff);
 
-      if (response.data.accounts) {
-        setListUsers(response.data.accounts);
-
-        // Kiểm tra nếu chỉ còn một tài khoản admin
-        const adminCount = response.data.accounts.filter(
+        const adminCount = response.data.staff.filter(
           (user: User) => user.role_name === "admin"
         ).length;
         setIsLastAdmin(adminCount === 1);
@@ -49,7 +46,6 @@ export default function Staff() {
   };
 
   const handleRemoveAccount = (username: string) => {
-    // Kiểm tra xem tài khoản đang được xóa có phải là tài khoản admin duy nhất hay không
     if (isLastAdmin) {
       console.error("Không thể xóa tài khoản admin duy nhất.");
       return;
@@ -59,7 +55,7 @@ export default function Staff() {
       .delete(`http://localhost:4000/api/deleteAccount/${username}`)
       .then((response) => {
         console.log("Tài khoản đã được xóa thành công.");
-        getListUsers(); // Tải lại danh sách tài khoản sau khi xóa
+        getListUsers();
       })
       .catch((error) => {
         console.error("Lỗi khi xóa tài khoản:", error);
@@ -67,7 +63,6 @@ export default function Staff() {
   };
 
   const handleEditAccount = (user: User) => {
-    // Chuyển tới trang chỉnh sửa và truyền thông tin tài khoản
     navigate(`/admin/editstaff/${user.username}`, { state: { user } });
   };
 
@@ -76,11 +71,8 @@ export default function Staff() {
   }, []);
 
   const filteredUsers = listUsers.filter((user) => {
-    // Loại bỏ dấu trong cả họ tên của người dùng và chuỗi tìm kiếm
     const fullNameWithoutDiacritics = unidecode(user.fullname).toLowerCase();
     const searchQueryWithoutDiacritics = unidecode(searchQuery).toLowerCase();
-
-    // Kiểm tra xem họ tên có chứa chuỗi tìm kiếm
     return fullNameWithoutDiacritics.includes(searchQueryWithoutDiacritics);
   });
 
@@ -129,7 +121,6 @@ export default function Staff() {
                 className="even:bg-blue-gray-50/50 leading-10"
               >
                 <td className="p-4">{user.username}</td>
-                <td className="p-4">{user.password}</td>
                 <td className="p-4">{user.fullname}</td>
                 <td className="p-4">{user.role_name}</td>
                 <td className="p-4">
