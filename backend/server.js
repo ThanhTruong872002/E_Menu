@@ -9,6 +9,10 @@ const app = express();
 const fs = require("fs");
 const LoginController = require('./controllers/loginController');
 const StaffController = require('./controllers/staffController');
+const AddStaffController = require('./controllers/addStaffController');
+const EditStaffController = require("./controllers/editStaffController");
+const MenuController = require("./controllers/menuController");
+const AddMenuController = require("./controllers/addMenuController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -55,218 +59,50 @@ function requireAuth(req, res, next) {
   }
 }
 
-app.post("/api/account", LoginController.login);
-
-app.get("/api/accounts-with-roles", StaffController.getAllStaff);
-
-app.delete("/api/deleteAccount/:username", StaffController.deleteStaff);
-
-
-// Thiết lập lưu trữ tệp tải lên bằng multer
+// Định nghĩa lưu trữ tệp tải lên bằng multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Chọn thư mục lưu trữ tùy theo loại tệp
-    if (file.fieldname === "image") {
-      cb(null, "uploads/images/");
-    } else if (file.fieldname === "otherImage") {
-      cb(null, "uploads/images/");
-    } else {
-      cb(null, "uploads/images/");
-    }
+    cb(null, "uploads/images/");
   },
   filename: (req, file, cb) => {
-    // Tạo tên tệp định danh bằng thời gian và định dạng tệp
     const extension = path.extname(file.originalname);
     const uniqueSuffix = Date.now() + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + uniqueSuffix + extension);
+    cb(null, `image${uniqueSuffix}${extension}`);
   },
 });
 
 const upload = multer({ storage });
 
-app.get("/api/roles", (req, res) => {
-  const sql = "SELECT role_id, role_name FROM role";
-  connection.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-    } else {
-      res.json({ roles: results });
-    }
-  });
-});
+//Login page
+app.post("/api/account", LoginController.login);
 
-app.post("/api/addStaff", (req, res) => {
-  const { account_id, username, password, fullname, role } = req.body;
+//Staff page
+app.get("/api/accounts-with-roles", StaffController.getAllStaff);
+app.delete("/api/deleteAccount/:username", StaffController.deleteStaff);
 
-  // Kiểm tra xem `role` có phải là một số nguyên không
-  if (!Number.isInteger(role)) {
-    res.status(400).json({ error: "ID của vai trò phải là một số nguyên" });
-    return;
-  }
+//addStaff page
+// Tuyến đường API để thêm nhân viên
+app.post("/api/addStaff", AddStaffController.addStaff);
 
-  // Thực hiện truy vấn SQL để thêm thông tin nhân viên vào cơ sở dữ liệu
-  const sql =
-    "INSERT INTO account (account_id, username, password, fullname, role) VALUES (?, ?, ?, ?, ?)";
-  connection.query(
-    sql,
-    [account_id, username, password, fullname, role],
-    function (err, results) {
-      if (err) {
-        res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-      } else {
-        res.json({ success: true, message: "Thêm nhân viên thành công" });
-      }
-    }
-  );
-});
+// Tuyến đường API để kiểm tra username
+app.get("/api/checkUsername", AddStaffController.checkUsername);
 
+// Tuyến đường API để lấy danh sách vai trò
+app.get("/api/roles", AddStaffController.getRoles); //dùng cho cả editStaff page
 
+//editStaff page
+app.get("/api/getAccount/:username", EditStaffController.getAccount);
+app.put("/api/updateAccount/:username", EditStaffController.updateAccount);
 
+//menu Page
+app.get("/api/menu", MenuController.getMenuItems);
+app.delete("/api/deleteDish/:id", MenuController.deleteDish);
 
-// API endpoint để kiểm tra username
-app.get("/api/checkUsername", (req, res) => {
-  const { username } = req.query;
+//addMenu page 
+app.post("/api/uploadImage", upload.single("image"), AddMenuController.uploadImage);
+app.post("/api/addDish", AddMenuController.addDish);
+app.get("/api/types", AddMenuController.getTypes);
 
-  // Thực hiện truy vấn SQL để kiểm tra username có tồn tại trong cơ sở dữ liệu không
-  const sql = "SELECT * FROM account WHERE username = ?";
-  connection.query(sql, [username], function (err, results) {
-    if (err) {
-      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-    } else {
-      if (results.length > 0) {
-        res.status(400).json({ error: "Username đã tồn tại" });
-      } else {
-        res.json({ success: true });
-      }
-    }
-  });
-});
-
-// Định nghĩa tuyến đường API để lấy thông tin tài khoản dựa trên username
-app.get("/api/getAccount/:username", (req, res) => {
-  const username = req.params.username;
-  const sql = "SELECT * FROM account WHERE username = ?";
-  connection.query(sql, [username], function (err, results) {
-    if (err) {
-      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-    } else {
-      if (results.length > 0) {
-        res.json({ account: results[0] });
-      } else {
-        res.status(404).json({ error: "Không tìm thấy tài khoản" });
-      }
-    }
-  });
-});
-
-app.put("/api/updateAccount/:username", (req, res) => {
-  const username = req.params.username;
-  const { password, fullname, role } = req.body;
-  // Thực hiện truy vấn SQL để cập nhật thông tin tài khoản
-  const sql =
-    "UPDATE account SET password = ?, fullname = ?, role = ? WHERE username = ?";
-  connection.query(
-    sql,
-    [password, fullname, role, username],
-    function (err, result) {
-      if (err) {
-        res.status(500).json({ error: "Lỗi khi cập nhật tài khoản" });
-      } else {
-        res.json({ success: true, message: "Cập nhật tài khoản thành công" });
-      }
-    }
-  );
-});
-
-app.get("/api/menu", (req, res) => {
-  const sql = `
-    SELECT menu.menu_item_name, menu.Description, menu.Price, menu.Image, foodcategor.category_name
-    FROM menu
-    INNER JOIN foodCategor ON menu.category_id = foodcategor.category_id
-  `;
-
-  connection.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-// Định nghĩa tuyến đường API để lấy danh sách các loại
-app.get("/api/types", (req, res) => {
-  const sql = "SELECT * FROM foodcategor";
-  connection.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Lỗi truy vấn cơ sở dữ liệu" });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-app.post("/api/uploadImage", upload.single("image"), (req, res) => {
-  const imageName = req.file.filename; // Lấy tên tệp ảnh từ req.file
-
-  // Tạo URL cho ảnh
-  const imageURL = `/images/${imageName}`; // Tạo URL dưới dạng /images/tên-ảnh
-
-  // Trả về URL của ảnh trong phản hồi
-  res.json({ imageURL });
-});
-
-// Định nghĩa tuyến đường API để thêm món ăn
-app.post("/api/addDish", (req, res) => {
-  const {
-    menu_item_name,
-    Description,
-    Price,
-    category_id,
-    image: imageFileName,
-  } = req.body;
-
-  // Thêm thông tin món ăn và tên tệp ảnh vào cơ sở dữ liệu
-  const sql =
-    "INSERT INTO menu (menu_item_name, Description, Price, category_id, Image) VALUES (?, ?, ?, ?, ?)";
-  connection.query(
-    sql,
-    [menu_item_name, Description, Price, category_id, imageFileName],
-    function (err, result) {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: "Lỗi khi lưu món ăn vào cơ sở dữ liệu",
-          error: err.message,
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: "Món ăn đã được thêm thành công",
-      });
-    }
-  );
-});
-
-app.post("/api/uploadImage", upload.single("image"), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      message: "Vui lòng tải lên một tệp ảnh",
-    });
-  }
-
-  // Đường dẫn đến tệp ảnh đã tải lên
-  const imagePath = req.file.path;
-
-  // Trả về URL hoặc thông tin về tệp ảnh đã tải lên
-  res.status(200).json({
-    success: true,
-    message: "Tải ảnh lên thành công",
-    imageURL: imagePath,
-  });
-});
 
 app.get("/api/locations", (req, res) => {
   const sql = "SELECT location_id, location_name FROM locationtable";
