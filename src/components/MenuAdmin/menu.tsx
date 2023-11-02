@@ -5,14 +5,9 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Card, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
+import { MenuData } from "../@types/MenuType";
 
-interface MenuData {
-  Image: string;
-  menu_item_name: string;
-  Description: string;
-  Price: string;
-  category_name: string;
-}
+
 
 const menuDividerStyle = {
   borderTop: "1px solid #ccc",
