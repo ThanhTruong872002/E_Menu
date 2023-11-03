@@ -1,15 +1,41 @@
-import React from 'react';
-import useRouterElement from './routes/useRouterElement'; // Đảm bảo bạn đã import useRouterElement
+import React, { useState } from "react";
+import useRouterElement from "./routes/useRouterElement";
+import { createContext, Dispatch, SetStateAction } from "react";
+import { MenuData } from "./components/@types/MenuType";
 
-function App() {
-  const isLoggedIn = true; // Thay thế bằng trạng thái xác thực thực tế
-  const routes = useRouterElement({ isLoggedIn }); // Truyền isLoggedIn vào useRouterElement
+const initialDetailsMenu: MenuData[] = [
+];
 
-  return (
-    <div>
-      {routes}
-    </div>
-  );
+interface MenuContextData {
+  showDetailsMenu: MenuData[];
+  setShowDetailMenu: Dispatch<SetStateAction<MenuData[]>>;
+  quantity: number;
+  setQuantity: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default App;
+const initialMenuContext: MenuContextData = {
+  showDetailsMenu: initialDetailsMenu,
+  setShowDetailMenu: () => null,
+  quantity: 1,
+  setQuantity: () => null,
+};
+
+export const MenuContext = createContext<MenuContextData>(initialMenuContext);
+
+export function App() {
+  const [showDetailsMenu, setShowDetailMenu] = useState<MenuData[]>(
+    initialMenuContext.showDetailsMenu
+  );
+
+  const [quantity, setQuantity] = useState(1);
+
+  const routerElement = useRouterElement({ isLoggedIn: true });
+
+  return (
+    <MenuContext.Provider
+      value={{ showDetailsMenu, setShowDetailMenu, quantity, setQuantity }}
+    >
+      <div>{routerElement}</div>
+    </MenuContext.Provider>
+  );
+}
