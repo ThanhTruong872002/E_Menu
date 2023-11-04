@@ -104,6 +104,72 @@ app.post("/api/addDish", AddMenuController.addDish);
 app.get("/api/types", AddMenuController.getTypes);
 
 
+app.get("/api/menu/:menu_id", (req, res) => {
+  const dishId = req.params.menu_id; // Lấy menu_id từ tham số URL
+
+  // Sử dụng câu lệnh SQL để lấy thông tin món ăn dựa trên menu_id
+  const sql = "SELECT * FROM menu WHERE menu_id = ?";
+
+  connection.query(sql, [dishId], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Lỗi truy vấn cơ sở dữ liệu",
+      });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        error: "Không tìm thấy món ăn với menu_id cung cấp",
+      });
+    }
+
+    const dishData = result[0];
+    res.status(200).json(dishData);
+  });
+});
+
+
+app.put("/api/editDish/:menu_id", (req, res) => {
+  const menuId = req.params.menu_id; // Lấy menu_id từ tham số URL
+  const updatedMenu = req.body; // Dữ liệu cần cập nhật từ yêu cầu PUT
+
+  // Tạo một đối tượng chứa dữ liệu cần cập nhật
+  const updatedData = {
+    menu_item_name: updatedMenu.menu_item_name,
+    Description: updatedMenu.Description,
+    Price: updatedMenu.Price,
+    category_id: updatedMenu.category_id,
+  };
+
+  // Sử dụng câu lệnh SQL để cập nhật thông tin món ăn dựa trên menu_id
+  const sql = "UPDATE menu SET ? WHERE menu_id = ?";
+
+  connection.query(sql, [updatedData, menuId], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Lỗi khi cập nhật thông tin món ăn",
+        error: err.message,
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy món ăn với menu_id cung cấp",
+      });
+    }
+
+    // Trả về thông báo cập nhật thành công nếu không có lỗi
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật thông tin món ăn thành công",
+    });
+  });
+});
+
+
+
 app.get("/api/locations", (req, res) => {
   const sql = "SELECT location_id, location_name FROM locationtable";
   connection.query(sql, (err, results) => {

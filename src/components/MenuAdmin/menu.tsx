@@ -5,22 +5,16 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Card, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
-<<<<<<< HEAD
 import unidecode from "unidecode";
 
 interface MenuData {
-  menu_id: string; 
+  menu_id: string;
   Image: string;
   menu_item_name: string;
   Description: string;
   Price: string;
   category_name: string;
 }
-=======
-import { MenuData } from "../@types/MenuType";
-
-
->>>>>>> 710283518474ac2d106bcc278c4c1143696e6e8a
 
 const menuDividerStyle = {
   borderTop: "1px solid #ccc",
@@ -54,7 +48,9 @@ const Menu: React.FC = () => {
     setSearchTerm(searchTerm);
 
     const filteredMenuData = menuData.filter((menuItem) =>
-      unidecode(menuItem.menu_item_name.toLowerCase()).includes(unidecode(searchTerm.toLowerCase()))
+      unidecode(menuItem.menu_item_name.toLowerCase()).includes(
+        unidecode(searchTerm.toLowerCase())
+      )
     );
     setFilteredMenuData(filteredMenuData);
   };
@@ -62,17 +58,17 @@ const Menu: React.FC = () => {
   const handleDeleteMenuItem = async (menuItemId: string) => {
     try {
       await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
-  
-      // Cập nhật cả hai mảng menuData và filteredMenuData
-      const updatedMenuData = menuData.filter((menuItem) => menuItem.menu_id !== menuItemId);
+
+      // Update both menuData and filteredMenuData arrays
+      const updatedMenuData = menuData.filter(
+        (menuItem) => menuItem.menu_id !== menuItemId
+      );
       setMenuData(updatedMenuData);
       setFilteredMenuData(updatedMenuData);
     } catch (error) {
       console.error("Error deleting menu item:", error);
     }
   };
-  
-  
 
   return (
     <Admin>
@@ -174,7 +170,10 @@ const Menu: React.FC = () => {
                     <td className="p-4">
                       <Typography color="blue-gray" className="font-medium">
                         <div className="flex gap-6">
-                          <span className="text-[#1890ff] cursor-pointer">
+                          <span
+                            className="text-[#1890ff] cursor-pointer"
+                            onClick={() => navigate(`/admin/editmenu/${menuItem.menu_id}`)}
+                          >
                             Edit
                           </span>
                           <span
