@@ -17,6 +17,7 @@ import CustomerMenu from "../components/CustomerMenu/customerMenu";
 import CustomerAbout from "../components/CustomerAbout";
 import CustomerMenuQR from "../components/CustomerMenuQR";
 import CustomerContact from "../components/CustomerContact";
+import CustomerMenuCart from "../components/CustomerMenuCart";
 
 export default function useRouterElement({ 
   isLoggedIn,
@@ -104,6 +105,10 @@ export default function useRouterElement({
       path: "/customer/menuqr",
       element: <CustomerMenuQR />,
     },
+    {
+      path: "/customer/menuqr/cart",
+      element: <CustomerMenuCart/>
+    }
   ]);
 
   return routerElement;

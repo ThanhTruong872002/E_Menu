@@ -5,6 +5,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Card, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
+<<<<<<< HEAD
 import unidecode from "unidecode";
 
 interface MenuData {
@@ -15,6 +16,11 @@ interface MenuData {
   Price: string;
   category_name: string;
 }
+=======
+import { MenuData } from "../@types/MenuType";
+
+
+>>>>>>> 710283518474ac2d106bcc278c4c1143696e6e8a
 
 const menuDividerStyle = {
   borderTop: "1px solid #ccc",

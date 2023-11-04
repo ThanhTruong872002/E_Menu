@@ -8,7 +8,8 @@ interface IButtons {
   bookTable?: string;
   bookTableSubmit?: string | undefined;
   customerMenu?: string;
-  buttonQr?: string
+  buttonQr?: string;
+  cartButton?: string
 }
 
 const Button: FC<IButtons> = ({
@@ -18,9 +19,15 @@ const Button: FC<IButtons> = ({
   bookTableSubmit,
   customerMenu,
   buttonQr,
+  cartButton
 }) => {
   const classes =
-    login || bookTable || bookTableSubmit || customerMenu || buttonQr
+    login ||
+    bookTable ||
+    bookTableSubmit ||
+    customerMenu ||
+    buttonQr ||
+    cartButton
 
   return <button className={classes}>{children}</button>;
 };
