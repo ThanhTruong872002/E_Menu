@@ -5,9 +5,17 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Card, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
-import { MenuData } from "../@types/MenuType";
 
+import unidecode from "unidecode";
 
+interface MenuData {
+  menu_id: string;
+  Image: string;
+  menu_item_name: string;
+  Description: string;
+  Price: string;
+  category_name: string;
+}
 
 const menuDividerStyle = {
   borderTop: "1px solid #ccc",
@@ -17,13 +25,16 @@ const menuDividerStyle = {
 const Menu: React.FC = () => {
   const navigate = useNavigate();
   const [menuData, setMenuData] = useState<MenuData[]>([]);
+  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/menu");
         setMenuData(response.data);
+        setFilteredMenuData(response.data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching menu data:", error);
@@ -32,6 +43,33 @@ const Menu: React.FC = () => {
 
     fetchMenuData();
   }, []);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+
+    const filteredMenuData = menuData.filter((menuItem) =>
+      unidecode(menuItem.menu_item_name.toLowerCase()).includes(
+        unidecode(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredMenuData(filteredMenuData);
+  };
+
+  const handleDeleteMenuItem = async (menuItemId: string) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
+
+      // Cập nhật cả hai mảng menuData và filteredMenuData
+      const updatedMenuData = menuData.filter(
+        (menuItem) => menuItem.menu_id !== menuItemId
+      );
+      setMenuData(updatedMenuData);
+      setFilteredMenuData(updatedMenuData);
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+    }
+  };
 
   return (
     <Admin>
@@ -49,13 +87,15 @@ const Menu: React.FC = () => {
               className="w-[325px] h-[48px] border-[1px] border-solid border-[#ccc] p-3 border-r-0"
               type="text"
               placeholder="Search for a food item"
+              value={searchTerm}
+              onChange={handleSearch}
             />
             <div className="flex justify-center items-center text-white w-[50px] h-[50px] bg-[#1890FF]">
               <FontAwesomeIcon icon={faSearch} />
             </div>
           </div>
         </div>
-        <Card className="w-full h-[70vh] overflow-y-scroll">
+        <Card className="w-full h-[80vh] overflow-y-scroll">
           <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
             <thead className="sticky top-0 z-50">
               <tr>
@@ -82,8 +122,8 @@ const Menu: React.FC = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="overflow-y-scroll">
-              {menuData.map((menuItem, index) => (
+            <tbody className="overflow-y-auto">
+              {filteredMenuData.map((menuItem, index) => (
                 <React.Fragment key={index}>
                   <tr
                     className={
@@ -100,7 +140,7 @@ const Menu: React.FC = () => {
                         <img
                           src={`http://localhost:4000/uploads${menuItem.Image}`}
                           alt={menuItem.menu_item_name}
-                          className="w-[100px] h-[100px] translate-y-[20px]"
+                          className="w-[100px] h-[100px] translate-y-[40px] object-cover rounded-xl"
                         />
                       </Typography>
                     </td>
@@ -109,10 +149,10 @@ const Menu: React.FC = () => {
                         {menuItem.menu_item_name}
                       </Typography>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 ">
                       <Typography
                         color="blue-gray"
-                        className="font-normal"
+                        className="font-normal -translate-y-[40px]"
                         style={{ maxWidth: "200px" }}
                       >
                         {menuItem.Description}
@@ -134,7 +174,12 @@ const Menu: React.FC = () => {
                           <span className="text-[#1890ff] cursor-pointer">
                             Edit
                           </span>
-                          <span className="text-[#ff4f4f] cursor-pointer">
+                          <span
+                            className="text-[#ff4f4f] cursor-pointer"
+                            onClick={() =>
+                              handleDeleteMenuItem(menuItem.menu_id)
+                            }
+                          >
                             Delete
                           </span>
                         </div>
