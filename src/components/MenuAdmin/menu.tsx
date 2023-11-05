@@ -5,7 +5,6 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { Card, Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import Admin from "../../pages/admin";
-
 import unidecode from "unidecode";
 
 interface MenuData {
@@ -171,7 +170,10 @@ const Menu: React.FC = () => {
                     <td className="p-4">
                       <Typography color="blue-gray" className="font-medium">
                         <div className="flex gap-6">
-                          <span className="text-[#1890ff] cursor-pointer">
+                          <span
+                            className="text-[#1890ff] cursor-pointer"
+                            onClick={() => navigate(`/admin/editmenu/${menuItem.menu_id}`)}
+                          >
                             Edit
                           </span>
                           <span
