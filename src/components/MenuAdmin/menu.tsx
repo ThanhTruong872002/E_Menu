@@ -168,23 +168,23 @@ const Menu: React.FC = () => {
                       </Typography>
                     </td>
                     <td className="p-4">
-                      <Typography color="blue-gray" className="font-medium">
-                        <div className="flex gap-6">
-                          <span
-                            className="text-[#1890ff] cursor-pointer"
-                            onClick={() => navigate(`/admin/editmenu/${menuItem.menu_id}`)}
-                          >
-                            Edit
-                          </span>
-                          <span
-                            className="text-[#ff4f4f] cursor-pointer"
-                            onClick={() => handleDeleteMenuItem(menuItem.menu_id)}
-                          >
-                            Delete
-                          </span>
-                        </div>
-                      </Typography>
-                    </td>
+                    <Typography color="blue-gray" className="font-medium">
+                      <div className="flex gap-6">
+                        <span
+                          className="text-[#1890ff] cursor-pointer"
+                          onClick={() => navigate(`/admin/editmenu/${menuItem.menu_id}`)}
+                        >
+                          Edit
+                        </span>
+                        <span
+                          className="text-[#ff4f4f] cursor-pointer"
+                          onClick={() => handleDeleteMenuItem(menuItem.menu_id)}
+                        >
+                          Delete
+                        </span>
+                      </div>
+                    </Typography>
+                  </td>
                   </tr>
                   <tr>
                     <td colSpan={6} style={menuDividerStyle}></td>
