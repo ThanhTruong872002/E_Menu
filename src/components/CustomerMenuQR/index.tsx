@@ -1,14 +1,12 @@
 import axios from "axios";
 import { MenuData } from "../@types/MenuType";
 import Button from "../common/butoons/button";
-import {
-  CartIcon,
-  SearchIcon,
-  StartIcon,
-} from "../common/icons/icons";
-import { useState, useEffect } from "react";
+import { CartIcon, SearchIcon, StartIcon } from "../common/icons/icons";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import PopupMenu from "./popupMenu";
+import OutSideClickHandler from "../OutSideClickHandler";
+import unidecode from "unidecode";
 
 export default function CustomerMenuQR() {
   const [selected, setSelected] = useState("breakfast");
@@ -19,11 +17,20 @@ export default function CustomerMenuQR() {
     null
   );
 
+  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const popupRef = useRef<HTMLDivElement>(null);
+
   const navigate = useNavigate();
 
-  const togglePopup = (menuItem: MenuData | null) => {
+  const togglePopup = (menuItem: any) => {
     setShowPopup(!showPopup);
-    setSelectedMenuItem(menuItem);
+    const newItem = {
+      ...menuItem,
+      quantity: 0,
+    };
+    setSelectedMenuItem(newItem);
   };
 
   useEffect(() => {
@@ -32,6 +39,7 @@ export default function CustomerMenuQR() {
         const res = await axios.get("http://localhost:4000/api/menu");
         if (res.data) {
           setListMenuItem(res.data);
+          setFilteredMenuData(res.data);
         }
       } catch (error) {
         console.error("Error fetching menu data:", error);
@@ -48,14 +56,31 @@ export default function CustomerMenuQR() {
   }, [showPopup]);
 
   const handleScroll = (event: any) => {
-    // Ngăn chặn cuộn trang khi popup hiển thị
     if (showPopup) {
       event.preventDefault();
     }
   };
 
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+
+    const filteredMenuData = listMenuItem.filter((menuItem) =>
+      unidecode(menuItem.menu_item_name.toLowerCase()).includes(
+        unidecode(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredMenuData(filteredMenuData);
+  };
+
+  const handleShowPopup = () => {
+    setShowPopup(false);
+  };
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      // onClick={() => OutSideClickHandler(popupRef, handleShowPopup)}
+    >
       <header className="w-full bg-[#FFFAE3] h-[70px] p-[18px] flex justify-between">
         <img src="/images/Logo.svg" alt="" className="w-[140px]" />
         <div
@@ -69,6 +94,8 @@ export default function CustomerMenuQR() {
         <div className="flex items-center gap-4 border-[1px] border-solid border-[#B3B3B3]  w-full h-[46px] px-4 mt-[42px] rounded-lg">
           <SearchIcon />
           <input
+            onChange={handleSearch}
+            value={searchTerm}
             type="text"
             name="search"
             placeholder="Search food"
@@ -116,9 +143,9 @@ export default function CustomerMenuQR() {
            overflow-y-scroll
            overflow-x-hidden"
         >
-          {listMenuItem.map((item, index) => (
+          {filteredMenuData.map((item, index) => (
             <div
-              className="w-[160px] shadow-2xl rounded-lg cursor-pointer"
+              className="w-[100%] shadow-2xl rounded-lg cursor-pointer"
               onClick={() => togglePopup(item)}
               key={index}
             >
@@ -128,7 +155,7 @@ export default function CustomerMenuQR() {
                 className="h-[160px] object-cover rounded-2xl w-[95%]"
               />
               <div className="p-3">
-                <h2 className="text-[1.6rem] font-medium mt-3 ">
+                <h2 className="text-[1.6rem] font-medium mt-3 h-[32px]">
                   {item.menu_item_name}
                 </h2>
                 <div className="flex gap-3 items-center mt-2">
@@ -137,7 +164,9 @@ export default function CustomerMenuQR() {
                     4.9
                   </p>
                 </div>
-                <p className="mt-3 text-[1.6rem] font-semibold ml-[2px]">$4</p>
+                <p className="mt-3 text-[1.6rem] font-semibold ml-[2px]">
+                  {item.Price} VND
+                </p>
               </div>
             </div>
           ))}
