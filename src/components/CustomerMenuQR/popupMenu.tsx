@@ -1,23 +1,55 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { IncreaseIcon, ReduceIcon, StartIcon } from "../common/icons/icons";
 import { MenuData } from "../@types/MenuType";
 import Button from "../common/butoons/button";
 import { MenuContext } from "../../App";
+import { notification } from "antd";
 
 interface PropsType {
   selectedMenuItem: MenuData | null;
   setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function PopupMenu({ selectedMenuItem, setShowPopup }: PropsType) {
-  const { setShowDetailMenu, quantity, setQuantity } = useContext(MenuContext);
+type NotificationType = "success" | "info" | "warning" | "error";
+
+export default function PopupMenu({
+  selectedMenuItem,
+  setShowPopup,
+}: PropsType) {
+  const { setShowDetailMenu, quantity, setQuantity, showDetailsMenu } =
+    useContext(MenuContext);
+  const [api, contextHolder] = notification.useNotification();
+
+  const openNotificationWithIcon = (type: NotificationType) => {
+    api[type]({
+      message: "",
+      description: "Successfully add to cart",
+    });
+  };
 
   const hanldeAddToCart = (menuItem: MenuData | null) => {
     if (menuItem) {
-      setShowDetailMenu((prev) => [...prev, menuItem]);
-      setShowPopup(false);
+      const checkedItemIndex = showDetailsMenu.findIndex(
+        (item) => item.menu_id === menuItem.menu_id
+      );
+      if (checkedItemIndex !== -1) {
+        const updatedMenuItems = [...showDetailsMenu];
+        updatedMenuItems[checkedItemIndex].quantity += quantity;
+        setShowDetailMenu(updatedMenuItems);
+      } else
+        setShowDetailMenu((prev) => [
+          ...prev,
+          {
+            ...menuItem,
+            quantity: quantity,
+          },
+        ]);
+      openNotificationWithIcon("success");
+      setQuantity(1);
+      // setShowPopup(false);
     }
   };
+
   const handleIncreaseIcon = () => {
     setQuantity(quantity + 1);
   };
@@ -29,8 +61,10 @@ export default function PopupMenu({ selectedMenuItem, setShowPopup }: PropsType)
       setQuantity(quantity - 1);
     }
   };
+
   return (
     <div>
+      {contextHolder}
       <div className="fixed top-[260px] w-[98%] bg-white mx-auto pb-10 transition ease-in-out delay-150">
         <img
           src={`http://localhost:4000/uploads${selectedMenuItem?.Image}`}
@@ -64,7 +98,9 @@ export default function PopupMenu({ selectedMenuItem, setShowPopup }: PropsType)
               </div>
             </div>
           </div>
-          <p className="font-semibold text-[2.2rem] mt-2 ml-4 ">$6</p>
+          <p className="font-semibold text-[2.2rem] mt-2 ml-4 ">
+            {selectedMenuItem?.Price} VND
+          </p>
           <div onClick={() => hanldeAddToCart(selectedMenuItem)}>
             <Button cartButton={"cartButton"}>Add To Cart</Button>
           </div>
