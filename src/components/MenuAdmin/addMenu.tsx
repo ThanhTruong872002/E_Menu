@@ -32,7 +32,7 @@ export default function AddMenu() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onSubmit = handleSubmit((data) => {
     const formData = new FormData();
@@ -62,6 +62,7 @@ export default function AddMenu() {
               .then((response) => {
                 if (response.data.success) {
                   message.success(response.data.message);
+                  navigate("/admin/menu");
                 } else {
                   message.error("Lỗi khi thêm món ăn.");
                 }

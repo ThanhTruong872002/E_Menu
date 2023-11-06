@@ -3,12 +3,10 @@ import { MenuData } from "../@types/MenuType";
 import Button from "../common/butoons/button";
 import {
   CartIcon,
-  IncreaseIcon,
-  ReduceIcon,
   SearchIcon,
   StartIcon,
 } from "../common/icons/icons";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PopupMenu from "./popupMenu";
 

@@ -59,7 +59,7 @@ const Menu: React.FC = () => {
     try {
       await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
 
-      // Update both menuData and filteredMenuData arrays
+      // Cập nhật cả hai mảng menuData và filteredMenuData
       const updatedMenuData = menuData.filter(
         (menuItem) => menuItem.menu_id !== menuItemId
       );
@@ -94,7 +94,7 @@ const Menu: React.FC = () => {
             </div>
           </div>
         </div>
-        <Card className="w-full h-[70vh] overflow-y-scroll">
+        <Card className="w-full h-[80vh] overflow-y-scroll">
           <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
             <thead className="sticky top-0 z-50">
               <tr>
@@ -121,7 +121,7 @@ const Menu: React.FC = () => {
                 ))}
               </tr>
             </thead>
-            <tbody className="overflow-y-scroll">
+            <tbody className="overflow-y-auto">
               {filteredMenuData.map((menuItem, index) => (
                 <React.Fragment key={index}>
                   <tr
@@ -139,7 +139,7 @@ const Menu: React.FC = () => {
                         <img
                           src={`http://localhost:4000/uploads${menuItem.Image}`}
                           alt={menuItem.menu_item_name}
-                          className="w-[100px] h-[100px] translate-y-[20px]"
+                          className="w-[100px] h-[100px] translate-y-[40px] object-cover rounded-xl"
                         />
                       </Typography>
                     </td>
@@ -148,10 +148,10 @@ const Menu: React.FC = () => {
                         {menuItem.menu_item_name}
                       </Typography>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 ">
                       <Typography
                         color="blue-gray"
-                        className="font-normal"
+                        className="font-normal -translate-y-[40px]"
                         style={{ maxWidth: "200px" }}
                       >
                         {menuItem.Description}

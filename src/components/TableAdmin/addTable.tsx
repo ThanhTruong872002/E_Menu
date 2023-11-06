@@ -117,7 +117,7 @@ export default function AddTable() {
               <h2 className="w-[170px]">Location</h2>
               <label>
                 <Select
-                  style={{ width: 200 }}
+                  style={{ width: 200, marginLeft: "20px" }}
                   placeholder="Select Location"
                   value={selectedValue}
                   onChange={(value) => {
