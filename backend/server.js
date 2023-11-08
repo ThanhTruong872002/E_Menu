@@ -235,6 +235,20 @@ app.post("/api/tables", (req, res) => {
   );
 });
 
+app.get("/api/tables", (req, res) => {
+  // Query to fetch data from the tableid table
+  const sql = "SELECT * from tableid";
+
+  connection.query(sql, (err, results) => {
+    if (err) {
+      res.status(500).json({ error: "Database query error" });
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
