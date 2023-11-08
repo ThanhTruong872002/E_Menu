@@ -107,7 +107,7 @@ export default function useRouterElement({
       ),
     },
     {
-      path: "/customer/menuqr",
+      path: "/customer/menuqr/:table_id",
       element: <CustomerMenuQR />,
     },
     {
