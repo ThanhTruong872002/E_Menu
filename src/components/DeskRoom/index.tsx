@@ -28,7 +28,7 @@ export default function DeskRoom() {
               onClick={() => handleClick("table")}
               className="text-[1.8rem] font-[600] cursor-pointer transition-all"
             >
-              Phòng bàn
+              Table
             </h2>
           </div>
           <div
@@ -41,7 +41,7 @@ export default function DeskRoom() {
           >
             <FoodIcon />
             <h2 className="text-[1.8rem]  font-[600] cursor-pointer transition-all">
-              Thực đơn
+              Menu
             </h2>
           </div>
           <div
@@ -54,7 +54,7 @@ export default function DeskRoom() {
           >
             <ReportIcon />
             <h2 className="text-[1.8rem] font-[600] cursor-pointer transition-all">
-              Báo cáo
+              Report
             </h2>
           </div>
         </div>

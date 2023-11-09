@@ -92,7 +92,7 @@ export default function TableReport() {
         dataSource={dataSource}
         columns={columns}
         style={{ flex: "1", flexGrow: "1" }}
-        size="large"
+        size="middle"
       />
       ;
     </div>

@@ -1,3 +1,9 @@
+import Chatbot from "react-chatbot-kit";
+import MessageParser from "../ChatBot/MessageParser";
+import config from "../ChatBot/config";
+import ActionProvider from "../ChatBot/ActionProvider";
+import "react-chatbot-kit/build/main.css";
+
 export default function CustomerHero() {
   return (
     <div className="relative">
@@ -10,8 +16,15 @@ export default function CustomerHero() {
         src="./images/title.svg"
         alt=""
         className="absolute top-[20%] left-[23%] lg:left-[30%]"
-        style={{maxWidth: "55%"}}
+        style={{ maxWidth: "55%" }}
       />
+      <div className="flex justify-center mx-auto text-center">
+        <Chatbot
+          config={config}
+          messageParser={MessageParser}
+          actionProvider={ActionProvider}
+        />
+      </div>
     </div>
   );
 }

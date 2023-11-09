@@ -45,7 +45,9 @@ export default function Table() {
   return (
     <Admin>
       <div>
-        <h2 className="text-[3rem] font-[600] mt-6 ">Manage The Dining Table</h2>
+        <h2 className="text-[3rem] font-[600] mt-6 ">
+          Manage The Dining Table
+        </h2>
         <div className="flex justify-between mt-20 mb-10">
           <button
             onClick={() => navigate("/admin/addtable")}
@@ -87,7 +89,9 @@ export default function Table() {
             <tbody className="overflow-y-scroll">
               {tableData.map((table, index) => (
                 <tr
-                  className={index % 2 === 0 ? "even:bg-blue-gray-50/50 leading-10" : ""}
+                  className={
+                    index % 2 === 0 ? "even:bg-blue-gray-50/50 leading-10" : ""
+                  }
                   key={index}
                 >
                   <td className="p-4">
