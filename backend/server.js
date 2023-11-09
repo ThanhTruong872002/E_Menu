@@ -21,7 +21,7 @@ if (!fs.existsSync(imageUploadPath)) {
 
 // Sử dụng middleware cors với tùy chọn để cho phép truy cập từ tên miền frontend
 const corsOptions = {
-  origin: "http://localhost:3000", // Tên miền frontend
+  origin: ["http://localhost:3000", "http://192.168.1.7:3000"], // Tên miền frontend
   optionsSuccessStatus: 200, // Mã trạng thái thành công cho tùy chọn preflight
 };
 
@@ -184,56 +184,70 @@ app.get("/api/locations", (req, res) => {
 const appDomain = "http://localhost:3000/menu";
 
 // Định nghĩa tuyến đường API để thêm bàn
-app.post("/api/tables", (req, res) => {
+app.post("/api/tables", async (req, res) => {
   const { table_name, seat_capacity, location, status } = req.body;
 
-  // Thực hiện truy vấn SQL để thêm thông tin bàn vào cơ sở dữ liệu
-  const sql =
-    "INSERT INTO tableid (table_name, seat_capacity, location, status) VALUES (?, ?, ?, ?)";
-  connection.query(
-    sql,
-    [table_name, seat_capacity, location, status],
-    function (err, result) {
-      if (err) {
+  // Tạo một bàn mới trong cơ sở dữ liệu (bạn cần có một hàm để thực hiện thao tác này)
+  try {
+    const result = await createNewTable(table_name, seat_capacity, location, status);
+    if (!result) {
+      return res.status(500).json({
+        success: false,
+        message: "Lỗi khi tạo bàn trong cơ sở dữ liệu",
+      });
+    }
+
+    const tableId = result.insertId;
+
+    // Tạo đường dẫn URL (QR code) từ ID bàn
+    const qrCode = `http://localhost:3000/customer/menuqr/${tableId}`;
+
+    // Cập nhật bàn với mã QR code mới được tạo
+    const updateQrCodeSql =
+      "UPDATE tableid SET qr_code = ? WHERE table_id = ?";
+    connection.query(updateQrCodeSql, [qrCode, tableId], (updateErr, updateResult) => {
+      if (updateErr) {
         return res.status(500).json({
           success: false,
-          message: "Lỗi khi thêm bàn vào cơ sở dữ liệu",
-          error: err.message,
+          message: "Lỗi khi cập nhật mã QR code",
+          error: updateErr.message,
         });
       }
 
-      // Trả về thông tin bàn và table_id
-      const tableId = result.insertId;
-
-      // Tạo mã QR code từ table_id
-      const qrCode = `http://localhost:3000/menu/tables/${tableId}`;
-
-      // Cập nhật cơ sở dữ liệu với mã QR code
-      const updateQrCodeSql =
-        "UPDATE tableid SET qr_code = ? WHERE table_id = ?";
-      connection.query(
-        updateQrCodeSql,
-        [qrCode, tableId],
-        function (updateErr, updateResult) {
-          if (updateErr) {
-            return res.status(500).json({
-              success: false,
-              message: "Lỗi khi cập nhật mã QR code",
-              error: updateErr.message,
-            });
-          }
-
-          res.status(200).json({
-            success: true,
-            message: "Thêm bàn thành công",
-            table_id: tableId,
-            qr_code: qrCode,
-          });
-        }
-      );
-    }
-  );
+      res.status(200).json({
+        success: true,
+        message: "Thêm bàn thành công",
+        table_id: tableId,
+        qr_code: qrCode,
+      });
+    });
+  } catch (error) {
+    console.error("Error adding the table:", error);
+    // eslint-disable-next-line no-undef
+    message.error("Failed to add the table.");
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi thêm bàn",
+      error: error.message,
+    });
+  }
 });
+
+// Hàm để tạo bàn mới
+async function createNewTable(table_name, seat_capacity, location, status) {
+  return new Promise((resolve, reject) => {
+    const sql = "INSERT INTO tableid (table_name, seat_capacity, location, status) VALUES (?, ?, ?, ?)";
+    connection.query(sql, [table_name, seat_capacity, location, status], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+
 
 app.get("/api/tables", (req, res) => {
   // Query to fetch data from the tableid table
@@ -256,6 +270,7 @@ app.get("/admin", requireAuth, (req, res) => {
 
 // Lắng nghe máy chủ trên cổng 4000
 const port = 4000;
-app.listen(port, () => {
+const host = "0.0.0.0";
+app.listen(port, host, () => {
   console.log(`Máy chủ đang lắng nghe trên cổng ${port}`);
 });

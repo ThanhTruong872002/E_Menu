@@ -3,8 +3,8 @@ import Admin from "../../pages/admin";
 import { useForm } from "react-hook-form";
 import { Input, Select, Space, message } from "antd";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 import QRCode from "qrcode.react";
+import { toPng } from "html-to-image"; // Thêm import này
 
 interface ILocation {
   location_id: number;
@@ -19,7 +19,7 @@ interface IAddTableForm {
 
 export default function AddTable() {
   const [selectedValue, setSelectedValue] = useState<number | undefined>();
-  const [tableId, setTableId] = useState<string | null>(null);
+  const [tableId, setTableId] = useState<number | null>(null);
   const [locations, setLocations] = useState<ILocation[]>([]);
 
   const {
@@ -40,23 +40,30 @@ export default function AddTable() {
       });
   }, []);
 
-  const generateQRCode = () => {
-    // Generate a unique identifier for the table
-    const newTableId = uuidv4();
+  const downloadQRCode = () => {
+    if (tableId) {
+      const qrCodeContainer = document.getElementById("qrCodeContainer");
 
-    // Set the QR code text using the tableId
-    setTableId(newTableId);
+      if (qrCodeContainer) {
+        toPng(qrCodeContainer) // Sử dụng toPng từ html-to-image
+          .then(function (dataUrl) {
+            const link = document.createElement("a");
+            link.download = `QR_Code_Table_${tableId}.png`;
+            link.href = dataUrl;
+            link.click();
+          })
+          .catch(function (error) {
+            console.error("Error converting QR code to image:", error);
+            message.error("Failed to download QR code.");
+          });
+      } else {
+        message.error("QR Code container not found.");
+      }
+    }
   };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      if (!tableId) {
-        generateQRCode();
-        if (!tableId) {
-          return;
-        }
-      }
-
       if (!selectedValue) {
         // Trường "Location" không được bỏ trống
         message.error("Please select a location.");
@@ -69,13 +76,15 @@ export default function AddTable() {
         seat_capacity: data.seat_capacity,
         location: selectedValue,
         status: 1,
-        qr_code: `http://localhost:3000/menu/${tableId || ""}`, // Sửa URL đích
       });
 
       if (response.status === 200) {
         console.log(`Table added with ID: ${response.data.table_id}`);
         // Display a success message
         message.success("Table added successfully.");
+
+        // Set the tableId with the ID from the response
+        setTableId(response.data.table_id);
       } else {
         message.error("Failed to add the table.");
       }
@@ -151,9 +160,15 @@ export default function AddTable() {
         {tableId && (
           <div className="flex items-center mt-14">
             <h2 className="w-[170px]">QR Code</h2>
-            <label className="mt-4">
+            <label className="mt-4" id="qrCodeContainer">
               <Space direction="vertical" align="center">
-                <QRCode value={tableId || "-"} />
+                <QRCode value={`http://192.168.1.7:3000/customer/menuqr/${tableId}`} />
+                <button
+                  onClick={downloadQRCode}
+                  className="text-[#1890ff] mt-2"
+                >
+                  Download QR Code
+                </button>
               </Space>
             </label>
           </div>
