@@ -18,11 +18,13 @@ export default function CustomerHero() {
         className="absolute top-[20%] left-[23%] lg:left-[30%]"
         style={{ maxWidth: "55%" }}
       />
-      <div className="flex justify-center mx-auto text-center">
+      <div
+        className="flex justify-center mx-auto text-center mt-10"
+      >
         <Chatbot
-          config={config}
           messageParser={MessageParser}
           actionProvider={ActionProvider}
+          config={config}
         />
       </div>
     </div>
