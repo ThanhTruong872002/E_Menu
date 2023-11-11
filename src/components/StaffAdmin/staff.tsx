@@ -6,7 +6,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Admin from "../../pages/admin";
 import unidecode from "unidecode";
 
-const TABLE_HEAD = ["Tài khoản", "Họ Tên", "Vai trò", "Thao Tác"];
+const TABLE_HEAD = ["Account", "Fullname", "Role", "Action"];
 
 interface User {
   account_id: string;
@@ -92,7 +92,7 @@ export default function Staff() {
             <input
               className="w-[325px] h-[48px] border-[1px] border-solid border-[#ccc] p-3 border-r-0"
               type="text"
-              placeholder="Tìm kiếm theo họ tên"
+              placeholder="Search by name"
               value={searchQuery}
               onChange={handleSearchChange}
             />
