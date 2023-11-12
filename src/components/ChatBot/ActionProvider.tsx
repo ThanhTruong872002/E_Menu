@@ -1,12 +1,26 @@
 import React from "react";
 
-const ActionProvider = ({ createChatBotMessage, setState, children } :any) => {
+const ActionProvider = ({ createChatBotMessage, setState, children }: any) => {
   const handleHello = () => {
-    const botMessage = createChatBotMessage("Hello. Nice to meet you.");
-
-    setState((prev:any) => ({
+    const botMessage = createChatBotMessage("Hello. Nice to meet you.", {
+      widget: "options",
+    });
+    setState((prev: any) => ({
       ...prev,
       messages: [...prev.messages, botMessage],
+    }));
+  };
+
+  const handleJavascriptQuiz = () => {
+    const message = createChatBotMessage(
+      "Fantastic. Here is your quiz. Good luck!",
+      {
+        widget: "javascriptQuiz",
+      }
+    );
+    setState((prev: any) => ({
+      ...prev,
+      messages: [...prev.messages, message],
     }));
   };
 
@@ -18,13 +32,12 @@ const ActionProvider = ({ createChatBotMessage, setState, children } :any) => {
       }
     );
 
-    setState((prev:any) => ({
+    setState((prev: any) => ({
       ...prev,
       messages: [...prev.messages, botMessage],
     }));
   };
 
-  // Put the handleHello and handleDog function in the actions object to pass to the MessageParser
   return (
     <div>
       {React.Children.map(children, (child) => {
@@ -32,6 +45,7 @@ const ActionProvider = ({ createChatBotMessage, setState, children } :any) => {
           actions: {
             handleHello,
             handleDog,
+            handleJavascriptQuiz,
           },
         });
       })}

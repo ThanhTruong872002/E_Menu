@@ -9,6 +9,9 @@ const MessageParser = ({ children, actions }: any) => {
     ) {
       actions.handleHello();
     }
+    if(message.includes("Javascript") || message.includes("js")) {
+      actions.handleJavascriptQuiz();
+    }
     if (
       message.includes("cún") ||
       message.includes("dog") ||
