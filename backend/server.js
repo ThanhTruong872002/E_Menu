@@ -13,6 +13,9 @@ const AddStaffController = require('./controllers/addStaffController');
 const EditStaffController = require("./controllers/editStaffController");
 const MenuController = require("./controllers/menuController");
 const AddMenuController = require("./controllers/addMenuController");
+const EditMenuController = require("./controllers/editMenuController");
+const TablesController = require('./controllers/tableController');
+const locationController = require('./controllers/locationController');
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -72,6 +75,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+const appDomain = "http://localhost:3000/menu";
 
 //Login page
 app.post("/api/account", LoginController.login);
@@ -103,87 +107,16 @@ app.post("/api/uploadImage", upload.single("image"), AddMenuController.uploadIma
 app.post("/api/addDish", AddMenuController.addDish);
 app.get("/api/types", AddMenuController.getTypes);
 
+//editMenu page
+app.get("/api/menu/:menu_id", EditMenuController.getDish);
+app.put("/api/editDish/:menu_id", EditMenuController.updateDish);
 
-app.get("/api/menu/:menu_id", (req, res) => {
-  const dishId = req.params.menu_id; // Lấy menu_id từ tham số URL
+//table page
+app.get("/api/tables", TablesController.getAllTables);
+app.delete("/api/tables/:table_id", TablesController.deleteTable);
 
-  // Sử dụng câu lệnh SQL để lấy thông tin món ăn dựa trên menu_id
-  const sql = "SELECT * FROM menu WHERE menu_id = ?";
-
-  connection.query(sql, [dishId], (err, result) => {
-    if (err) {
-      return res.status(500).json({
-        error: "Lỗi truy vấn cơ sở dữ liệu",
-      });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({
-        error: "Không tìm thấy món ăn với menu_id cung cấp",
-      });
-    }
-
-    const dishData = result[0];
-    res.status(200).json(dishData);
-  });
-});
-
-
-app.put("/api/editDish/:menu_id", (req, res) => {
-  const menuId = req.params.menu_id; // Lấy menu_id từ tham số URL
-  const updatedMenu = req.body; // Dữ liệu cần cập nhật từ yêu cầu PUT
-
-  // Tạo một đối tượng chứa dữ liệu cần cập nhật
-  const updatedData = {
-    menu_item_name: updatedMenu.menu_item_name,
-    Description: updatedMenu.Description,
-    Price: updatedMenu.Price,
-    category_id: updatedMenu.category_id,
-  };
-
-  // Sử dụng câu lệnh SQL để cập nhật thông tin món ăn dựa trên menu_id
-  const sql = "UPDATE menu SET ? WHERE menu_id = ?";
-
-  connection.query(sql, [updatedData, menuId], (err, result) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Lỗi khi cập nhật thông tin món ăn",
-        error: err.message,
-      });
-    }
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Không tìm thấy món ăn với menu_id cung cấp",
-      });
-    }
-
-    // Trả về thông báo cập nhật thành công nếu không có lỗi
-    res.status(200).json({
-      success: true,
-      message: "Cập nhật thông tin món ăn thành công",
-    });
-  });
-});
-
-
-
-app.get("/api/locations", (req, res) => {
-  const sql = "SELECT location_id, location_name FROM locationtable";
-  connection.query(sql, (err, results) => {
-    if (err) {
-      res.status(500).json({ error: "Database query error" });
-    } else {
-      res.json(results);
-    }
-  });
-});
-
-const appDomain = "http://localhost:3000/menu";
-
-// Định nghĩa tuyến đường API để thêm bàn
+//addTable page
+app.get("/api/locations", locationController.getLocations);
 app.post("/api/tables", async (req, res) => {
   const { table_name, seat_capacity, location, status } = req.body;
 
@@ -248,20 +181,70 @@ async function createNewTable(table_name, seat_capacity, location, status) {
 }
 
 
+// Add this new route to fetch table data by ID
+app.get("/api/tables/:table_id", (req, res) => {
+  const tableId = req.params.table_id;
+  console.log("Received table_id:", tableId);
 
-app.get("/api/tables", (req, res) => {
-  // Query to fetch data from the tableid table
-  const sql = "SELECT * from tableid";
+  // Use a SQL query to get the table data with the specified table_id
+  const getTableSql = "SELECT * FROM tableid WHERE table_id = ?";
 
-  connection.query(sql, (err, results) => {
+  connection.query(getTableSql, [tableId], (err, result) => {
     if (err) {
-      res.status(500).json({ error: "Database query error" });
-    } else {
-      res.json(results);
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching table data",
+        error: err.message,
+      });
     }
+
+    if (result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Table not found with the provided table_id",
+      });
+    }
+
+    const tableData = result[0];
+    res.status(200).json(tableData);
   });
 });
 
+
+app.put("/api/tables/:table_id", async (req, res) => {
+  const tableId = req.params.table_id;
+  const updatedTable = req.body;
+
+  const updateData = {
+    table_name: updatedTable.table_name,
+    seat_capacity: updatedTable.seat_capacity,
+    location: updatedTable.location,
+  };
+
+  const updateTableSql = "UPDATE tableid SET ? WHERE table_id = ?";
+
+  connection.query(updateTableSql, [updateData, tableId], (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Error updating table information",
+        error: err.message,
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Table not found with the provided table_id",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Table information updated successfully",
+    });
+  });
+});
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {

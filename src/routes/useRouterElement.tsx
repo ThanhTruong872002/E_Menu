@@ -19,6 +19,8 @@ import CustomerMenuQR from "../components/CustomerMenuQR";
 import CustomerContact from "../components/CustomerContact";
 import CustomerMenuCart from "../components/CustomerMenuCart";
 import EditMenu  from "../components/MenuAdmin/editMenu";
+import EditTable from "../components/TableAdmin/editTable";
+
 
 export default function useRouterElement({ 
   isLoggedIn,
@@ -59,9 +61,14 @@ export default function useRouterElement({
       element: <PrivateRoute isLoggedIn={isLoggedIn} element={<AddTable />} />,
     },
     {
+      path: "/admin/edittable/:table_id",
+      element: <PrivateRoute isLoggedIn = {isLoggedIn} element ={<EditTable/>} />,
+    },
+    {
       path: "/manager",
       element: <Manager />,
     },
+
     {
       path: "/",
       element: (

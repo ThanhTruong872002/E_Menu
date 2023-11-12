@@ -46,21 +46,31 @@ export default function Staff() {
   };
 
   const handleRemoveAccount = (username: string) => {
-    if (isLastAdmin) {
-      console.error("Không thể xóa tài khoản admin duy nhất.");
-      return;
+    // Confirm the deletion with a user
+    const confirmDelete = window.confirm(`Are you sure you want to delete the account "${username}"?`);
+  
+    // If the user confirms the deletion, proceed
+    if (confirmDelete) {
+      // Check if it's the last admin account
+      if (isLastAdmin) {
+        console.error("Cannot delete the last admin account.");
+        return;
+      }
+  
+      // Send a DELETE request to the server
+      axios
+        .delete(`http://localhost:4000/api/deleteAccount/${username}`)
+        .then((response) => {
+          console.log("Account deleted successfully.");
+          // Update the list of users after successful deletion
+          getListUsers();
+        })
+        .catch((error) => {
+          console.error("Error deleting account:", error);
+        });
     }
-
-    axios
-      .delete(`http://localhost:4000/api/deleteAccount/${username}`)
-      .then((response) => {
-        console.log("Tài khoản đã được xóa thành công.");
-        getListUsers();
-      })
-      .catch((error) => {
-        console.error("Lỗi khi xóa tài khoản:", error);
-      });
   };
+  
 
   const handleEditAccount = (user: User) => {
     navigate(`/admin/editstaff/${user.username}`, { state: { user } });

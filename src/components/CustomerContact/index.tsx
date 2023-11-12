@@ -81,6 +81,7 @@ export default function CustomerContact() {
                   type="text"
                   name="message"
                   errorsMessage={errors.message?.message}
+                  className="w-[100%]"
                 />
               </div>
             </div>

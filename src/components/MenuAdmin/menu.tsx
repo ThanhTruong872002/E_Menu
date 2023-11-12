@@ -55,18 +55,27 @@ const Menu: React.FC = () => {
     setFilteredMenuData(filteredMenuData);
   };
 
-  const handleDeleteMenuItem = async (menuItemId: string) => {
-    try {
-      await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
+  const handleDeleteMenuItem = async (menuItemId: string, menuItemName: string) => {
+    // Confirm the deletion with the user
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the item "${menuItemName}"?`
+    );
 
-      // Cập nhật cả hai mảng menuData và filteredMenuData
-      const updatedMenuData = menuData.filter(
-        (menuItem) => menuItem.menu_id !== menuItemId
-      );
-      setMenuData(updatedMenuData);
-      setFilteredMenuData(updatedMenuData);
-    } catch (error) {
-      console.error("Error deleting menu item:", error);
+    // If the user confirms the deletion, proceed
+    if (confirmDelete) {
+      try {
+        // Send a DELETE request to the server
+        await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
+
+        // Update both menuData and filteredMenuData after successful deletion
+        const updatedMenuData = menuData.filter(
+          (menuItem) => menuItem.menu_id !== menuItemId
+        );
+        setMenuData(updatedMenuData);
+        setFilteredMenuData(updatedMenuData);
+      } catch (error) {
+        console.error("Error deleting menu item:", error);
+      }
     }
   };
 
@@ -179,7 +188,7 @@ const Menu: React.FC = () => {
                           <span
                             className="text-[#ff4f4f] cursor-pointer"
                             onClick={() =>
-                              handleDeleteMenuItem(menuItem.menu_id)
+                              handleDeleteMenuItem(menuItem.menu_id, menuItem.menu_item_name)
                             }
                           >
                             Delete

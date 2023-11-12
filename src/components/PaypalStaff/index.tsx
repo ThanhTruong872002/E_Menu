@@ -66,7 +66,7 @@ export default function PaypalStaff({ selected } : IPayPalType) {
         <StaffNameIcon />
         <h2>Tên Nhân Viên</h2>
       </div>
-      <div className="flex text-[2rem] font-bold gap-6 mt-28">
+      <div className="flex text-[2rem] font-bold gap-6 mt-8">
         {selected === "table" ? (
           <div className="flex gap-4 items-center w-[50%] bg-[#FFB700] rounded-3xl justify-center">
             <img src="./images/Average Price.svg" alt="" />

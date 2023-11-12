@@ -1,180 +1,99 @@
 import { Input } from "antd";
 import { SearchProps } from "antd/lib/input";
+import { MenuData } from "../@types/MenuType";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import unidecode from "unidecode";
 export default function MenuStaff() {
   const { Search } = Input;
 
   const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
     console.log(info?.source, value);
 
+  const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
+  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const getListMenu = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/menu");
+        if (res.data) {
+          setListMenuItem(res.data);
+          setFilteredMenuData(res.data);
+        }
+      } catch (error) {
+        console.error("Error fetching menu data:", error);
+      }
+    };
+
+    getListMenu();
+  }, []);
+
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = event.target.value;
+    setSearchTerm(searchTerm);
+
+    const filteredMenuData = listMenuItem.filter((menuItem) =>
+      unidecode(menuItem.menu_item_name.toLowerCase()).includes(
+        unidecode(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredMenuData(filteredMenuData);
+  };
   return (
-    <div>
+    <div className="h-[100vh]">
       <div className="flex gap-6 text-[2rem] font-[500] items-center">
-        <h2>ALL</h2>
-        <h2>BEER</h2>
-        <h2>CLASSIC COCKTAILS</h2>
-        <h2>APPETIZER</h2>
-        <h2>MAIN DISH</h2>
-        <h2>DESERTS</h2>
+        <div className="flex gap-10">
+          <h2>All</h2>
+          <h2>Breakfast</h2>
+          <h2>Main Dishes</h2>
+          <h2>Drinks</h2>
+          <h2>Desserts</h2>
+        </div>
         <Search
           placeholder="Search for food"
           onSearch={onSearch}
-          style={{ width: 250 }}
-          className="ml-20"
+          style={{ width: 200 }}
+          className="ml-60"
+          size="large"
+          onChange={handleSearch}
+          value={searchTerm}
         />
       </div>
       <div className="w-full bg-black my-6 h-[1px]"></div>
-      <div className="py-8 grid grid-cols-4 grid-rows-2 gap-20">
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>{" "}
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>{" "}
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>{" "}
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>{" "}
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
-        </div>{" "}
-        <div>
-          <img
-            src="./images/menu_food.svg"
-            alt=""
-            className="w-[180px] h-[120px] object-cover rounded-md"
-          />
-          <h2 className="text-[1.8rem] font-bold my-2">The Burger Cafe</h2>
-          <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-            125.000 VND
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
-            Time:
-            <span className="font-[600] text-black ml-32 ">20 min</span>
-          </p>
-          <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
-            Food Type:
-            <span className="font-[600] text-black ml-16 ">Burger</span>
-          </p>
+      <div className=" py-8  overflow-y-scroll h-[600px]">
+        <div className="grid grid-cols-4 grid-rows-2 gap-10">
+          {filteredMenuData.map((item) => (
+            <div
+              key={item.menu_id}
+              className="border-[1px] border-solid border-[#ccc] rounded-xl"
+            >
+              <img
+                src={`http://localhost:4000/uploads${item.Image}`}
+                alt=""
+                className="w-[100%] h-[140px] object-cover rounded-md"
+              />
+              <div className="p-2">
+                <h2 className="text-[1.6rem] font-bold my-2">
+                  {item.menu_item_name}
+                </h2>
+                <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
+                  {item.Price}VND
+                </p>
+                <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
+                  Time:
+                  <span className="font-[600] text-black ml-32 ">20 min</span>
+                </p>
+                <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3">
+                  Type:
+                  <span className="font-[600] text-black ml-20 ">
+                    {item.category_name}
+                  </span>
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

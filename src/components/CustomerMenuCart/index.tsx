@@ -47,6 +47,9 @@ export default function CustomerMenuCart() {
       updatedDetailsMenu.splice(0, updatedDetailsMenu.length);
       setShowDetailMenu(updatedDetailsMenu);
       Swal.fire("Deleted!", "All items have been deleted.", "success");
+      setLastTotal(0);
+      setTotal(0);
+      setTax(0);
     }
   };
 
@@ -54,7 +57,7 @@ export default function CustomerMenuCart() {
     handleTotalBill();
     handleTax();
     handleLastTotal();
-  }, [total, tax]);
+  }, [total, tax, handleTotalBill, handleTax, handleLastTotal]);
 
   return (
     <div>
