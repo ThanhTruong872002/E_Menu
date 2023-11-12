@@ -81,14 +81,14 @@ export default function Table() {
             onClick={() => navigate("/admin/addtable")}
             className="w-[170px] h-[48px] cursor-pointer font-[500] border-[1px] border-solid border-[#ccc] p-3"
           >
-            <FontAwesomeIcon icon={faPlus} /> Thêm Bàn
+            <FontAwesomeIcon icon={faPlus} /> Add New Table
           </button>
         </div>
         <div className="flex items-center">
           <input
             className="w-[325px] h-[48px] border-[1px] border-solid border-[#ccc] p-3 border-r-0"
             type="text"
-            placeholder="Tìm kiếm theo tên bàn"
+            placeholder="Search by table name"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />

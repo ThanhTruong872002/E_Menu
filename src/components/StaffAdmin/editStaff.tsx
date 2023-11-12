@@ -83,16 +83,16 @@ export default function EditStaff() {
   return (
     <Admin>
       <div>
-        <h2 className="font-[600] text-[3rem] p-8 mb-10">Chỉnh Sửa Tài Khoản</h2>
+        <h2 className="font-[600] text-[3rem] p-8 mb-10">Edit account information</h2>
         <div>
           <form className="ml-10" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center">
-              <h2 className="w-[170px]">Tên đăng nhập :</h2>
+              <h2 className="w-[170px]">Username :</h2>
               <label>
                 <input
                   className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
                   type="text"
-                  placeholder="Tên đăng nhập"
+                  placeholder="Username"
                   value={userData?.username}
                   disabled
                 />
@@ -102,12 +102,12 @@ export default function EditStaff() {
               </label>
             </div>
             <div className="flex items-center">
-              <h2 className="w-[170px]"> Mật khẩu :</h2>
+              <h2 className="w-[170px]"> Password :</h2>
               <label className="mt-4">
                 <input
                   className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
                   type="password"
-                  placeholder="Mật khẩu"
+                  placeholder="Password"
                   {...register('password', {
                     required: 'Mật khẩu là bắt buộc',
                     minLength: {
@@ -122,14 +122,14 @@ export default function EditStaff() {
               </label>
             </div>
             <div className="flex items-center">
-              <h2 className="w-[170px]">Xác nhận mật khẩu :</h2>
+              <h2 className="w-[170px]">Confirm password :</h2>
               <label className="mt-4">
                 <input
                   className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
                   type="password"
-                  placeholder="Xác nhận mật khẩu"
+                  placeholder="Confirm password"
                   {...register('confirmPassword', {
-                    required: 'Xác nhận mật khẩu là bắt buộc',
+                    required: 'Please confirm your password',
                   })}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
@@ -138,14 +138,14 @@ export default function EditStaff() {
               </label>
             </div>
             <div className="flex items-center">
-              <h2 className="w-[170px]">Họ và Tên :</h2>
+              <h2 className="w-[170px]">Fullname :</h2>
               <label className="mt-8">
                 <input
                   className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
                   type="text"
-                  placeholder="Họ và Tên"
+                  placeholder="Fullname"
                   {...register('fullname', {
-                    required: 'Họ và Tên là bắt buộc',
+                    required: 'Full Name is required',
                   })}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
@@ -154,7 +154,7 @@ export default function EditStaff() {
               </label>
             </div>
             <div className="flex items-center">
-              <h2 className="w-[170px]">Vai trò :</h2>
+              <h2 className="w-[170px]">Role :</h2>
               <div className="flex items-center">
                 {roles.length > 0 ? (
                   <label>
@@ -163,7 +163,7 @@ export default function EditStaff() {
                       {...register('role')}
                       defaultValue={userData ? userData.role_name : ''}
                     >
-                      <option value="">Chọn vai trò</option>
+                      <option value="">Chose a role</option>
                       {roles.map((role) => (
                         <option key={role.role_id} value={role.role_name}>
                           {role.role_name}
@@ -175,15 +175,14 @@ export default function EditStaff() {
                     </div>
                   </label>
                 ) : (
-                  <p>Đang tải vai trò...</p>
+                  <p>Loading...</p>
                 )}
               </div>
             </div>
             <div className="flex items-center mt-20">
-              <h2 className="w-[170px]">Thao tác:</h2>
               <label>
                 <button className="border-[1px] border-solid bg-[#1890ff] text-white w-[200px] h-[50px] ml-8 rounded-md">
-                  Lưu Thay Đổi
+                Save Changes
                 </button>
               </label>
             </div>  
