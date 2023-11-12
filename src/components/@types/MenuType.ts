@@ -7,3 +7,4 @@ export interface MenuData {
   category_name: string;
   quantity: number;
 }
+

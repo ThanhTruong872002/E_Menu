@@ -3,7 +3,7 @@ import DogPicture from "./DogPicture";
 import Avatar from "./Avatar";
 import Header from "./Header";
 import Options from "../Options/Options";
-import Quiz from "../Quiz/Quiz";
+import Quiz from "../Quizz/Quiz";
 
 const botName = "FoodEats";
 
