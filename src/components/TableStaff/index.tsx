@@ -1,43 +1,54 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-
-interface PropsType {
-  table_id: string;
-  table_name: string;
-  seat_capacity: number;
-  status: number;
-  qr_code: {
-    type: string;
-    data: [];
-  };
-  location: number;
-}
+import { useState, useContext, useEffect } from "react";
+import { PropsType } from "../@types/TableType";
+import { MenuContext } from "../../App";
 
 export default function TableStaff() {
-  const [listData, setListData] = useState<PropsType[]>();
+  const { setLocation, filterListData } = useContext(MenuContext);
 
-  console.log(listData);
-  
-
-  const getTableData = async () => {
-    const res = await axios.get("http://localhost:4000/api/tables");
-    if (res.data) {
-      setListData(res.data);
-      console.log(res.data);
-    }
-  };
-
-  useEffect(() => {
-    getTableData();
-  }, []);
+  const [selected, setSelected] = useState(0);
 
   return (
     <div>
       <div className="flex gap-10 text-[2rem] font-[500]">
-        <h2 className="text-[#182FFF] font-[600]">All</h2>
-        <h2>1st Floor</h2>
-        <h2>2st Floor</h2>
-        <h2>3st Floor</h2>
+        <h2
+          className={`${
+            selected === 0 ? "text-[#182FFF] " : ""
+          } font-[600] cursor-pointer`}
+          onClick={() => {
+            setLocation(0);
+            setSelected(0);
+          }}
+        >
+          All
+        </h2>
+        <h2
+          className={`${selected === 1 ? "text-[#182FFF]" : ""} cursor-pointer`}
+          onClick={() => {
+            setLocation(1);
+            setSelected(1);
+          }}
+        >
+          1st Floor
+        </h2>
+        <h2
+          className={`${selected === 2 ? "text-[#182FFF]" : ""} cursor-pointer`}
+          onClick={() => {
+            setLocation(2);
+            setSelected(2);
+          }}
+        >
+          2st Floor
+        </h2>
+        <h2
+          className={`${selected === 3 ? "text-[#182FFF]" : ""} cursor-pointer`}
+          onClick={() => {
+            setLocation(3);
+            setSelected(3);
+          }}
+        >
+          3st Floor
+        </h2>
       </div>
       <div className="w-full bg-black my-6 h-[1px]"></div>
       <div className="flex flex-col gap-4 text-[2rem] font-[600]">
@@ -49,8 +60,7 @@ export default function TableStaff() {
         </h2>
       </div>
       <div className="pt-10  grid grid-cols-8 grid-rows-4 gap-20 cursor-pointer">
-       
-        {listData?.map((table, index) => (
+        {filterListData?.map((table, index) => (
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +83,7 @@ export default function TableStaff() {
               />
             </svg>
             <h2 className="mt-2 text-[1.6rem] font-[500] w-[100px]">
-               {table.table_name}
+              {table.table_name}
             </h2>
           </div>
         ))}

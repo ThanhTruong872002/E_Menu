@@ -42,12 +42,12 @@ export default function MenuStaff() {
     setFilteredMenuData(filteredMenuData);
   };
   return (
-    <div className="h-[100vh]">
+    <div >
       <div className="flex gap-6 text-[2rem] font-[500] items-center">
         <div className="flex gap-10">
           <h2>All</h2>
-          <h2>Breakfast</h2>
-          <h2>Main Dishes</h2>
+          <h2>Appetizer</h2>
+          <h2>Main Course</h2>
           <h2>Drinks</h2>
           <h2>Desserts</h2>
         </div>

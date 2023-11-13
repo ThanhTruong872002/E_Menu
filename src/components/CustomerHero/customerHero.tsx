@@ -15,12 +15,10 @@ export default function CustomerHero() {
       <img
         src="./images/title.svg"
         alt=""
-        className="absolute top-[20%] left-[23%] lg:left-[30%]"
+        className="absolute top-[20%] left-[23%] lg:left-[28%] lg:top-[15%]"
         style={{ maxWidth: "55%" }}
       />
-      <div
-        className="flex justify-center mx-auto text-center mt-10"
-      >
+      <div className="flex justify-center mx-auto text-center mt-10">
         <Chatbot
           messageParser={MessageParser}
           actionProvider={ActionProvider}

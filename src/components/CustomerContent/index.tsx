@@ -9,9 +9,9 @@ export default function CustomerContent() {
           <img
             src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=1980&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="no img"
-            className="w-[600px] h-[560px] object-cover rounded-2xl"
+            className="w-[500px] h-[500px] object-cover rounded-2xl"
           />
-          <div className="absolute -bottom-[10%] left-[20%] xl:bottom-[10%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
+          <div className="absolute -bottom-[20%] left-[20%] xl:bottom-[10%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
             <h2 className="font-sans text-[2.4rem] font-bold mb-[45px] text-white">
               Come and visit us
             </h2>
@@ -32,7 +32,7 @@ export default function CustomerContent() {
           </div>
         </div>
         <div className="w-[50%] mb-32 pl-28">
-          <h2 className="font-playfair text-[6.2rem] font-[500] max-w-[557px] text-[#2C2F24]">
+          <h2 className="font-playfair text-[6rem] font-[500] max-w-[557px] text-[#2C2F24]">
             We provide healthy food for your family.
           </h2>
           <h3 className="text-[2rem] font-sans font-[500] max-w-[557px] my-6 text-[#2C2F24] leading-[2.8rem]">
@@ -50,7 +50,7 @@ export default function CustomerContent() {
       </div>
       <div className="mt-[120px] flex justify-between xl:justify-around items-center  gap-20">
         <div>
-          <h2 className="font-playfair text-[5.5rem] font-[500] max-w-[557px] text-[#2C2F24]">
+          <h2 className="font-playfair text-[4rem] font-[500] max-w-[557px] text-[#2C2F24]">
             A little information for our valuable guest
           </h2>
           <h4 className="mt-6 font-sans font-normal text-[#414536] text-[1.8rem] max-w-[557px] leading-10">
@@ -97,7 +97,7 @@ export default function CustomerContent() {
           <img
             src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt=""
-            className="w-[555px] h-[680px] object-cover rounded-2xl"
+            className="w-[500px] h-[600px] object-cover rounded-2xl"
           />
         </div>
       </div>
@@ -105,17 +105,17 @@ export default function CustomerContent() {
         <h2 className="font-playfair text-[5.5rem] font-[500] max-w-[626px] text-[#2C2F24]">
           What Our Customers Say
         </h2>
-        <div className="flex gap-20">
-          <div className="w-[416px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
-            <h2 className="text-[#AD343E] font-bold text-[2.4rem]">
+        <div className="flex gap-10">
+          <div className="w-[300px] h-[400px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
+            <h2 className="text-[#AD343E] font-bold text-[1.8rem]">
               “The best restaurant”
             </h2>
-            <p className="font-sans text-[1.8rem] font-[400] leading-10 my-10">
+            <p className="font-sans text-[1.6rem] font-[400] leading-10 my-10">
               Last night, we dined at place and were simply blown away. From the
               moment we stepped in, we were enveloped in an inviting atmosphere
               and greeted with warm smiles.
             </p>
-            <div className="flex gap-4 mt-28  items-center">
+            <div className="flex gap-4 mt-20  items-center">
               <img
                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt=""
@@ -127,16 +127,16 @@ export default function CustomerContent() {
               </div>
             </div>
           </div>
-          <div className="w-[416px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
-            <h2 className="text-[#AD343E] font-bold text-[2.4rem]">
-              “One of a kind restaurant”
+          <div className="w-[300px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[30px] ">
+            <h2 className="text-[#AD343E] font-bold text-[1.8rem] ">
+              “One  a kind restaurant”
             </h2>
-            <p className="font-sans text-[1.8rem] font-[400] leading-10 my-10">
+            <p className="font-sans text-[1.6rem] font-[400] leading-10 my-10">
               The culinary experience at place is first to none. The atmosphere
               is vibrant, the food - nothing short of extraordinary. The food
               was the highlight of our evening. Highly recommended.
             </p>
-            <div className="flex gap-4 mt-28  items-center">
+            <div className="flex gap-4 mt-20  items-center">
               <img
                 src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&q=80&w=1780&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt=""
@@ -148,16 +148,16 @@ export default function CustomerContent() {
               </div>
             </div>
           </div>{" "}
-          <div className="w-[416px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
-            <h2 className="text-[#AD343E] font-bold text-[2.4rem]">
+          <div className="w-[300px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
+            <h2 className="text-[#AD343E] font-bold text-[1.8rem]">
               “Simply delicious”
             </h2>
-            <p className="font-sans text-[1.8rem] font-[400] leading-10 my-10">
+            <p className="font-sans text-[1.6rem] font-[400] leading-10 my-10">
               Place exceeded my expectations on all fronts. The ambiance was
               cozy and relaxed, making it a perfect venue for our anniversary
               dinner. Each dish was prepared and beautifully presented.
             </p>
-            <div className="flex gap-4 mt-28  items-center">
+            <div className="flex gap-4 mt-20  items-center">
               <img
                 src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&q=80&w=1887&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt=""
