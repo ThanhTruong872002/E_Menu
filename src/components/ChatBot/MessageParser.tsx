@@ -1,9 +1,23 @@
 import React from "react";
 
-const MessageParser = ({ children, actions }:any) => {
-  const parse = (message:any) => {
-    if (message.includes("hello")) {
+const MessageParser = ({ children, actions }: any) => {
+  const parse = (message: any) => {
+    if (
+      message.includes("hello") ||
+      message.includes("hi") ||
+      message.includes("xin chào")
+    ) {
       actions.handleHello();
+    }
+    if(message.includes("Javascript") || message.includes("js")) {
+      actions.handleJavascriptQuiz();
+    }
+    if (
+      message.includes("cún") ||
+      message.includes("dog") ||
+      message.includes("chó")
+    ) {
+      actions.handleDog();
     }
   };
 

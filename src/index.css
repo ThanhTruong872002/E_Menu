@@ -6,6 +6,24 @@
   width: 6px;
 }
 
+.react-chatbot-kit-chat-container {
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 50px;
+
+}
+
+.react-chatbot-kit-chat-inner-container {
+  background-color: #fff;
+  border-radius: 5px;
+  padding-top: 20px;
+}
+
+.react-chatbot-kit-chat-message-container {
+  background-color: #F6F6F7;
+}
+
+
 html,
 body,
 div,
