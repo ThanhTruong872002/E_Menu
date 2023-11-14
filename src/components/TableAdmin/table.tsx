@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Admin from "../../pages/admin";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSearch,
-  faEdit,
-  faTrash,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { Card, Typography } from "@material-tailwind/react";
 import QRCode from "qrcode.react";
-import { toPng } from "html-to-image";
 import unidecode from "unidecode";
 
 const TABLE_HEAD = [
@@ -29,7 +23,7 @@ interface TableData {
   location: string;
 }
 
-export default function Table() {
+const Table: React.FC = () => {
   const navigate = useNavigate();
   const [tableData, setTableData] = useState<TableData[]>([]);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
@@ -44,16 +38,36 @@ export default function Table() {
   }, []);
 
   const handleEdit = (table: TableData) => {
-    // Handle the Edit action for the selected table
-    console.log("Edit table:", table);
-
-    // Save the table_id of the selected table
-    setSelectedTableId(table.table_id);
+    // Redirect to the editTable page with the table_id parameter
+    navigate(`/admin/editTable/${table.table_id}`);
   };
 
   const handleDelete = (table: TableData) => {
-    // Handle the Delete action for the selected table
-    console.log("Delete table:", table);
+    // Display a confirmation dialog
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the table "${table.table_name}"?`
+    );
+
+    if (confirmDelete) {
+      // If the user confirms, proceed with the delete action
+      console.log("Delete table:", table);
+
+      // Add logic to send a delete request to your API endpoint
+      fetch(`http://localhost:4000/api/tables/${table.table_id}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            // If the delete request is successful, update the table data
+            setTableData((prevTableData) =>
+              prevTableData.filter((item) => item.table_id !== table.table_id)
+            );
+          } else {
+            console.error("Failed to delete table");
+          }
+        })
+        .catch((error) => console.error("Error deleting table", error));
+    }
   };
 
   const lowercaseTableData = tableData.map((table) => ({
@@ -97,7 +111,7 @@ export default function Table() {
           </div>
         </div>
       </div>
-      <Card className="w-full h-[66vh] overflow-y-scroll mt-10">
+      <Card className="w-full h-[70vh] overflow-y-scroll mt-10">
         <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
           <thead className="sticky top-0">
             <tr>
@@ -171,4 +185,6 @@ export default function Table() {
       </Card>
     </Admin>
   );
-}
+};
+
+export default Table;

@@ -9,7 +9,7 @@ import OutSideClickHandler from "../OutSideClickHandler";
 import unidecode from "unidecode";
 
 export default function CustomerMenuQR() {
-  const [selected, setSelected] = useState("breakfast");
+  const [selected, setSelected] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
 
@@ -17,8 +17,10 @@ export default function CustomerMenuQR() {
     null
   );
 
-  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
+  const [filteredMenuData, setFilteredMenuData] =
+    useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
+  const [typeFood, setTypeFood] = useState("appetizer");
 
   const popupRef = useRef<HTMLDivElement>(null);
 
@@ -53,7 +55,30 @@ export default function CustomerMenuQR() {
     return () => {
       document.removeEventListener("wheel", handleScroll);
     };
-  }, [showPopup]);
+  }, []);
+
+  useEffect(() => {
+    const filterTypeFood = () => {
+      if (typeFood === "appetizer") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "appetizer")
+        );
+      } else if (typeFood === "main course") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "main course")
+        );
+      } else if (typeFood === "drink") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "drink")
+        );
+      } else if (typeFood === "dessert") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "dessert")
+        );
+      }
+    };
+    filterTypeFood();
+  }, [typeFood]);
 
   const handleScroll = (event: any) => {
     if (showPopup) {
@@ -102,29 +127,49 @@ export default function CustomerMenuQR() {
             className="border-none focus:outline-none"
           />
         </div>
-        <div className="mt-[28px] flex gap-4 ">
-          <div onClick={() => setSelected("breakfast")}>
+        <div className="mt-[28px] flex gap-2 ">
+          <div
+            onClick={() => {
+              setSelected("appetizer");
+              setTypeFood("appetizer");
+            }}
+          >
             <Button
-              buttonQr={selected === "breakfast" ? "selectMenuQR" : "buttonQr"}
+              buttonQr={selected === "appetizer" ? "selectMenuQR" : "buttonQr"}
             >
-              Breakfast
+              Appetizer
             </Button>
           </div>
-          <div onClick={() => setSelected("mainDish")}>
+          <div
+            onClick={() => {
+              setSelected("mainDish");
+              setTypeFood("main course");
+            }}
+          >
             <Button
               buttonQr={selected === "mainDish" ? "selectMenuQR" : "buttonQr"}
             >
               Main Dishes
             </Button>
           </div>
-          <div onClick={() => setSelected("Drink")}>
+          <div
+            onClick={() => {
+              setSelected("Drink");
+              setTypeFood("drink");
+            }}
+          >
             <Button
               buttonQr={selected === "Drink" ? "selectMenuQR" : "buttonQr"}
             >
               Drink
             </Button>
           </div>
-          <div onClick={() => setSelected("Desserts")}>
+          <div
+            onClick={() => {
+              setSelected("Desserts");
+              setTypeFood("dessert");
+            }}
+          >
             <Button
               buttonQr={selected === "Desserts" ? "selectMenuQR" : "buttonQr"}
             >
@@ -165,7 +210,7 @@ export default function CustomerMenuQR() {
                   </p>
                 </div>
                 <p className="mt-3 text-[1.6rem] font-semibold ml-[2px]">
-                  {item.Price} VND
+                  {item.Price.toLocaleString()} VND
                 </p>
               </div>
             </div>

@@ -162,7 +162,9 @@ export default function AddTable() {
             <h2 className="w-[170px]">QR Code</h2>
             <label className="mt-4" id="qrCodeContainer">
               <Space direction="vertical" align="center">
-                <QRCode value={`http://192.168.1.7:3000/customer/menuqr/${tableId}`} />
+                <QRCode
+                  value={`http://172.20.43.113:3000/customer/menuqr/${tableId}`}
+                />
                 <button
                   onClick={downloadQRCode}
                   className="text-[#1890ff] mt-2"

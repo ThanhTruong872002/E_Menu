@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ArrowBack } from "../common/icons/icons";
 import Button from "../common/butoons/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MenuContext } from "../../App";
 import { useContext } from "react";
 import Swal from "sweetalert2";
 
 export default function CustomerMenuCart() {
   const navigate = useNavigate();
+
+  let { id } = useParams();
 
   const { showDetailsMenu, setShowDetailMenu } = useContext(MenuContext);
 
@@ -57,13 +59,30 @@ export default function CustomerMenuCart() {
     handleTotalBill();
     handleTax();
     handleLastTotal();
-  }, [total, tax]);
+  }, [total, tax, handleTotalBill, handleTax, handleLastTotal]);
 
+  const handleOder = () => {
+    if (showDetailsMenu.length === 0) {
+      Swal.fire({
+        title: "Cart is Empty",
+        text: "Please add orders before checking out",
+        confirmButtonText: "Ok",
+        showCancelButton: true,
+      });
+    } else {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: false,
+      });
+    }
+  };
   return (
     <div>
       <header className="py-[16px] px-[20px] flex items-center gap-[16px] h-[50px] shadow-lg">
         <div
-          onClick={() => navigate("/customer/menuQR")}
+          onClick={() => navigate(`/customer/menuqr/:table_${id}`)}
           className="cursor-pointer"
         >
           <ArrowBack />
@@ -132,7 +151,7 @@ export default function CustomerMenuCart() {
               {lastTotal.toLocaleString("en-US")} VND
             </p>
           </div>
-          <div className="mt-[16px]">
+          <div className="mt-[16px]" onClick={handleOder}>
             <Button cartButton={"cartButton"}>Order</Button>
           </div>
         </div>
