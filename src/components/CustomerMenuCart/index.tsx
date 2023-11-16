@@ -71,12 +71,24 @@ export default function CustomerMenuCart() {
       });
     } else {
       Swal.fire({
-        position: "center",
         icon: "success",
-        title: "Your work has been saved",
-        showConfirmButton: false,
+        title: "You have placed your order successfully!",
+        width: 600,
+        padding: "3em",
+        color: "#6add6a",
+        background:
+          "#fff url(https://sweetalert2.github.io/#examplesimages/trees.png)",
+        backdrop: `
+    rgba(0,0,123,0.4)
+    url("https://gif-avatars.com/img/100x100/nyan-cat.gif")
+    top right 
+    no-repeat
+  `,
+        confirmButtonColor: "#298b29",
       });
     }
+
+    setShowDetailMenu([])
   };
   return (
     <div>
@@ -104,7 +116,9 @@ export default function CustomerMenuCart() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="w-[100px]">{item.menu_item_name}</h4>
-                    <p className="mt-6 text-[1.4rem] ml-1">{item.Price} VND</p>
+                    <p className="mt-6 text-[1.4rem] ml-1">
+                      {item.Price.toLocaleString()} VND
+                    </p>
                   </div>
                   <div className="flex gap-6 items-center ml-36">
                     <span className="text-[1.8rem]">x{item.quantity}</span>

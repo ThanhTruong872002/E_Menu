@@ -47,18 +47,14 @@ export default function CustomerMenuQR() {
         console.error("Error fetching menu data:", error);
       }
     };
-
     getListMenu();
-
-    document.addEventListener("wheel", handleScroll, { passive: false });
-
-    return () => {
-      document.removeEventListener("wheel", handleScroll);
-    };
   }, []);
 
   useEffect(() => {
     const filterTypeFood = () => {
+      if (typeFood === "all") {
+        setFilteredMenuData(listMenuItem);
+      }
       if (typeFood === "appetizer") {
         setFilteredMenuData(() =>
           listMenuItem.filter((data) => data.category_name === "appetizer")
@@ -79,12 +75,6 @@ export default function CustomerMenuQR() {
     };
     filterTypeFood();
   }, [typeFood]);
-
-  const handleScroll = (event: any) => {
-    if (showPopup) {
-      event.preventDefault();
-    }
-  };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
@@ -128,6 +118,18 @@ export default function CustomerMenuQR() {
           />
         </div>
         <div className="mt-[28px] flex gap-2 ">
+          <div
+            onClick={() => {
+              setSelected("all");
+              setTypeFood("all");
+            }}
+          >
+            <Button
+              buttonQr={selected === "all" ? "selectMenuQR" : "buttonQr"}
+            >
+              All
+            </Button>
+          </div>
           <div
             onClick={() => {
               setSelected("appetizer");

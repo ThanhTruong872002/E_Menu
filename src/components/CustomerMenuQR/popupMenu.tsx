@@ -3,14 +3,12 @@ import { IncreaseIcon, ReduceIcon, StartIcon } from "../common/icons/icons";
 import { MenuData } from "../@types/MenuType";
 import Button from "../common/butoons/button";
 import { MenuContext } from "../../App";
-import { notification } from "antd";
+import Swal from "sweetalert2";
 
 interface PropsType {
   selectedMenuItem: MenuData | null;
   setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-type NotificationType = "success" | "info" | "warning" | "error";
 
 export default function PopupMenu({
   selectedMenuItem,
@@ -18,14 +16,6 @@ export default function PopupMenu({
 }: PropsType) {
   const { setShowDetailMenu, quantity, setQuantity, showDetailsMenu } =
     useContext(MenuContext);
-  const [api, contextHolder] = notification.useNotification();
-
-  const openNotificationWithIcon = (type: NotificationType) => {
-    api[type]({
-      message: "",
-      description: "Successfully add to cart",
-    });
-  };
 
   const hanldeAddToCart = (menuItem: MenuData | null) => {
     if (menuItem) {
@@ -44,10 +34,15 @@ export default function PopupMenu({
             quantity: quantity,
           },
         ]);
-      openNotificationWithIcon("success");
-      setQuantity(1);
-      // setShowPopup(false);
+      setShowPopup(false);
+      Swal.fire({
+        icon: "success",
+        title: "You have successfully added to cart",
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
+    setQuantity(1);
   };
 
   const handleIncreaseIcon = () => {
@@ -64,7 +59,6 @@ export default function PopupMenu({
 
   return (
     <div>
-      {contextHolder}
       <div className="fixed top-[260px] w-[98%] bg-white mx-auto pb-10 transition ease-in-out delay-150">
         <img
           src={`http://localhost:4000/uploads${selectedMenuItem?.Image}`}
@@ -99,7 +93,7 @@ export default function PopupMenu({
             </div>
           </div>
           <p className="font-semibold text-[2.2rem] mt-2 ml-4 ">
-            {selectedMenuItem?.Price} VND
+            {selectedMenuItem?.Price.toLocaleString()} VND
           </p>
           <div onClick={() => hanldeAddToCart(selectedMenuItem)}>
             <Button cartButton={"cartButton"}>Add To Cart</Button>
