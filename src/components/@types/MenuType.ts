@@ -1,5 +1,5 @@
 export interface MenuData {
-  menu_id: string
+  menu_id: string;
   Image: string;
   menu_item_name: string;
   Description: string;

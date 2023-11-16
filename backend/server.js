@@ -246,6 +246,22 @@ app.put("/api/tables/:table_id", async (req, res) => {
   });
 });
 
+app.get("/api/locationtable", (req, res) => {
+  const getLocationTableSql = "SELECT * FROM locationtable";
+
+  connection.query(getLocationTableSql, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Error fetching location table data",
+        error: err.message,
+      });
+    }
+
+    res.status(200).json(result);
+  });
+});
+
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
