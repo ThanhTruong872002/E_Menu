@@ -1,27 +1,24 @@
+/* eslint-disable no-template-curly-in-string */
 import axios from "axios";
 import { MenuData } from "../@types/MenuType";
 import Button from "../common/butoons/button";
 import { CartIcon, SearchIcon, StartIcon } from "../common/icons/icons";
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PopupMenu from "./popupMenu";
-import OutSideClickHandler from "../OutSideClickHandler";
 import unidecode from "unidecode";
 
 export default function CustomerMenuQR() {
-  const [selected, setSelected] = useState("breakfast");
+  const { table_id } = useParams();
+
+  const [selected, setSelected] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
-
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuData | null>(
-    null
-  );
-
-  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuData | null>(null);
+  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [typeFood, setTypeFood] = useState("appetizer");
   const popupRef = useRef<HTMLDivElement>(null);
-
   const navigate = useNavigate();
 
   const togglePopup = (menuItem: any) => {
@@ -45,21 +42,37 @@ export default function CustomerMenuQR() {
         console.error("Error fetching menu data:", error);
       }
     };
-
     getListMenu();
+  }, []);
 
-    document.addEventListener("wheel", handleScroll, { passive: false });
-
-    return () => {
-      document.removeEventListener("wheel", handleScroll);
+  useEffect(() => {
+    console.log("Received table_id:", table_id);
+    const filterTypeFood = () => {
+      if (typeFood === "all") {
+        setFilteredMenuData(listMenuItem);
+      }
+      if (typeFood === "appetizer") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "appetizer")
+        );
+      } else if (typeFood === "main course") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "main course")
+        );
+      } else if (typeFood === "drink") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "drink")
+        );
+      } else if (typeFood === "dessert") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "dessert")
+        );
+      }
     };
-  }, [showPopup]);
+    filterTypeFood();
+  }, [typeFood]);
 
-  const handleScroll = (event: any) => {
-    if (showPopup) {
-      event.preventDefault();
-    }
-  };
+  
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
@@ -84,8 +97,7 @@ export default function CustomerMenuQR() {
       <header className="w-full bg-[#FFFAE3] h-[70px] p-[18px] flex justify-between">
         <img src="/images/Logo.svg" alt="" className="w-[140px]" />
         <div
-          className="cursor-pointer"
-          onClick={() => navigate("/customer/menuqr/cart")}
+          onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)}
         >
           <CartIcon />
         </div>
@@ -102,29 +114,61 @@ export default function CustomerMenuQR() {
             className="border-none focus:outline-none"
           />
         </div>
-        <div className="mt-[28px] flex gap-4 ">
-          <div onClick={() => setSelected("breakfast")}>
+        <div className="mt-[28px] flex gap-2 ">
+          <div
+            onClick={() => {
+              setSelected("all");
+              setTypeFood("all");
+            }}
+          >
             <Button
-              buttonQr={selected === "breakfast" ? "selectMenuQR" : "buttonQr"}
+              buttonQr={selected === "all" ? "selectMenuQR" : "buttonQr"}
             >
-              Breakfast
+              All
             </Button>
           </div>
-          <div onClick={() => setSelected("mainDish")}>
+          <div
+            onClick={() => {
+              setSelected("appetizer");
+              setTypeFood("appetizer");
+            }}
+          >
+            <Button
+              buttonQr={selected === "appetizer" ? "selectMenuQR" : "buttonQr"}
+            >
+              Appetizer
+            </Button>
+          </div>
+          <div
+            onClick={() => {
+              setSelected("mainDish");
+              setTypeFood("main course");
+            }}
+          >
             <Button
               buttonQr={selected === "mainDish" ? "selectMenuQR" : "buttonQr"}
             >
               Main Dishes
             </Button>
           </div>
-          <div onClick={() => setSelected("Drink")}>
+          <div
+            onClick={() => {
+              setSelected("Drink");
+              setTypeFood("drink");
+            }}
+          >
             <Button
               buttonQr={selected === "Drink" ? "selectMenuQR" : "buttonQr"}
             >
               Drink
             </Button>
           </div>
-          <div onClick={() => setSelected("Desserts")}>
+          <div
+            onClick={() => {
+              setSelected("Desserts");
+              setTypeFood("dessert");
+            }}
+          >
             <Button
               buttonQr={selected === "Desserts" ? "selectMenuQR" : "buttonQr"}
             >
@@ -165,7 +209,7 @@ export default function CustomerMenuQR() {
                   </p>
                 </div>
                 <p className="mt-3 text-[1.6rem] font-semibold ml-[2px]">
-                  {item.Price} VND
+                  {item.Price.toLocaleString()} VND
                 </p>
               </div>
             </div>

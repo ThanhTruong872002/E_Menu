@@ -41,16 +41,17 @@ const Table: React.FC = () => {
     // Redirect to the editTable page with the table_id parameter
     navigate(`/admin/editTable/${table.table_id}`);
   };
-  
 
   const handleDelete = (table: TableData) => {
     // Display a confirmation dialog
-    const confirmDelete = window.confirm(`Are you sure you want to delete the table "${table.table_name}"?`);
-  
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the table "${table.table_name}"?`
+    );
+
     if (confirmDelete) {
       // If the user confirms, proceed with the delete action
       console.log("Delete table:", table);
-  
+
       // Add logic to send a delete request to your API endpoint
       fetch(`http://localhost:4000/api/tables/${table.table_id}`, {
         method: "DELETE",
@@ -68,7 +69,7 @@ const Table: React.FC = () => {
         .catch((error) => console.error("Error deleting table", error));
     }
   };
-  
+
   const lowercaseTableData = tableData.map((table) => ({
     ...table,
     table_name: table.table_name.toLowerCase(),
@@ -77,7 +78,9 @@ const Table: React.FC = () => {
   const normalizedSearchQuery = unidecode(searchQuery).toLowerCase();
 
   const filteredTableData = lowercaseTableData.filter((table) => {
-    return unidecode(table.table_name).toLowerCase().includes(normalizedSearchQuery);
+    return unidecode(table.table_name)
+      .toLowerCase()
+      .includes(normalizedSearchQuery);
   });
 
   return (
@@ -108,7 +111,7 @@ const Table: React.FC = () => {
           </div>
         </div>
       </div>
-      <Card className="w-full h-[66vh] overflow-y-scroll">
+      <Card className="w-full h-[70vh] overflow-y-scroll mt-10">
         <table className="w-full min-w-max table-auto text-left text-[1.8rem]">
           <thead className="sticky top-0">
             <tr>
@@ -128,10 +131,12 @@ const Table: React.FC = () => {
               ))}
             </tr>
           </thead>
-          <tbody className="overflow-y-scroll">
+          <tbody className="overflow-y-scroll ">
             {filteredTableData.map((table, index) => (
               <tr
-                className={index % 2 === 0 ? "even:bg-blue-gray-50/50 leading-10" : ""}
+                className={
+                  index % 2 === 0 ? "even:bg-blue-gray-50/50 leading-10" : ""
+                }
                 key={table.table_id}
                 style={{ borderBottom: "2px solid #000" }}
               >
@@ -147,7 +152,9 @@ const Table: React.FC = () => {
                 </td>
                 <td className="p-4">
                   <div className="mt-4" id="qrCodeContainer">
-                    <QRCode value={`http://192.168.1.7:3000/customer/menuqr/${table.table_id}`} />
+                    <QRCode
+                      value={`http://192.168.1.7:3000/customer/menuqr/${table.table_id}`}
+                    />
                   </div>
                 </td>
                 <td className="p-4">

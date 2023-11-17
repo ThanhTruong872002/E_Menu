@@ -11,8 +11,13 @@ export default function MenuStaff() {
     console.log(info?.source, value);
 
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
-  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>([]);
+  const [filteredMenuData, setFilteredMenuData] =
+    useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [typeFood, setTypeFood] = useState("all");
+
+  const [selected, setSelected] = useState(0);
 
   useEffect(() => {
     const getListMenu = async () => {
@@ -26,9 +31,33 @@ export default function MenuStaff() {
         console.error("Error fetching menu data:", error);
       }
     };
-
     getListMenu();
   }, []);
+
+  useEffect(() => {
+    const filterTypeFood = () => {
+      if (typeFood === "all") {
+        setFilteredMenuData(listMenuItem);
+      } else if (typeFood === "appetizer") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "appetizer")
+        );
+      } else if (typeFood === "main course") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "main course")
+        );
+      } else if (typeFood === "drink") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "drink")
+        );
+      } else if (typeFood === "dessert") {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === "dessert")
+        );
+      }
+    };
+    filterTypeFood();
+  }, [typeFood]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
@@ -42,14 +71,64 @@ export default function MenuStaff() {
     setFilteredMenuData(filteredMenuData);
   };
   return (
-    <div >
+    <div>
       <div className="flex gap-6 text-[2rem] font-[500] items-center">
         <div className="flex gap-10">
-          <h2>All</h2>
-          <h2>Appetizer</h2>
-          <h2>Main Course</h2>
-          <h2>Drinks</h2>
-          <h2>Desserts</h2>
+          <h2
+            className={`${
+              selected === 0 ? "text-[#182FFF] " : ""
+            } font-[600] cursor-pointer`}
+            onClick={() => {
+              setTypeFood("all");
+              setSelected(0);
+            }}
+          >
+            All
+          </h2>
+          <h2
+            className={`${
+              selected === 1 ? "text-[#182FFF] " : ""
+            } font-[600] cursor-pointer`}
+            onClick={() => {
+              setTypeFood("appetizer");
+              setSelected(1);
+            }}
+          >
+            Appetizer
+          </h2>
+          <h2
+            className={`${
+              selected === 2 ? "text-[#182FFF] " : ""
+            } font-[600] cursor-pointer`}
+            onClick={() => {
+              setTypeFood("main course");
+              setSelected(2);
+            }}
+          >
+            Main Course
+          </h2>
+          <h2
+            className={`${
+              selected === 3 ? "text-[#182FFF] " : ""
+            } font-[600] cursor-pointer`}
+            onClick={() => {
+              setTypeFood("drink");
+              setSelected(3);
+            }}
+          >
+            Drinks
+          </h2>
+          <h2
+            className={`${
+              selected === 4 ? "text-[#182FFF] " : ""
+            } font-[600] cursor-pointer`}
+            onClick={() => {
+              setTypeFood("dessert");
+              setSelected(4);
+            }}
+          >
+            Desserts
+          </h2>
         </div>
         <Search
           placeholder="Search for food"
@@ -79,7 +158,7 @@ export default function MenuStaff() {
                   {item.menu_item_name}
                 </h2>
                 <p className="text-[1.6rem] my-4 text-[#575363] font-[600]">
-                  {item.Price}VND
+                  {item.Price.toLocaleString()}VND
                 </p>
                 <p className="text-[14px] text-[#575363] font-bold mb-3 mt-3 ">
                   Time:

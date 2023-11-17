@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { ArrowBack } from "../common/icons/icons";
 import Button from "../common/butoons/button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MenuContext } from "../../App";
 import { useContext } from "react";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 export default function CustomerMenuCart() {
   const navigate = useNavigate();
+
+  let { table_id } = useParams();
 
   const { showDetailsMenu, setShowDetailMenu } = useContext(MenuContext);
 
   const [total, setTotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [lastTotal, setLastTotal] = useState(0);
+  const [orderPlaced, setOrderPlaced] = useState(false); // Cờ kiểm tra có món được gọi hay không
 
   const handleTotalBill = () => {
     const totalBill = showDetailsMenu.reduce((total, item) => {
@@ -25,7 +29,7 @@ export default function CustomerMenuCart() {
   };
 
   const handleTax = () => {
-    const TaxMoney = (total * 10) / 100;
+    const TaxMoney = 0;
     setTax(TaxMoney);
   };
 
@@ -53,17 +57,89 @@ export default function CustomerMenuCart() {
     }
   };
 
+  const handleOrder = async () => {
+    if (showDetailsMenu.length === 0) {
+      // Hiển thị thông báo rằng giỏ hàng đang trống
+      Swal.fire({
+        title: "Cart is Empty",
+        text: "Please add orders before checking out",
+        confirmButtonText: "Ok",
+        showCancelButton: true,
+      });
+    } else {
+      try {
+        // Bước 1: Thực hiện truy vấn cập nhật trạng thái bàn
+        const response = await axios.put(
+          "http://localhost:4000/api/updateTableStatus",
+          {
+            tableId: table_id,
+            newStatus: 3,
+          }
+        );
+
+        if (response.status !== 200) {
+          console.log("Có lỗi xảy ra khi cập nhật trạng thái bàn");
+          return;
+        }
+
+        // Bước 2: Tạo mới dữ liệu cho bảng orderid
+        const orderResponse = await axios.post(
+          "http://localhost:4000/api/createOrder",
+          {
+            tableId: table_id,
+            status: 1,
+          }
+        );
+
+        if (orderResponse.status === 200) {
+          console.log("Tạo mới dữ liệu cho bảng orderid thành công");
+          setOrderPlaced(true);
+        } else {
+          console.log("Có lỗi xảy ra khi tạo mới dữ liệu cho bảng orderid");
+        }
+      } catch (error) {
+        console.error("Lỗi khi thực hiện truy vấn:", error);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "You have placed your order successfully!",
+        width: 600,
+        padding: "3em",
+        color: "#6add6a",
+        background:
+          "#fff url(https://sweetalert2.github.io/#examplesimages/trees.png)",
+        backdrop: `
+          rgba(0,0,123,0.4)
+          url("https://gif-avatars.com/img/100x100/nyan-cat.gif")
+          top right 
+          no-repeat
+        `,
+        confirmButtonColor: "#298b29",
+      });
+
+      setShowDetailMenu([]);
+    }
+  };
+
   useEffect(() => {
     handleTotalBill();
     handleTax();
     handleLastTotal();
-  }, [total, tax, handleTotalBill, handleTax, handleLastTotal]);
+
+    // Effect sẽ chạy khi orderPlaced thay đổi
+    if (orderPlaced) {
+      // Thực hiện các công việc cần thiết khi có món được gọi
+      // Ví dụ: Gửi thông báo, cập nhật UI, v.v.
+      console.log("Có món được gọi. Thực hiện các công việc cần thiết.");
+    }
+  }, [total, tax, orderPlaced, handleTotalBill, handleLastTotal]);
 
   return (
     <div>
       <header className="py-[16px] px-[20px] flex items-center gap-[16px] h-[50px] shadow-lg">
         <div
-          onClick={() => navigate("/customer/menuQR")}
+          onClick={() => navigate(`/customer/menuqr/${table_id}`)}
           className="cursor-pointer"
         >
           <ArrowBack />
@@ -85,7 +161,9 @@ export default function CustomerMenuCart() {
                 <div className="flex justify-between items-center">
                   <div>
                     <h4 className="w-[100px]">{item.menu_item_name}</h4>
-                    <p className="mt-6 text-[1.4rem] ml-1">{item.Price} VND</p>
+                    <p className="mt-6 text-[1.4rem] ml-1">
+                      {item.Price.toLocaleString()} VND
+                    </p>
                   </div>
                   <div className="flex gap-6 items-center ml-36">
                     <span className="text-[1.8rem]">x{item.quantity}</span>
@@ -114,7 +192,7 @@ export default function CustomerMenuCart() {
             </p>
           </div>
           <div className="flex justify-between">
-            <h4 className="text-[1.6rem[ font-[400] mb-[16px]">VAT 10%</h4>
+            <h4 className="text-[1.6rem[ font-[400] mb-[16px]">VAT</h4>
             <p className="font-medium text-[500]">
               {tax.toLocaleString("en-US")}
             </p>
@@ -132,7 +210,7 @@ export default function CustomerMenuCart() {
               {lastTotal.toLocaleString("en-US")} VND
             </p>
           </div>
-          <div className="mt-[16px]">
+          <div className="mt-[16px]" onClick={handleOrder}>
             <Button cartButton={"cartButton"}>Order</Button>
           </div>
         </div>

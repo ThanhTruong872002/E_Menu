@@ -54,7 +54,7 @@ export function App() {
     const res = await axios.get("http://localhost:4000/api/tables");
     if (res.data) {
       setListData(res.data);
-      setFilterListData(res.data)
+      setFilterListData(res.data);
     }
   };
 
@@ -65,7 +65,9 @@ export function App() {
   useEffect(() => {
     const filterData = () => {
       if (location === 0) {
-        setFilterListData(listData);
+        setFilterListData(() =>
+          listData?.filter((data) => data.location === 0)
+        );
       } else if (location === 1) {
         setFilterListData(() =>
           listData?.filter((data) => data.location === 1)
@@ -73,10 +75,6 @@ export function App() {
       } else if (location === 2) {
         setFilterListData(() =>
           listData?.filter((data) => data.location === 2)
-        );
-      } else if (location === 3) {
-        setFilterListData(() =>
-          listData?.filter((data) => data.location === 3)
         );
       }
     };

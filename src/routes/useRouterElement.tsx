@@ -1,5 +1,5 @@
 import React from "react";
-import { useRoutes } from "react-router-dom";
+import { useParams, useRoutes } from "react-router-dom";
 import Login from "../components/Login/login";
 import Staff from "../components/StaffAdmin/staff";
 import Menu from "../components/MenuAdmin/menu";
@@ -27,6 +27,7 @@ export default function useRouterElement({
 }: {
   isLoggedIn: boolean;
 }) {
+
   const routerElement = useRoutes([
     {
       path: "/login",
@@ -49,9 +50,9 @@ export default function useRouterElement({
       element: <PrivateRoute isLoggedIn={isLoggedIn} element={<AddMenu />} />,
     },
     {
-      path:"/admin/editmenu/:menu_id",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditMenu/>} />,
-    },    
+      path: "/admin/editmenu/:menu_id",
+      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditMenu />} />,
+    },
     {
       path: "/admin/table",
       element: <PrivateRoute isLoggedIn={isLoggedIn} element={<Table />} />,
@@ -62,7 +63,7 @@ export default function useRouterElement({
     },
     {
       path: "/admin/edittable/:table_id",
-      element: <PrivateRoute isLoggedIn = {isLoggedIn} element ={<EditTable/>} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditTable />} />,
     },
     {
       path: "/manager",
@@ -114,13 +115,13 @@ export default function useRouterElement({
       ),
     },
     {
-      path: "/customer/menuqr/:table_id",
+      path: `/customer/menuqr/:table_id`,
       element: <CustomerMenuQR />,
     },
     {
-      path: "/customer/menuqr/cart",
-      element: <CustomerMenuCart/>
-    }
+      path: "/customer/menuqr/cart/:table_id",
+      element: <CustomerMenuCart />,
+    },
   ]);
 
   return routerElement;
