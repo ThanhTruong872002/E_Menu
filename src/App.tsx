@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import useRouterElement from "./routes/useRouterElement";
 import { createContext, Dispatch, SetStateAction } from "react";
-import { MenuData } from "./components/@types/MenuType";
-import { PropsType } from "./components/@types/TableType";
+import { MenuData } from "./types/MenuType";
+import { PropsType } from "./types/TableType";
 import axios from "axios";
+import { useQuery } from "react-query";
+import { getTableData } from "./apis/table.api";
 
 const initialDetailsMenu: MenuData[] = [];
-
 const initialListDataTable: PropsType[] = [];
 interface MenuContextData {
   showDetailsMenu: MenuData[];
@@ -40,43 +41,34 @@ export function App() {
   const [showDetailsMenu, setShowDetailMenu] = useState<MenuData[]>(
     initialMenuContext.showDetailsMenu
   );
-  const [quantity, setQuantity] = useState(1);
-
   const routerElement = useRouterElement({ isLoggedIn: true });
-
+  const [quantity, setQuantity] = useState(1);
   const [listData, setListData] = useState<PropsType[]>(initialListDataTable);
-
   const [filterListData, setFilterListData] = useState<PropsType[]>(listData);
-
   const [location, setLocation] = useState(0);
 
-  const getTableData = async () => {
-    const res = await axios.get("http://localhost:4000/api/tables");
-    if (res.data) {
-      setListData(res.data);
-      setFilterListData(res.data);
-    }
-  };
+  const {
+    data: tableData,
+    isSuccess,
+    isError,
+  } = useQuery({
+    queryKey: ["api/tables"],
+    queryFn: async () => {
+      const res = await getTableData();
+      return res.data;
+    },
+  });
 
   useEffect(() => {
-    getTableData();
-  }, []);
+    if (isSuccess) {
+      setListData(tableData);
+      setFilterListData(tableData);
+    }
+  }, [isSuccess, tableData]);
 
   useEffect(() => {
     const filterData = () => {
-      if (location === 0) {
-        setFilterListData(() =>
-          listData?.filter((data) => data.location === 0)
-        );
-      } else if (location === 1) {
-        setFilterListData(() =>
-          listData?.filter((data) => data.location === 1)
-        );
-      } else if (location === 2) {
-        setFilterListData(() =>
-          listData?.filter((data) => data.location === 2)
-        );
-      }
+      setFilterListData(listData?.filter((data) => data.location === location));
     };
     filterData();
   }, [location]);

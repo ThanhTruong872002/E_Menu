@@ -1,63 +1,53 @@
 import { Input } from "antd";
 import { SearchProps } from "antd/lib/input";
-import { MenuData } from "../@types/MenuType";
+import { MenuData } from "../../types/MenuType";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import unidecode from "unidecode";
+import { useQuery } from "react-query";
+import { getMenuData } from "../../apis/menu.api";
+
 export default function MenuStaff() {
   const { Search } = Input;
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
-
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) => console.log(info?.source, value);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
-  const [filteredMenuData, setFilteredMenuData] =
-    useState<MenuData[]>(listMenuItem);
+  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
-
   const [typeFood, setTypeFood] = useState("all");
-
   const [selected, setSelected] = useState(0);
 
-  useEffect(() => {
-    const getListMenu = async () => {
+  const { data, isSuccess } = useQuery({
+    queryKey: ["api/menu"],
+    queryFn: async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/menu");
-        if (res.data) {
-          setListMenuItem(res.data);
-          setFilteredMenuData(res.data);
-        }
+        const res = await getMenuData();
+        return res.data;
       } catch (error) {
-        console.error("Error fetching menu data:", error);
+        console.log("Error fetching menu data:", error);
+        throw error;
       }
-    };
-    getListMenu();
-  }, []);
+    },
+  });
+  useEffect(() => {
+    if (isSuccess) {
+      setListMenuItem(data);
+      setFilteredMenuData(data);
+    }
+  }, [isSuccess, data]);
 
   useEffect(() => {
     const filterTypeFood = () => {
       if (typeFood === "all") {
         setFilteredMenuData(listMenuItem);
-      } else if (typeFood === "appetizer") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "appetizer")
-        );
-      } else if (typeFood === "main course") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "main course")
-        );
-      } else if (typeFood === "drink") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "drink")
-        );
-      } else if (typeFood === "dessert") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "dessert")
+      } else {
+        setFilteredMenuData(
+          listMenuItem.filter((item) => item.category_name === typeFood)
         );
       }
     };
     filterTypeFood();
-  }, [typeFood]);
+  }, [typeFood, listMenuItem]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;

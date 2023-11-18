@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import { IncreaseIcon, ReduceIcon, StartIcon } from "../common/icons/icons";
-import { MenuData } from "../@types/MenuType";
+import { MenuData } from "../../types/MenuType";
 import Button from "../common/butoons/button";
 import { MenuContext } from "../../App";
 import Swal from "sweetalert2";

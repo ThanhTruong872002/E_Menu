@@ -1,11 +1,9 @@
 import axios from "axios";
 import { useState, useContext, useEffect } from "react";
 import { MenuContext } from "../../App";
-
-interface LocationType {
-  location_id: number;
-  location_name: string;
-}
+import { useQuery } from "react-query";
+import { LocationType } from "../../types/LocationType";
+import { getLocationData } from "../../apis/location.api";
 
 export default function TableStaff() {
   const { setLocation, filterListData } = useContext(MenuContext);
@@ -14,15 +12,19 @@ export default function TableStaff() {
 
   const [floor, setFloor] = useState<LocationType[]>();
 
+  const { data: locationData, isSuccess } = useQuery({
+    queryKey: ["api/locations"],
+    queryFn: async () => {
+      const res = await getLocationData();
+      return res.data;
+    },
+  });
+
   useEffect(() => {
-    const getLocation = async () => {
-      const res = await axios.get("http://localhost:4000/api/locations");
-      if (res.data) {
-        setFloor(res.data);
-      }
-    };
-    getLocation();
-  }, []);
+    if (isSuccess) {
+      setFloor(locationData);
+    }
+  });
 
   return (
     <div>

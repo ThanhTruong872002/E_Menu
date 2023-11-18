@@ -88,7 +88,7 @@ export default function CustomerMenuCart() {
       });
     }
 
-    setShowDetailMenu([])
+    setShowDetailMenu([]);
   };
   return (
     <div>

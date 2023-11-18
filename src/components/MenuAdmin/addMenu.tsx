@@ -6,19 +6,8 @@ import axios from "axios";
 import { rules } from "../../utils/rules";
 import { config } from "process";
 import { useNavigate } from "react-router-dom";
+import { Category, IAddMenuForm } from "../../types/MenuType";
 
-interface IAddMenuForm {
-  menu_item_name: string;
-  Description: string;
-  Price: string;
-  category_id: number;
-  image: File | null;
-}
-
-interface Category {
-  category_id: number;
-  category_name: string;
-}
 
 export default function AddMenu() {
   const {
