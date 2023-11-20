@@ -1,12 +1,15 @@
 /* eslint-disable no-template-curly-in-string */
 import axios from "axios";
-import { MenuData } from "../@types/MenuType";
+import { MenuData } from "../../types/MenuType";
 import Button from "../common/butoons/button";
 import { CartIcon, SearchIcon, StartIcon } from "../common/icons/icons";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PopupMenu from "./popupMenu";
 import unidecode from "unidecode";
+import { MenuContext } from "../../App";
+import { useQuery } from "react-query";
+import { getMenuData } from "../../apis/menu.api";
 
 export default function CustomerMenuQR() {
   const { table_id } = useParams();
@@ -30,42 +33,33 @@ export default function CustomerMenuQR() {
     setSelectedMenuItem(newItem);
   };
 
-  useEffect(() => {
-    const getListMenu = async () => {
+  const { data, isSuccess } = useQuery({
+    queryKey: ["api/menu"],
+    queryFn: async () => {
       try {
-        const res = await axios.get("http://localhost:4000/api/menu");
-        if (res.data) {
-          setListMenuItem(res.data);
-          setFilteredMenuData(res.data);
-        }
+        const res = await getMenuData();
+        return res.data;
       } catch (error) {
-        console.error("Error fetching menu data:", error);
+        console.log("Error fetching menu data:", error);
+        throw error;
       }
-    };
-    getListMenu();
-  }, []);
+    },
+  });
+  useEffect(() => {
+    if (isSuccess) {
+      setListMenuItem(data);
+      setFilteredMenuData(data);
+    }
+  }, [isSuccess, data]);
 
   useEffect(() => {
     console.log("Received table_id:", table_id);
     const filterTypeFood = () => {
       if (typeFood === "all") {
         setFilteredMenuData(listMenuItem);
-      }
-      if (typeFood === "appetizer") {
+      } else {
         setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "appetizer")
-        );
-      } else if (typeFood === "main course") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "main course")
-        );
-      } else if (typeFood === "drink") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "drink")
-        );
-      } else if (typeFood === "dessert") {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === "dessert")
+          listMenuItem.filter((data) => data.category_name === typeFood)
         );
       }
     };
@@ -121,9 +115,7 @@ export default function CustomerMenuQR() {
               setTypeFood("all");
             }}
           >
-            <Button
-              buttonQr={selected === "all" ? "selectMenuQR" : "buttonQr"}
-            >
+            <Button buttonQr={selected === "all" ? "selectMenuQR" : "buttonQr"}>
               All
             </Button>
           </div>
@@ -188,6 +180,7 @@ export default function CustomerMenuQR() {
            overflow-x-hidden"
         >
           {filteredMenuData.map((item, index) => (
+            
             <div
               className="w-[100%] shadow-2xl rounded-lg cursor-pointer"
               onClick={() => togglePopup(item)}

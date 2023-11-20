@@ -13,15 +13,16 @@ export default function CustomerMenuCart() {
   let { table_id } = useParams();
 
   const { showDetailsMenu, setShowDetailMenu } = useContext(MenuContext);
+  console.log(showDetailsMenu);
 
   const [total, setTotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [lastTotal, setLastTotal] = useState(0);
-  const [orderPlaced, setOrderPlaced] = useState(false); // Cờ kiểm tra có món được gọi hay không
+  const [orderPlaced, setOrderPlaced] = useState(false); 
 
   const handleTotalBill = () => {
     const totalBill = showDetailsMenu.reduce((total, item) => {
-      const price = parseFloat(item.Price);
+      const price = item.Price;
       const quantity = item.quantity;
       return total + price * quantity;
     }, 0);
@@ -59,7 +60,6 @@ export default function CustomerMenuCart() {
 
   const handleOrder = async () => {
     if (showDetailsMenu.length === 0) {
-      // Hiển thị thông báo rằng giỏ hàng đang trống
       Swal.fire({
         title: "Cart is Empty",
         text: "Please add orders before checking out",
@@ -68,7 +68,6 @@ export default function CustomerMenuCart() {
       });
     } else {
       try {
-        // Bước 1: Thực hiện truy vấn cập nhật trạng thái bàn
         const response = await axios.put(
           "http://localhost:4000/api/updateTableStatus",
           {
@@ -78,27 +77,27 @@ export default function CustomerMenuCart() {
         );
 
         if (response.status !== 200) {
-          console.log("Có lỗi xảy ra khi cập nhật trạng thái bàn");
+          console.log("Error updating table status");
           return;
         }
 
-        // Bước 2: Tạo mới dữ liệu cho bảng orderid
         const orderResponse = await axios.post(
           "http://localhost:4000/api/createOrder",
           {
             tableId: table_id,
             status: 1,
+            showDetailsMenu: showDetailsMenu,
           }
         );
 
         if (orderResponse.status === 200) {
-          console.log("Tạo mới dữ liệu cho bảng orderid thành công");
+          console.log("Order placed successfully");
           setOrderPlaced(true);
         } else {
-          console.log("Có lỗi xảy ra khi tạo mới dữ liệu cho bảng orderid");
+          console.log("Error creating order");
         }
       } catch (error) {
-        console.error("Lỗi khi thực hiện truy vấn:", error);
+        console.error("Error performing the request:", error);
       }
 
       Swal.fire({
@@ -121,8 +120,8 @@ export default function CustomerMenuCart() {
       setShowDetailMenu([]);
     }
   };
-
   useEffect(() => {
+    console.log("Menu Item IDs:", showDetailsMenu.map(item => item.menu_id));
     handleTotalBill();
     handleTax();
     handleLastTotal();
@@ -133,7 +132,7 @@ export default function CustomerMenuCart() {
       // Ví dụ: Gửi thông báo, cập nhật UI, v.v.
       console.log("Có món được gọi. Thực hiện các công việc cần thiết.");
     }
-  }, [total, tax, orderPlaced, handleTotalBill, handleLastTotal]);
+  }, [total, tax, orderPlaced, handleTotalBill, handleLastTotal, showDetailsMenu]);
 
   return (
     <div>
