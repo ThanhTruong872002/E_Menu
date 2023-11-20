@@ -47,18 +47,17 @@ export default function AddMenu() {
       imageFormData.append("image", selectedImage);
 
       axios
-        .post("http://localhost:4000/api/uploadImage", imageFormData) // Thay đổi URL thành API của bạn
+        .post("http://localhost:4000/api/uploadImage", imageFormData)
         .then((response) => {
           if (response.data.imageURL) {
             // Gán URL của ảnh vào trường image trong dữ liệu món ăn
             formData.append("image", response.data.imageURL);
-
             const config = {
               headers: { "Content-Type": "application/json" },
             };
 
             axios
-              .post("http://localhost:4000/api/addDish", formData, config) // Thay đổi URL thành API của bạn
+              .post("http://localhost:4000/api/addDish", formData, config)
               .then((response) => {
                 if (response.data.success) {
                   message.success(response.data.message);
