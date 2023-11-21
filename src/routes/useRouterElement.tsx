@@ -119,7 +119,7 @@ export default function useRouterElement({
       element: <CustomerMenuQR />,
     },
     {
-      path: "/customer/menuqr/cart",
+      path: "/customer/menuqr/cart/:table_id",
       element: <CustomerMenuCart />,
     },
   ]);

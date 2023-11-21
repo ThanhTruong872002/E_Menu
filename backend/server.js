@@ -16,16 +16,16 @@ const AddMenuController = require("./controllers/addMenuController");
 const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
+const editTableController = require("./controllers/editTableController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
   fs.mkdirSync(imageUploadPath);
 }
 
-// Sử dụng middleware cors với tùy chọn để cho phép truy cập từ tên miền frontend
 const corsOptions = {
-  origin: ["http://localhost:3000", true], // Tên miền frontend
-  optionsSuccessStatus: 200, // Mã trạng thái thành công cho tùy chọn preflight
+  origin: ["http://localhost:3000", true],
+  optionsSuccessStatus: 200,
 };
 
 app.use(express.json());
@@ -34,7 +34,7 @@ app.use((req, res, next) => {
   console.log(req.hostname);
   next();
 });
-app.use(cors());  
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -56,10 +56,8 @@ connection.connect(function (err) {
   }
 });
 
-// Middleware kiểm tra xác thực trước khi xử lý bất kỳ tuyến đường bảo mật nào
 function requireAuth(req, res, next) {
   if (req.isAuthenticated()) {
-    // Nếu người dùng đã đăng nhập, cho phép họ tiếp tục
     next();
   } else {
     res.status(401).json({ error: "Bạn chưa đăng nhập" });
@@ -127,7 +125,6 @@ app.delete("/api/tables/:table_id", TablesController.deleteTable);
 app.get("/api/locations", locationController.getLocations);
 app.post("/api/tables", async (req, res) => {
   const { table_name, seat_capacity, location, status } = req.body;
-
   // Tạo một bàn mới trong cơ sở dữ liệu (bạn cần có một hàm để thực hiện thao tác này)
   try {
     const result = await createNewTable(
@@ -201,69 +198,85 @@ async function createNewTable(table_name, seat_capacity, location, status) {
   });
 }
 
-// Add this new route to fetch table data by ID
-app.get("/api/tables/:table_id", (req, res) => {
-  const tableId = req.params.table_id;
-  console.log("Received table_id:", tableId);
+//editTable page
+app.get("/api/tables/:table_id", editTableController.getTable);
+app.put("/api/tables/:table_id", editTableController.updateTable);
 
-  // Use a SQL query to get the table data with the specified table_id
-  const getTableSql = "SELECT * FROM tableid WHERE table_id = ?";
+//customerMenuCart page
+// Thêm vào phần định nghĩa tuyến đường
+app.put("/api/updateTableStatus", (req, res) => {
+  const { tableId, newStatus } = req.body;
 
-  connection.query(getTableSql, [tableId], (err, result) => {
+  // Thực hiện truy vấn cập nhật trạng thái bàn
+  const updateStatusSql = "UPDATE tableid SET status = ? WHERE table_id = ?";
+  connection.query(updateStatusSql, [newStatus, tableId], (err, result) => {
     if (err) {
+      console.error("Lỗi khi cập nhật trạng thái bàn:", err);
       return res.status(500).json({
         success: false,
-        message: "Error fetching table data",
-        error: err.message,
-      });
-    }
-
-    if (result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Table not found with the provided table_id",
-      });
-    }
-
-    const tableData = result[0];
-    res.status(200).json(tableData);
-  });
-});
-
-app.put("/api/tables/:table_id", async (req, res) => {
-  const tableId = req.params.table_id;
-  const updatedTable = req.body;
-
-  const updateData = {
-    table_name: updatedTable.table_name,
-    seat_capacity: updatedTable.seat_capacity,
-    location: updatedTable.location,
-  };
-
-  const updateTableSql = "UPDATE tableid SET ? WHERE table_id = ?";
-
-  connection.query(updateTableSql, [updateData, tableId], (err, result) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: "Error updating table information",
+        message: "Lỗi khi cập nhật trạng thái bàn",
         error: err.message,
       });
     }
 
     if (result.affectedRows === 0) {
+      // Không có bàn nào được cập nhật
       return res.status(404).json({
         success: false,
-        message: "Table not found with the provided table_id",
+        message: "Không tìm thấy bàn để cập nhật",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: "Table information updated successfully",
+      message: "Cập nhật trạng thái bàn thành công",
     });
   });
 });
+
+app.post("/api/createOrder", async (req, res) => {
+  const { tableId, status } = req.body;
+
+  try {
+    const result = await createNewOrder(tableId, status);
+    if (!result) {
+      return res.status(500).json({
+        success: false,
+        message: "Lỗi khi tạo mới dữ liệu cho bảng orderid",
+      });
+    }
+
+    const orderId = result.insertId;
+
+    res.status(200).json({
+      success: true,
+      message: "Tạo mới dữ liệu cho bảng orderid thành công",
+      order_id: orderId,
+    });
+  } catch (error) {
+    console.error("Error creating a new order:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi tạo mới dữ liệu cho bảng orderid",
+      error: error.message,
+    });
+  }
+});
+
+// Hàm để tạo mới dữ liệu cho bảng orderid
+async function createNewOrder(tableId, status) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "INSERT INTO orderid (table_id, order_date, status) VALUES (?, NOW(), ?)";
+    connection.query(sql, [tableId, status], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {

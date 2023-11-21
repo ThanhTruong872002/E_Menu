@@ -1,13 +1,12 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import { Select, Button, message } from "antd";
+import { Select, message } from "antd";
 import Admin from "../../pages/admin";
 import axios from "axios";
 import { rules } from "../../utils/rules";
 import { config } from "process";
 import { useNavigate } from "react-router-dom";
 import { Category, IAddMenuForm } from "../../types/MenuType";
-
 
 export default function AddMenu() {
   const {
@@ -27,7 +26,7 @@ export default function AddMenu() {
     const formData = new FormData();
     formData.append("menu_item_name", data.menu_item_name);
     formData.append("Description", data.Description);
-    formData.append("Price", data.Price);
+    formData.append("Price", data.Price.toString());
     formData.append("category_id", selectedValue.toString());
 
     if (selectedImage) {

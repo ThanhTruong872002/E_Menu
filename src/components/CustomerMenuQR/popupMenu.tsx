@@ -4,7 +4,6 @@ import { MenuData } from "../../types/MenuType";
 import Button from "../common/butoons/button";
 import { MenuContext } from "../../App";
 import Swal from "sweetalert2";
-
 interface PropsType {
   selectedMenuItem: MenuData | null;
   setShowPopup: React.Dispatch<React.SetStateAction<boolean>>;

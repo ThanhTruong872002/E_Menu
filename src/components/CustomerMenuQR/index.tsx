@@ -1,17 +1,17 @@
-import axios from "axios";
+/* eslint-disable no-template-curly-in-string */
 import { MenuData } from "../../types/MenuType";
 import Button from "../common/butoons/button";
 import { CartIcon, SearchIcon, StartIcon } from "../common/icons/icons";
 import { useState, useEffect, useRef, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PopupMenu from "./popupMenu";
-import OutSideClickHandler from "../OutSideClickHandler";
 import unidecode from "unidecode";
 import { MenuContext } from "../../App";
 import { useQuery } from "react-query";
 import { getMenuData } from "../../apis/menu.api";
 
 export default function CustomerMenuQR() {
+  const { table_id } = useParams();
   const [selected, setSelected] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
@@ -22,7 +22,7 @@ export default function CustomerMenuQR() {
     useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFood, setTypeFood] = useState("appetizer");
-  // const popupRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const togglePopup = (menuItem: any) => {
@@ -54,6 +54,7 @@ export default function CustomerMenuQR() {
   }, [isSuccess, data]);
 
   useEffect(() => {
+    console.log("Received table_id:", table_id);
     const filterTypeFood = () => {
       if (typeFood === "all") {
         setFilteredMenuData(listMenuItem);
@@ -88,10 +89,7 @@ export default function CustomerMenuQR() {
     >
       <header className="w-full bg-[#FFFAE3] h-[70px] p-[18px] flex justify-between">
         <img src="/images/Logo.svg" alt="" className="w-[140px]" />
-        <div
-          className="cursor-pointer"
-          onClick={() => navigate("/customer/menuqr/cart")}
-        >
+        <div onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)}>
           <CartIcon />
         </div>
       </header>
