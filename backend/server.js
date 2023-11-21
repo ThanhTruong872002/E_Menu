@@ -7,6 +7,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
+const axios = require("axios");
 const LoginController = require("./controllers/loginController");
 const StaffController = require("./controllers/staffController");
 const AddStaffController = require("./controllers/addStaffController");
@@ -235,35 +236,55 @@ app.put("/api/updateTableStatus", (req, res) => {
 });
 
 app.post("/api/createOrder", async (req, res) => {
-  const { tableId, status } = req.body;
+  const { tableId, showDetailsMenu } = req.body;
 
   try {
-    const result = await createNewOrder(tableId, status);
-    if (!result) {
-      return res.status(500).json({
-        success: false,
-        message: "Lỗi khi tạo mới dữ liệu cho bảng orderid",
-      });
+    const existingOrder = await checkExistingOrder(tableId);
+
+    let orderId;
+
+    if (existingOrder) {
+      orderId = existingOrder.order_id;
+    } else {
+      const newOrder = await createNewOrder(tableId, 1); // status = 1
+      orderId = newOrder.insertId;
     }
 
-    const orderId = result.insertId;
+    for (const item of showDetailsMenu) {
+      await addOrderDetail(orderId, item.menu_id, item.quantity, item.Price);
+    }
 
     res.status(200).json({
       success: true,
-      message: "Tạo mới dữ liệu cho bảng orderid thành công",
+      message: "Order placed successfully",
       order_id: orderId,
     });
   } catch (error) {
-    console.error("Error creating a new order:", error);
+    console.error("Error creating or using order:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi khi tạo mới dữ liệu cho bảng orderid",
+      message: "Error creating or using order",
       error: error.message,
     });
   }
 });
 
-// Hàm để tạo mới dữ liệu cho bảng orderid
+// Function to check if there is an existing order for the table with status = 1 or 2
+async function checkExistingOrder(tableId) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "SELECT order_id FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2) LIMIT 1";
+    connection.query(sql, [tableId], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result[0]);
+      }
+    });
+  });
+}
+
+// Function to create new data for the orderid table
 async function createNewOrder(tableId, status) {
   return new Promise((resolve, reject) => {
     const sql =
@@ -278,6 +299,20 @@ async function createNewOrder(tableId, status) {
   });
 }
 
+// Function to add order detail
+async function addOrderDetail(orderId, menuId, quantity, price) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "INSERT INTO orderdetail (order_id, menu_item_id, quantity, price, invoice_description) VALUES (?, ?, ?, ?, NULL)";
+    connection.query(sql, [orderId, menuId, quantity, price], (err, result) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây

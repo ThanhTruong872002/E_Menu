@@ -1,4 +1,5 @@
 export interface MenuData {
+  table_id: number;
   menu_id: number;
   Image: string;
   menu_item_name: string;
