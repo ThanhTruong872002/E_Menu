@@ -9,6 +9,7 @@ class Http {
       httpsAgent: { rejectUnauthorized: false },
       headers: {
         "Content-Type": "application/json",
+        "Content-Security-Policy": "upgrade-insecure-requests",
       },
     });
   }
