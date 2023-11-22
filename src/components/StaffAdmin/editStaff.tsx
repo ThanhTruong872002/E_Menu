@@ -1,156 +1,196 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Admin from '../../pages/admin';
-import { Input, Select, message } from 'antd';
 
-interface ILocation {
-  location_id: number;
-  location_name: string;
+interface IRole {
+  role_id: number;
+  role_name: string;
 }
 
-interface ITableData {
-  table_name: string;
-  seat_capacity: number;
-  location: number;
+interface IUserData {
+  username: string;
+  password: string;
+  fullname: string;
+  role_name: string;
 }
 
-interface IEditTableForm extends ITableData {}
+interface IEditStaffForm {
+  username: string;
+  password: string;
+  confirmPassword: string; // Thêm trường xác nhận mật khẩu
+  fullname: string;
+  role: string;
+}
 
-export default function EditTable() {
-  const { table_id } = useParams();
-  const navigate = useNavigate();
-  const [locations, setLocations] = useState<ILocation[]>([]);
-  const [tableData, setTableData] = useState<ITableData | null>(null);
-
+export default function EditStaff() {
+  const { username } = useParams();
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<IEditTableForm>();
+  } = useForm<IEditStaffForm>();
+
+  const [roles, setRoles] = useState<IRole[]>([]);
+  const [userData, setUserData] = useState<IUserData | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Current table_id:', table_id);
-
-    // Fetch location data from your API endpoint
-    axios
-      .get("http://localhost:4000/api/locations")
-      .then((response) => {
-        setLocations(response.data);
+    axios.get('http://localhost:4000/api/roles')
+      .then(response => {
+        setRoles(response.data.roles);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(error => {
+        console.error('Lỗi khi lấy danh sách vai trò:', error);
       });
 
-    // Fetch table data based on the table_id
-    axios
-      .get(`http://localhost:4000/api/tables/${table_id}`)
-      .then((response) => {
-        console.log('API Response:', response.data);
-        const tableData = response.data;
-        if (tableData) {
-          console.log('Table Data:', tableData);
-          setTableData(tableData);
-          // Set form values using setValue
-          setValue('table_name', tableData.table_name);
-          setValue('seat_capacity', tableData.seat_capacity);
-          setValue('location', tableData.location);
-        } else {
-          console.error('Dữ liệu bảng không xác định');
-        }
+    axios.get(`http://localhost:4000/api/getAccount/${username}`)
+      .then(response => {
+        const userData = response.data.account;
+        setUserData(userData);
+        setValue('username', userData.username);
+        setValue('password', userData.password);
+        setValue('confirmPassword', userData.password); // Đặt giá trị mặc định cho confirmPassword
+        setValue('fullname', userData.fullname);
+        setValue('role', userData.role_name);
       })
-      .catch((error) => {
-        console.error('Lỗi khi truy xuất dữ liệu bảng:', error);
+      .catch(error => {
+        console.error('Lỗi khi lấy thông tin tài khoản:', error);
       });
-  }, [table_id, setValue]); // Ensure that the dependencies array is closed
+  }, [username, setValue]);
 
-  const onSubmit: SubmitHandler<IEditTableForm> = async (data) => {
+  const onSubmit: SubmitHandler<IEditStaffForm> = async (data) => {
     try {
-      // Send a request to update the table
-      await axios.put(`http://localhost:4000/api/tables/${table_id}`, data);
+      if (data.password !== data.confirmPassword) {
+        // Kiểm tra xác nhận mật khẩu
+        setSuccessMessage('Xác nhận mật khẩu không khớp.');
+        return;
+      }
 
-      message.success('Table information has been updated successfully.');
-      // Redirect to the table management page or another appropriate page
-      navigate('/admin/table');
+      const selectedRoleObject = roles.find((role) => role.role_name === data.role);
+      if (selectedRoleObject) {
+        const selectedRoleID = selectedRoleObject.role_id;
+        await axios.put(`http://localhost:4000/api/updateAccount/${username}`, { ...data, role: selectedRoleID });
+        setSuccessMessage('Thông tin tài khoản đã được cập nhật thành công.');
+      }
     } catch (error) {
-      console.error('Error updating table information:', error);
-      message.error('Failed to update table information.');
+      console.error('Lỗi khi cập nhật tài khoản:', error);
     }
   };
 
   return (
     <Admin>
       <div>
-        <h2 className="font-[600] text-[3rem] p-8 mb-10">Edit Table Information</h2>
+        <h2 className="font-[600] text-[3rem] p-8 mb-10">Edit account information</h2>
         <div>
           <form className="ml-10" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center">
-              <h2 className="w-[170px]">Table Name :</h2>
+              <h2 className="w-[170px]">Username :</h2>
               <label>
-                <Input
-                  className="ml-8 w-[720px]"
-                  placeholder="Table Name"
-                  {...register('table_name')}
-                  defaultValue={tableData?.table_name || ''}
+                <input
+                  className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                  type="text"
+                  placeholder="Username"
+                  value={userData?.username}
                   disabled
                 />
-              </label>
-            </div>
-
-            <div className="flex items-center mt-4">
-              <h2 className="w-[170px]">Seat Capacity :</h2>
-              <label className="mt-4">
-                <Input
-                  className="ml-8 w-[720px]"
-                  type="number"
-                  placeholder="Seat Capacity"
-                  {...register('seat_capacity', {
-                    required: 'Seat Capacity is required',
-                    min: {
-                      value: 1,
-                      message: 'Seat Capacity must be at least 1',
-                    },
-                  })}
-                  defaultValue={tableData?.seat_capacity || ''}
-                />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
-                  {errors.seat_capacity?.message}
+                  {errors.username?.message}
                 </div>
               </label>
             </div>
-
-            <div className="flex items-center mt-4">
-              <h2 className="w-[170px]">Location :</h2>
+            <div className="flex items-center">
+              <h2 className="w-[170px]"> Password :</h2>
               <label className="mt-4">
-              <Select
-  style={{ width: 200, marginLeft: '20px' }}
-  placeholder="Select Location"
-  {...register('location')}
-  onChange={(value) => setValue('location', value)}
-  value={tableData?.location}
->
-  {locations.map((location) => (
-    <Select.Option
-      key={location.location_id}
-      value={location.location_id}
-    >
-      {location.location_name}
-    </Select.Option>
-  ))}
-</Select>
-
+                <input
+                  className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                  type="password"
+                  placeholder="Password"
+                  {...register('password', {
+                    required: 'Mật khẩu là bắt buộc',
+                    minLength: {
+                      value: 8,
+                      message: 'Mật khẩu phải có ít nhất 8 ký tự',
+                    },
+                  })}
+                />
+                <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
+                  {errors.password?.message}
+                </div>
               </label>
             </div>
-
-            <div className="flex items-center mt-10">
+            <div className="flex items-center">
+              <h2 className="w-[170px]">Confirm password :</h2>
+              <label className="mt-4">
+                <input
+                  className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                  type="password"
+                  placeholder="Confirm password"
+                  {...register('confirmPassword', {
+                    required: 'Please confirm your password',
+                  })}
+                />
+                <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
+                  {errors.confirmPassword?.message}
+                </div>
+              </label>
+            </div>
+            <div className="flex items-center">
+              <h2 className="w-[170px]">Fullname :</h2>
+              <label className="mt-8">
+                <input
+                  className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                  type="text"
+                  placeholder="Fullname"
+                  {...register('fullname', {
+                    required: 'Full Name is required',
+                  })}
+                />
+                <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
+                  {errors.fullname?.message}
+                </div>
+              </label>
+            </div>
+            <div className="flex items-center">
+              <h2 className="w-[170px]">Role :</h2>
+              <div className="flex items-center">
+                {roles.length > 0 ? (
+                  <label>
+                    <select
+                      className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
+                      {...register('role')}
+                      defaultValue={userData ? userData.role_name : ''}
+                    >
+                      <option value="">Chose a role</option>
+                      {roles.map((role) => (
+                        <option key={role.role_id} value={role.role_name}>
+                          {role.role_name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
+                      {errors.role && <span>{errors.role.message}</span>}
+                    </div>
+                  </label>
+                ) : (
+                  <p>Loading...</p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center mt-20">
               <label>
                 <button className="border-[1px] border-solid bg-[#1890ff] text-white w-[200px] h-[50px] ml-8 rounded-md">
-                  Save Changes
+                Save Changes
                 </button>
               </label>
-            </div>
+            </div>  
+            {successMessage && (
+              <div className="text-red-600 font-bold text-xl mt-4">
+                {successMessage}
+              </div>
+            )}
           </form>
         </div>
       </div>

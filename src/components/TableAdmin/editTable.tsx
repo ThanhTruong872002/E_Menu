@@ -92,7 +92,7 @@ export default function EditTable() {
                 <Input
                   className="ml-8 w-[720px]"
                   placeholder="Table Name"
-                  value={tableData?.table_name || ''} // Sử dụng giá trị từ tableData
+                  value={tableData?.table_name || ''} 
                   disabled
                 />
               </label>

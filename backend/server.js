@@ -207,7 +207,6 @@ app.get("/api/tables/:table_id", editTableController.getTable);
 app.put("/api/tables/:table_id", editTableController.updateTable);
 
 //customerMenuCart page
-// Thêm vào phần định nghĩa tuyến đường
 app.put("/api/updateTableStatus", (req, res) => {
   const { tableId, newStatus } = req.body;
 
@@ -249,7 +248,7 @@ app.post("/api/createOrder", async (req, res) => {
     if (existingOrder) {
       orderId = existingOrder.order_id;
     } else {
-      const newOrder = await createNewOrder(tableId, 1); // status = 1
+      const newOrder = await createNewOrder(tableId, 1);
       orderId = newOrder.insertId;
     }
 
