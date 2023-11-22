@@ -23,7 +23,7 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://139.180.187.232:4000/api/account', formLogin);
+      const response = await axios.post('https://139.180.187.232:4000/api/account', formLogin);
       console.log("Response from server:", response.data); 
       if (response.data.success) {
         const userRole = response.data.role;

@@ -35,7 +35,7 @@ export default function AddMenu() {
       imageFormData.append("image", selectedImage);
 
       axios
-        .post("http://139.180.187.232:4000/api/uploadImage", imageFormData)
+        .post("https://139.180.187.232:4000/api/uploadImage", imageFormData)
         .then((response) => {
           if (response.data.imageURL) {
             // Gán URL của ảnh vào trường image trong dữ liệu món ăn
@@ -45,7 +45,7 @@ export default function AddMenu() {
             };
 
             axios
-              .post("http://139.180.187.232:4000/api/addDish", formData, config)
+              .post("https://139.180.187.232:4000/api/addDish", formData, config)
               .then((response) => {
                 if (response.data.success) {
                   message.success(response.data.message);
@@ -69,7 +69,7 @@ export default function AddMenu() {
     }
   });
   useEffect(() => {
-    axios.get("http://139.180.187.232:4000/api/types").then((response) => {
+    axios.get("https://139.180.187.232:4000/api/types").then((response) => {
       setCategoryData(response.data);
     });
   }, []);

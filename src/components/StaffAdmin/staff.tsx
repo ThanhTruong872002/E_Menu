@@ -28,7 +28,7 @@ export default function Staff() {
   const getListUsers = async () => {
     try {
       const response = await axios.get(
-        "http://139.180.187.232:4000/api/accounts-with-roles"
+        "https://139.180.187.232:4000/api/accounts-with-roles"
       );
       if (response.data.staff) {
         setListUsers(response.data.staff);
@@ -59,7 +59,7 @@ export default function Staff() {
   
       // Send a DELETE request to the server
       axios
-        .delete(`http://139.180.187.232:4000/api/deleteAccount/${username}`)
+        .delete(`https://139.180.187.232:4000/api/deleteAccount/${username}`)
         .then((response) => {
           console.log("Account deleted successfully.");
           // Update the list of users after successful deletion

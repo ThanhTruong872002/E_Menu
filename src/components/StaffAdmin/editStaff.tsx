@@ -39,7 +39,7 @@ export default function EditStaff() {
 
   useEffect(() => {
     axios
-      .get("http://139.180.187.232:4000/api/roles")
+      .get("https://139.180.187.232:4000/api/roles")
       .then((response) => {
         setRoles(response.data.roles);
       })
@@ -48,7 +48,7 @@ export default function EditStaff() {
       });
 
     axios
-      .get(`http://139.180.187.232:4000/api/getAccount/${username}`)
+      .get(`https://139.180.187.232:4000/api/getAccount/${username}`)
       .then((response) => {
         const userData = response.data.account;
         setUserData(userData);
@@ -76,7 +76,7 @@ export default function EditStaff() {
       );
       if (selectedRoleObject) {
         const selectedRoleID = selectedRoleObject.role_id;
-        await axios.put(`http://139.180.187.232:4000/api/updateAccount/${username}`, {
+        await axios.put(`https://139.180.187.232:4000/api/updateAccount/${username}`, {
           ...data,
           role: selectedRoleID,
         });
