@@ -25,7 +25,7 @@ if (!fs.existsSync(imageUploadPath)) {
 }
 
 const corsOptions = {
-  origin: ["http://localhost:3000", true],
+  origin: ["https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app", true],
   optionsSuccessStatus: 200,
 };
 
@@ -78,7 +78,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-const appDomain = "http://localhost:3000/menu";
+// const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";
 
 //Login page
 app.post("/api/account", LoginController.login);
@@ -144,7 +144,7 @@ app.post("/api/tables", async (req, res) => {
     const tableId = result.insertId;
 
     // Tạo đường dẫn URL (QR code) từ ID bàn
-    const qrCode = `http://localhost:3000/customer/menuqr/${tableId}`;
+    const qrCode = `https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/customer/menuqr/${tableId}`;
 
     // Cập nhật bàn với mã QR code mới được tạo
     const updateQrCodeSql = "UPDATE tableid SET qr_code = ? WHERE table_id = ?";

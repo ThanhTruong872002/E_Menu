@@ -36,7 +36,7 @@ export default function EditTable() {
 
     // Fetch location data from your API endpoint
     axios
-      .get("http://localhost:4000/api/locations")
+      .get("http://139.180.187.232:4000/api/locations")
       .then((response) => {
         setLocations(response.data);
       })
@@ -46,7 +46,7 @@ export default function EditTable() {
 
     // Fetch table data based on the table_id
     axios
-      .get(`http://localhost:4000/api/tables/${table_id}`)
+      .get(`http://139.180.187.232:4000/api/tables/${table_id}`)
       .then((response) => {
         console.log('API Response:', response.data);
         const tableData = response.data;
@@ -69,7 +69,7 @@ export default function EditTable() {
   const onSubmit: SubmitHandler<IEditTableForm> = async (data) => {
     try {
       // Send a request to update the table
-      await axios.put(`http://localhost:4000/api/tables/${table_id}`, data);
+      await axios.put(`http://139.180.187.232:4000/api/tables/${table_id}`, data);
 
       message.success('Table information has been updated successfully.');
       // Redirect to the table management page or another appropriate page

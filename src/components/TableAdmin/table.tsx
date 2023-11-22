@@ -31,7 +31,7 @@ const Table: React.FC = () => {
 
   useEffect(() => {
     // Fetch table data from your API endpoint
-    fetch("http://localhost:4000/api/tables")
+    fetch("http://139.180.187.232:4000/api/tables")
       .then((response) => response.json())
       .then((data: TableData[]) => setTableData(data))
       .catch((error) => console.error("Error fetching table data", error));
@@ -53,7 +53,7 @@ const Table: React.FC = () => {
       console.log("Delete table:", table);
 
       // Add logic to send a delete request to your API endpoint
-      fetch(`http://localhost:4000/api/tables/${table.table_id}`, {
+      fetch(`http://139.180.187.232:4000/api/tables/${table.table_id}`, {
         method: "DELETE",
       })
         .then((response) => {
@@ -153,7 +153,7 @@ const Table: React.FC = () => {
                 <td className="p-4">
                   <div className="mt-4" id="qrCodeContainer">
                     <QRCode
-                      value={`http://192.168.1.7:3000/customer/menuqr/${table.table_id}`}
+                      value={`http://139.180.187.232:4000/customer/menuqr/${table.table_id}`}
                     />
                   </div>
                 </td>

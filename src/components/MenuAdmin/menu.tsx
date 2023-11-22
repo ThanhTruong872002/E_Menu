@@ -31,7 +31,7 @@ const Menu: React.FC = () => {
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/menu");
+        const response = await axios.get("http://139.180.187.232:4000/api/menu");
         setMenuData(response.data);
         setFilteredMenuData(response.data);
         setLoading(false);
@@ -65,7 +65,7 @@ const Menu: React.FC = () => {
     if (confirmDelete) {
       try {
         // Send a DELETE request to the server
-        await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
+        await axios.delete(`http://139.180.187.232:4000/api/deleteDish/${menuItemId}`);
 
         // Update both menuData and filteredMenuData after successful deletion
         const updatedMenuData = menuData.filter(
@@ -146,7 +146,7 @@ const Menu: React.FC = () => {
                         className="font-normal flex items-center"
                       >
                         <img
-                          src={`http://localhost:4000/uploads${menuItem.Image}`}
+                          src={`http://139.180.187.232:4000/uploads${menuItem.Image}`}
                           alt={menuItem.menu_item_name}
                           className="w-[100px] h-[100px] translate-y-[40px] object-cover rounded-xl"
                         />

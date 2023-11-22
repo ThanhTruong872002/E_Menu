@@ -50,7 +50,7 @@ export default function AddStaff() {
       const selectedRoleObject = roles.find((role) => role.role_name === selectedRole);
       if (selectedRoleObject) {
         const selectedRoleID = selectedRoleObject.role_id;
-        await axios.post('http://localhost:4000/api/addStaff', { ...data, role: selectedRoleID });
+        await axios.post('http://139.180.187.232:4000/api/addStaff', { ...data, role: selectedRoleID });
         setSuccessMessage('Nhân viên đã được thêm thành công.');
       }
     } catch (error) {
@@ -60,7 +60,7 @@ export default function AddStaff() {
 
   const checkUsername = async (username: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/checkUsername?username=${username}`);
+      const response = await axios.get(`http://139.180.187.232:4000/api/checkUsername?username=${username}`);
       return response.data.success;
     } catch (error) {
       console.error('Lỗi khi kiểm tra username:', error);
@@ -69,7 +69,7 @@ export default function AddStaff() {
   };
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/roles')
+    axios.get('http://139.180.187.232:4000/api/roles')
       .then(response => {
         setRoles(response.data.roles);
       })

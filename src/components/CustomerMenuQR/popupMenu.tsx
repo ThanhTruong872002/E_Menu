@@ -60,7 +60,7 @@ export default function PopupMenu({
     <div>
       <div className="fixed top-[260px] w-[98%] bg-white mx-auto pb-10 transition ease-in-out delay-150">
         <img
-          src={`http://localhost:4000/uploads${selectedMenuItem?.Image}`}
+          src={`http://139.180.187.232:4000/uploads${selectedMenuItem?.Image}`}
           alt=""
           className="w-full rounded-2xl h-[300px] object-cover"
         />

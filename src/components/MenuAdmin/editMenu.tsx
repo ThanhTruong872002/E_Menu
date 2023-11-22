@@ -43,10 +43,10 @@ export default function EditMenu() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<FileList | null>(null);
   console.log(imagePreview);
-
+  
   useEffect(() => {
     axios
-      .get("http://localhost:4000/api/types")
+      .get("http://139.180.187.232:4000/api/types")
       .then((response) => {
         setCategories(response.data);
       })
@@ -55,7 +55,7 @@ export default function EditMenu() {
       });
 
     axios
-      .get(`http://localhost:4000/api/menu/${menu_id}`)
+      .get(`http://139.180.187.232:4000/api/menu/${menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);
@@ -64,7 +64,7 @@ export default function EditMenu() {
         setValue("Price", menuData.Price);
         setValue("category_id", menuData.category_id.toString());
         // Gán ảnh hiện tại cho hiển thị xem trước
-        setImagePreview(`http://localhost:4000/uploads${menuData.Image}`);
+        setImagePreview(`http://139.180.187.232:4000/uploads${menuData.Image}`);
       })
       .catch((error) => {
         console.error("Lỗi khi lấy thông tin món ăn:", error);
@@ -78,15 +78,15 @@ export default function EditMenu() {
       const formData = new FormData();
       formData.append("menu_item_name", data.menu_item_name);
       formData.append("Description", data.Description);
-      formData.append("Price", data.Price);
-      formData.append("category_id", category_id); // Sử dụng giá trị kiểu số
+      formData.append("Price", data.Price.toString());
+      formData.append("category_id", category_id.toString()); // Sử dụng giá trị kiểu số
 
       if (selectedImage) {
         formData.append("image", selectedImage[0]);
       }
 
       await axios.put(
-        `http://localhost:4000/api/editDish/${menu_id}`,
+        `http://139.180.187.232:4000/api/editDish/${menu_id}`,
         formData
       );
       setSuccessMessage("Thông tin món ăn đã được cập nhật thành công.");
@@ -195,7 +195,7 @@ export default function EditMenu() {
             <div className="flex items-center justify-center mt-20">
               <label>
                 <button className="border-[1px] border-solid bg-[#1890ff] text-white w-[250px] h-[50px]  rounded-md">
-                   Update
+                  Update
                 </button>
               </label>
             </div>
