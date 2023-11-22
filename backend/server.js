@@ -25,7 +25,7 @@ if (!fs.existsSync(imageUploadPath)) {
 }
 
 const corsOptions = {
-  origin: ["https://e-menu-u1ndgpp6g-thanhtruong872002.vercel.app", true],
+  origin: ["https://e-menu-khaki.vercel.app",true],
   optionsSuccessStatus: 200,
 };
 
@@ -144,7 +144,7 @@ app.post("/api/tables", async (req, res) => {
     const tableId = result.insertId;
 
     // Tạo đường dẫn URL (QR code) từ ID bàn
-    const qrCode = `https://e-menu-u1ndgpp6g-thanhtruong872002.vercel.app/customer/menuqr/${tableId}`;
+    const qrCode = `https://e-menu-khaki.vercel.app/customer/menuqr/${tableId}`;
 
     // Cập nhật bàn với mã QR code mới được tạo
     const updateQrCodeSql = "UPDATE tableid SET qr_code = ? WHERE table_id = ?";
