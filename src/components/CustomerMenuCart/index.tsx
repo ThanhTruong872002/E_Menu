@@ -18,8 +18,9 @@ export default function CustomerMenuCart() {
   const [total, setTotal] = useState(0);
   const [tax, setTax] = useState(0);
   const [lastTotal, setLastTotal] = useState(0);
-  const [orderPlaced, setOrderPlaced] = useState(false); 
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleTotalBill = () => {
     const totalBill = showDetailsMenu.reduce((total, item) => {
       const price = item.Price;
@@ -34,6 +35,7 @@ export default function CustomerMenuCart() {
     setTax(TaxMoney);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleLastTotal = () => {
     const totalAmount = tax + total;
     setLastTotal(totalAmount);
@@ -69,7 +71,7 @@ export default function CustomerMenuCart() {
     } else {
       try {
         const response = await axios.put(
-          "http://localhost:4000/api/updateTableStatus",
+          "https://139.180.187.232:4000/api/updateTableStatus",
           {
             tableId: table_id,
             newStatus: 3,
@@ -82,7 +84,7 @@ export default function CustomerMenuCart() {
         }
 
         const orderResponse = await axios.post(
-          "http://localhost:4000/api/createOrder",
+          "https://139.180.187.232:4000/api/createOrder",
           {
             tableId: table_id,
             status: 1,
@@ -116,23 +118,29 @@ export default function CustomerMenuCart() {
         `,
         confirmButtonColor: "#298b29",
       });
-
       setShowDetailMenu([]);
     }
   };
   useEffect(() => {
-    console.log("Menu Item IDs:", showDetailsMenu.map(item => item.menu_id));
+    console.log(
+      "Menu Item IDs:",
+      showDetailsMenu.map((item) => item.menu_id)
+    );
     handleTotalBill();
     handleTax();
     handleLastTotal();
 
-    // Effect sẽ chạy khi orderPlaced thay đổi
     if (orderPlaced) {
-      // Thực hiện các công việc cần thiết khi có món được gọi
-      // Ví dụ: Gửi thông báo, cập nhật UI, v.v.
       console.log("Có món được gọi. Thực hiện các công việc cần thiết.");
     }
-  }, [total, tax, orderPlaced, handleTotalBill, handleLastTotal, showDetailsMenu]);
+  }, [
+    total,
+    tax,
+    orderPlaced,
+    handleTotalBill,
+    handleLastTotal,
+    showDetailsMenu,
+  ]);
 
   return (
     <div>
@@ -151,7 +159,7 @@ export default function CustomerMenuCart() {
             <div key={index} className="flex items-center">
               <div>
                 <img
-                  src={`http://localhost:4000/uploads${item.Image}`}
+                  src={`https://139.180.187.232:4000/uploads${item.Image}`}
                   alt=""
                   className="w-[80px] h-[80px] object-cover rounded-xl mr-4"
                 />

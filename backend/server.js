@@ -7,7 +7,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
-const axios = require('axios');
+const axios = require("axios");
 const LoginController = require("./controllers/loginController");
 const StaffController = require("./controllers/staffController");
 const AddStaffController = require("./controllers/addStaffController");
@@ -17,17 +17,16 @@ const AddMenuController = require("./controllers/addMenuController");
 const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
-const editTableController = require('./controllers/editTableController');
+const editTableController = require("./controllers/editTableController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
   fs.mkdirSync(imageUploadPath);
 }
 
-// Sử dụng middleware cors với tùy chọn để cho phép truy cập từ tên miền frontend
 const corsOptions = {
-  origin: ["http://localhost:3000", true], // Tên miền frontend
-  optionsSuccessStatus: 200, // Mã trạng thái thành công cho tùy chọn preflight
+  origin: ["https://e-menu-khaki.vercel.app",true],
+  optionsSuccessStatus: 200,
 };
 
 app.use(express.json());
@@ -36,7 +35,7 @@ app.use((req, res, next) => {
   console.log(req.hostname);
   next();
 });
-app.use(cors());  
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -58,10 +57,8 @@ connection.connect(function (err) {
   }
 });
 
-// Middleware kiểm tra xác thực trước khi xử lý bất kỳ tuyến đường bảo mật nào
 function requireAuth(req, res, next) {
   if (req.isAuthenticated()) {
-    // Nếu người dùng đã đăng nhập, cho phép họ tiếp tục
     next();
   } else {
     res.status(401).json({ error: "Bạn chưa đăng nhập" });
@@ -81,7 +78,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-const appDomain = "http://localhost:3000/menu";
+// const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";
 
 //Login page
 app.post("/api/account", LoginController.login);
@@ -147,7 +144,7 @@ app.post("/api/tables", async (req, res) => {
     const tableId = result.insertId;
 
     // Tạo đường dẫn URL (QR code) từ ID bàn
-    const qrCode = `http://localhost:3000/customer/menuqr/${tableId}`;
+    const qrCode = `https://e-menu-khaki.vercel.app/customer/menuqr/${tableId}`;
 
     // Cập nhật bàn với mã QR code mới được tạo
     const updateQrCodeSql = "UPDATE tableid SET qr_code = ? WHERE table_id = ?";
@@ -315,10 +312,6 @@ async function addOrderDetail(orderId, menuId, quantity, price) {
     });
   });
 }
-
-
-
-
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây

@@ -1,13 +1,12 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { useForm } from "react-hook-form";
-import { Select, Button, message } from "antd";
+import { Select, message } from "antd";
 import Admin from "../../pages/admin";
 import axios from "axios";
 import { rules } from "../../utils/rules";
 import { config } from "process";
 import { useNavigate } from "react-router-dom";
 import { Category, IAddMenuForm } from "../../types/MenuType";
-
 
 export default function AddMenu() {
   const {
@@ -36,7 +35,7 @@ export default function AddMenu() {
       imageFormData.append("image", selectedImage);
 
       axios
-        .post("http://localhost:4000/api/uploadImage", imageFormData)
+        .post("https://139.180.187.232:4000/api/uploadImage", imageFormData)
         .then((response) => {
           if (response.data.imageURL) {
             // Gán URL của ảnh vào trường image trong dữ liệu món ăn
@@ -46,7 +45,7 @@ export default function AddMenu() {
             };
 
             axios
-              .post("http://localhost:4000/api/addDish", formData, config)
+              .post("https://139.180.187.232:4000/api/addDish", formData, config)
               .then((response) => {
                 if (response.data.success) {
                   message.success(response.data.message);
@@ -70,7 +69,7 @@ export default function AddMenu() {
     }
   });
   useEffect(() => {
-    axios.get("http://localhost:4000/api/types").then((response) => {
+    axios.get("https://139.180.187.232:4000/api/types").then((response) => {
       setCategoryData(response.data);
     });
   }, []);

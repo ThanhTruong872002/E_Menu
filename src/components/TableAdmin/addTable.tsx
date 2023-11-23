@@ -31,7 +31,7 @@ export default function AddTable() {
   useEffect(() => {
     // Fetch location data from your API endpoint
     axios
-      .get("http://localhost:4000/api/locations")
+      .get("https://139.180.187.232:4000/api/locations")
       .then((response) => {
         setLocations(response.data);
       })
@@ -71,7 +71,7 @@ export default function AddTable() {
       }
 
       // Send a request to create the table
-      const response = await axios.post("http://localhost:4000/api/tables", {
+      const response = await axios.post("https://139.180.187.232:4000/api/tables", {
         table_name: data.table_name,
         seat_capacity: data.seat_capacity,
         location: selectedValue,
@@ -163,7 +163,7 @@ export default function AddTable() {
             <label className="mt-4" id="qrCodeContainer">
               <Space direction="vertical" align="center">
                 <QRCode
-                  value={`http://172.20.43.113:3000/customer/menuqr/${tableId}`}
+                  value={`https://e-menu-khaki.vercel.app/customer/menuqr/${tableId}`}
                 />
                 <button
                   onClick={downloadQRCode}

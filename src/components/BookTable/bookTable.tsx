@@ -10,13 +10,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { Schema, schema } from "../../utils/rules";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-// interface FormData {
-//   name: string;
-//   phone_number: string;
-//   total_person: string;
-//   date: string;
-//   time: string | null;
-// } = schema
+
 
 dayjs.extend(customParseFormat);
 

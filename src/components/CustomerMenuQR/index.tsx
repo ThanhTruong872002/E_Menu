@@ -1,9 +1,8 @@
 /* eslint-disable no-template-curly-in-string */
-import axios from "axios";
 import { MenuData } from "../../types/MenuType";
 import Button from "../common/butoons/button";
 import { CartIcon, SearchIcon, StartIcon } from "../common/icons/icons";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PopupMenu from "./popupMenu";
 import unidecode from "unidecode";
@@ -13,12 +12,14 @@ import { getMenuData } from "../../apis/menu.api";
 
 export default function CustomerMenuQR() {
   const { table_id } = useParams();
-
   const [selected, setSelected] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
-  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuData | null>(null);
-  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>(listMenuItem);
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuData | null>(
+    null
+  );
+  const [filteredMenuData, setFilteredMenuData] =
+    useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFood, setTypeFood] = useState("appetizer");
   const popupRef = useRef<HTMLDivElement>(null);
@@ -66,8 +67,6 @@ export default function CustomerMenuQR() {
     filterTypeFood();
   }, [typeFood]);
 
-  
-
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
     setSearchTerm(searchTerm);
@@ -90,9 +89,7 @@ export default function CustomerMenuQR() {
     >
       <header className="w-full bg-[#FFFAE3] h-[70px] p-[18px] flex justify-between">
         <img src="/images/Logo.svg" alt="" className="w-[140px]" />
-        <div
-          onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)}
-        >
+        <div onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)}>
           <CartIcon />
         </div>
       </header>
@@ -180,14 +177,13 @@ export default function CustomerMenuQR() {
            overflow-x-hidden"
         >
           {filteredMenuData.map((item, index) => (
-            
             <div
               className="w-[100%] shadow-2xl rounded-lg cursor-pointer"
               onClick={() => togglePopup(item)}
               key={index}
             >
               <img
-                src={`http://localhost:4000/uploads${item.Image}`}
+                src={`https://139.180.187.232:4000/uploads${item.Image}`}
                 alt=""
                 className="h-[160px] object-cover rounded-2xl w-[95%]"
               />
