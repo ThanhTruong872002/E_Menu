@@ -55,7 +55,7 @@ export default function EditMenu() {
       });
 
     axios
-      .get(`https://139.180.187.232:4000/api/menu/${menu_id}`)
+      .get(`https://139.180.187.232:4000/api/menu/$ {menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);

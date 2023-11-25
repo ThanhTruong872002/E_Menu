@@ -139,7 +139,7 @@ export default function MenuStaff() {
               className="border-[1px] border-solid border-[#ccc] rounded-xl"
             >
               <img
-                src={`https://139.180.187.232:4000/uploads${item.Image}`}
+                src={`http://localhost:4000/uploads${item.Image}`}
                 alt=""
                 className="w-[100%] h-[140px] object-cover rounded-md"
               />

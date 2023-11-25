@@ -1,14 +1,40 @@
-import React from "react";
-import { NotifiIcon, StaffNameIcon, UserIcon } from "../common/icons/icons";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { NotifiIcon, StaffNameIcon } from "../common/icons/icons";
 
 interface IPayPalType {
   selected: string;
+  tableId: number | null;
 }
 
-export default function PaypalStaff({ selected }: IPayPalType) {
+export default function PaypalStaff({ selected, tableId }: IPayPalType) {
+  const [tableName, setTableName] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Gọi hàm để lấy table_name dựa trên table_id
+    const fetchTableName = async () => {
+      try {
+        if (tableId !== null) {
+          // Thực hiện lấy dữ liệu từ API sử dụng Axios
+          const response = await axios.get(`http://localhost:4000/api/tables/${tableId}`);
+          const data = response.data;
+
+          // Lấy table_name từ dữ liệu và cập nhật state
+          setTableName(data.table_name);
+        }
+      } catch (error) {
+        console.error("Error fetching table_name:", error);
+      }
+    };
+
+    // Gọi hàm fetchTableName khi tableId thay đổi
+    fetchTableName();
+  }, [tableId]); 
+
   return (
     <div>
       <div className="flex gap-[3rem] justify-end mb-20 text-[1.8rem] font-[600] ">
+      <h2>{tableName}</h2>
         <h2>Số lượng</h2>
         <h2 className="mr-10">Đơn giá</h2>
         <h2 className="mr-10">Thành tiền</h2>

@@ -8,6 +8,9 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
 const axios = require("axios");
+const dayjs = require("dayjs");
+const util = require('util');
+
 const LoginController = require("./controllers/loginController");
 const StaffController = require("./controllers/staffController");
 const AddStaffController = require("./controllers/addStaffController");
@@ -18,7 +21,9 @@ const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
 const editTableController = require("./controllers/editTableController");
-const customerMenuCartController = require('./controllers/customerMdenuCartController');
+const customerMenuCartController = require('./controllers/customerMenuCartController');
+const bookTableController = require('./controllers/bookTableController');
+
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -38,9 +43,11 @@ app.use((req, res, next) => {
 });
 app.use(cors());
 
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
@@ -80,6 +87,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 // const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";
+
+const queryAsync = util.promisify(connection.query).bind(connection);
 
 //Login page
 app.post("/api/account", LoginController.login);
@@ -204,15 +213,55 @@ app.put("/api/tables/:table_id", editTableController.updateTable);
 app.put("/api/updateTableStatus", customerMenuCartController.updateTableStatus);
 app.post("/api/createOrder", customerMenuCartController.createOrder);
 
+//BookTable
+app.post('/api/createReservation', bookTableController.createReservation);
+
+//Staff
+app.get("/api/tables/:table_id", async (req, res) => {
+  try {
+    const tableId = req.params.table_id;
+
+    // Kiểm tra xem tableId có phải là một số không
+    if (isNaN(tableId)) {
+      return res.status(400).json({
+        success: false,
+        message: "table_id phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để lấy thông tin bàn
+    const sql = "SELECT * FROM tableid WHERE table_id = ?";
+    const result = await queryAsync(sql, [tableId]);
+
+    // Kiểm tra xem có bàn nào được tìm thấy hay không
+    if (result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy thông tin bàn",
+      });
+    }
+
+    // Trả về thông tin bàn
+    res.status(200).json({
+      success: true,
+      data: result[0],
+    });
+  } catch (error) {
+    console.error("Error getting table information:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy thông tin bàn",
+      error: error.message,
+    });
+  }
+});
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
 });
 
-// Lắng nghe máy chủ trên cổng 4000
 const port = 4000;
-const host = "0.0.0.0";
 app.listen(port, () => {
   console.log(`Máy chủ đang lắng nghe trên cổng ${port}`);
 });
