@@ -153,7 +153,7 @@ const Table: React.FC = () => {
                 <td className="p-4">
                   <div className="mt-4" id="qrCodeContainer">
                     <QRCode
-                      value={`https://139.180.187.232:4000/customer/menuqr/${table.table_id}`}
+                      value={`https://e-menu-khaki.vercel.app/customer/menuqr/${table.table_id}`}
                     />
                   </div>
                 </td>

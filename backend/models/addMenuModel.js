@@ -11,7 +11,7 @@ class AddMenuModel {
         const tempPath = imageFile.path;
         const extension = path.extname(imageFile.originalname);
         const uniqueSuffix = Date.now() + Math.round(Math.random() * 1e9);
-        const targetPath = `backend/uploads/images/image${uniqueSuffix}${extension}`;
+        const targetPath = `/uploads/images/image${uniqueSuffix}${extension}`;
     
         fs.rename(tempPath, targetPath, (err) => {
           if (err) {

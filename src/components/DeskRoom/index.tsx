@@ -7,6 +7,11 @@ import TableStaff from "../TableStaff";
 
 export default function DeskRoom() {
   const [selected, setSelected] = useState("table");
+  const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
+
+  const handleTableClick = (tableId: number) => {
+    setSelectedTableId(tableId); // Lưu trữ table_id vào state
+  };
 
   const handleClick = (item: string) => {
     setSelected(item);
@@ -57,18 +62,23 @@ export default function DeskRoom() {
               Report
             </h2>
           </div>
-        </div>
+          </div>
         <div className="bg-white h-[88vh] rounded-b-3xl rounded-tr-3xl p-10">
-          {selected === "table" && <TableStaff />}
+          {selected === "table" && (
+            <TableStaff onTableClick={handleTableClick} />
+          )}
 
           {selected === "menu" && <MenuStaff />}
 
           {selected === "report" && <ReportStaff />}
-        </div>
+          </div>
       </div>
       {selected !== "report" && (
         <div className="w-[37%] bg-white h-[88vh] mt-20 rounded-3xl p-10">
-          <PaypalStaff selected={selected} />
+          {/* Truyền selectedTableId xuống PaypalStaff */}
+          {selected !== "report" && (
+            <PaypalStaff selected={selected} tableId={selectedTableId} />
+          )}
         </div>
       )}
     </div>

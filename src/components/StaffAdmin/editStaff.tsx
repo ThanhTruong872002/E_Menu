@@ -1,98 +1,87 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { useForm, SubmitHandler } from "react-hook-form";
-import Admin from "../../pages/admin";
+import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Admin from '../../pages/admin';
 
 interface IRole {
   role_id: number;
   role_name: string;
 }
 
-interface IUserData {
+interface IAddStaffForm {
   username: string;
   password: string;
-  fullname: string;
-  role_name: string;
-}
-
-interface IEditStaffForm {
-  username: string;
-  password: string;
-  confirmPassword: string; // Thêm trường xác nhận mật khẩu
+  confirmPassword: string;
   fullname: string;
   role: string;
 }
 
-export default function EditStaff() {
-  const { username } = useParams();
+export default function AddStaff() {
   const {
     register,
     handleSubmit,
-    setValue,
+    control, // Định nghĩa đối tượng control
     formState: { errors },
-  } = useForm<IEditStaffForm>();
+  } = useForm<IAddStaffForm>();
+
+  const confirmPassword = useWatch({ name: 'confirmPassword', control });
 
   const [roles, setRoles] = useState<IRole[]>([]);
-  const [userData, setUserData] = useState<IUserData | null>(null);
+  const [selectedRole, setSelectedRole] = useState<string>('');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    axios
-      .get("https://139.180.187.232:4000/api/roles")
-      .then((response) => {
-        setRoles(response.data.roles);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy danh sách vai trò:", error);
-      });
-
-    axios
-      .get(`https://139.180.187.232:4000/api/getAccount/${username}`)
-      .then((response) => {
-        const userData = response.data.account;
-        setUserData(userData);
-        setValue("username", userData.username);
-        setValue("password", userData.password);
-        setValue("confirmPassword", userData.password); // Đặt giá trị mặc định cho confirmPassword
-        setValue("fullname", userData.fullname);
-        setValue("role", userData.role_name);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy thông tin tài khoản:", error);
-      });
-  }, [username, setValue]);
-
-  const onSubmit: SubmitHandler<IEditStaffForm> = async (data) => {
+  const onSubmit: SubmitHandler<IAddStaffForm> = async (data) => {
     try {
-      if (data.password !== data.confirmPassword) {
-        // Kiểm tra xác nhận mật khẩu
-        setSuccessMessage("Xác nhận mật khẩu không khớp.");
+      // Trước khi thực hiện yêu cầu POST, kiểm tra username
+      const isUsernameValid = await checkUsername(data.username);
+      if (!isUsernameValid) {
+        // Hiển thị thông báo lỗi
+        setSuccessMessage('Username đã bị trùng vui lòng sử dụng Username khác!');
         return;
       }
 
-      const selectedRoleObject = roles.find(
-        (role) => role.role_name === data.role
-      );
+      if (data.password !== data.confirmPassword) {
+        // Xác nhận mật khẩu không khớp
+        setSuccessMessage('Xác nhận mật khẩu không khớp. Vui lòng kiểm tra lại.');
+        return;
+      }
+
+      // Thực hiện yêu cầu POST để thêm nhân viên
+      const selectedRoleObject = roles.find((role) => role.role_name === selectedRole);
       if (selectedRoleObject) {
         const selectedRoleID = selectedRoleObject.role_id;
-        await axios.put(`https://139.180.187.232:4000/api/updateAccount/${username}`, {
-          ...data,
-          role: selectedRoleID,
-        });
-        setSuccessMessage("Thông tin tài khoản đã được cập nhật thành công.");
+        await axios.post('https://139.180.187.232:4000/api/addStaff', { ...data, role: selectedRoleID });
+        setSuccessMessage('Nhân viên đã được thêm thành công.');
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật tài khoản:", error);
+      console.error('Lỗi khi thêm nhân viên:', error);
     }
   };
+
+  const checkUsername = async (username: string) => {
+    try {
+      const response = await axios.get(`https://139.180.187.232:4000/api/checkUsername?username=${username}`);
+      return response.data.success;
+    } catch (error) {
+      console.error('Lỗi khi kiểm tra username:', error);
+      return false;
+    }
+  };
+
+  useEffect(() => {
+    axios.get('https://139.180.187.232:4000/api/roles')
+      .then(response => {
+        setRoles(response.data.roles);
+      })
+      .catch(error => {
+        console.error('Lỗi khi lấy danh sách vai trò:', error);
+      });
+  }, []);
 
   return (
     <Admin>
       <div>
-        <h2 className="font-[600] text-[3rem] p-8 mb-10">
-          Edit account information
-        </h2>
+        <h2 className="font-[600] text-[3rem] p-8 mb-10">Add new account</h2>
         <div>
           <form className="ml-10" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex items-center">
@@ -102,8 +91,13 @@ export default function EditStaff() {
                   className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
                   type="text"
                   placeholder="Username"
-                  value={userData?.username}
-                  disabled
+                  {...register("username", {
+                    required: 'Tên đăng nhập là bắt buộc',
+                    pattern: {
+                      value: /^[^\s]+$/,
+                      message: 'Tên đăng nhập không được chứa khoảng trắng',
+                    },
+                  })}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
                   {errors.username?.message}
@@ -118,10 +112,10 @@ export default function EditStaff() {
                   type="password"
                   placeholder="Password"
                   {...register("password", {
-                    required: "Mật khẩu là bắt buộc",
+                    required: 'Mật khẩu là bắt buộc',
                     minLength: {
                       value: 8,
-                      message: "Mật khẩu phải có ít nhất 8 ký tự",
+                      message: 'Mật khẩu phải có ít nhất 8 ký tự',
                     },
                   })}
                 />
@@ -138,7 +132,8 @@ export default function EditStaff() {
                   type="password"
                   placeholder="Confirm password"
                   {...register("confirmPassword", {
-                    required: "Please confirm your password",
+                    required: 'Please confirm your password',
+                    validate: (value) => value === confirmPassword || 'Mật khẩu không khớp',
                   })}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
@@ -154,7 +149,7 @@ export default function EditStaff() {
                   type="text"
                   placeholder="Fullname"
                   {...register("fullname", {
-                    required: "Full Name is required",
+                    required: 'Full Name is required',
                   })}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
@@ -169,8 +164,13 @@ export default function EditStaff() {
                   <label>
                     <select
                       className="ml-8 p-3 w-[720px] h-[40px] border-[1px] border-solid border-[#ccc]"
-                      {...register("role")}
-                      defaultValue={userData ? userData.role_name : ""}
+                      value={selectedRole}
+                      onChange={(e) => {
+                        const selectedValue = e.target.value;
+                        setSelectedRole(selectedValue);
+                        const selectedRoleId = roles.find((role) => role.role_name === selectedValue)?.role_id;
+                        console.log(`ID Vai trò đã chọn: ${selectedRoleId}`);
+                      }}
                     >
                       <option value="">Chose a role</option>
                       {roles.map((role) => (
@@ -191,7 +191,7 @@ export default function EditStaff() {
             <div className="flex items-center mt-20">
               <label>
                 <button className="border-[1px] border-solid bg-[#1890ff] text-white w-[200px] h-[50px] ml-8 rounded-md">
-                  Save Changes
+                  Thêm Nhân Viên
                 </button>
               </label>
             </div>

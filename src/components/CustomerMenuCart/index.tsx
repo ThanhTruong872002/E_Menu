@@ -71,7 +71,7 @@ export default function CustomerMenuCart() {
     } else {
       try {
         const response = await axios.put(
-          "https://139.180.187.232:4000/api/updateTableStatus",
+          "http://localhost:4000/api/updateTableStatus",
           {
             tableId: table_id,
             newStatus: 3,
@@ -84,7 +84,7 @@ export default function CustomerMenuCart() {
         }
 
         const orderResponse = await axios.post(
-          "https://139.180.187.232:4000/api/createOrder",
+          "http://localhost:4000/api/createOrder",
           {
             tableId: table_id,
             status: 1,

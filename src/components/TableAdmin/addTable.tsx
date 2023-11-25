@@ -163,7 +163,7 @@ export default function AddTable() {
             <label className="mt-4" id="qrCodeContainer">
               <Space direction="vertical" align="center">
                 <QRCode
-                  value={`http://172.20.43.113:3000/customer/menuqr/${tableId}`}
+                  value={`https://e-menu-khaki.vercel.app/customer/menuqr/${tableId}`}
                 />
                 <button
                   onClick={downloadQRCode}
