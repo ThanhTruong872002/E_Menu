@@ -18,6 +18,8 @@ const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
 const editTableController = require("./controllers/editTableController");
+const TransactionController = require("./controllers/transactionController");
+const StoreReservationController = require("./controllers/storeReservationController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -313,6 +315,13 @@ async function addOrderDetail(orderId, menuId, quantity, price) {
     });
   });
 }
+
+//Tuyến đường API để truy xuất thông tin doanh thu
+app.get("/api/transactions", TransactionController.getTransactionItems);
+
+// Tuyến đường API để lưu thông tin đặt bàn
+app.post("/api/storeReservation", StoreReservationController.storeReservation);
+
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
