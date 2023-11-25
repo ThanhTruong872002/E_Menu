@@ -21,6 +21,9 @@ const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
 const editTableController = require("./controllers/editTableController");
+const customerMenuCartController = require('./controllers/customerMenuCartController');
+const bookTableController = require('./controllers/bookTableController');
+
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -253,50 +256,6 @@ app.get("/api/tables/:table_id", async (req, res) => {
   }
 });
 
-// Function to check if there is an existing order for the table with status = 1 or 2
-async function checkExistingOrder(tableId) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "SELECT order_id FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2) LIMIT 1";
-    connection.query(sql, [tableId], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result[0]);
-      }
-    });
-  });
-}
-
-// Function to create new data for the orderid table
-async function createNewOrder(tableId, status) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "INSERT INTO orderid (table_id, order_date, status) VALUES (?, NOW(), ?)";
-    connection.query(sql, [tableId, status], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
-// Function to add order detail
-async function addOrderDetail(orderId, menuId, quantity, price) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "INSERT INTO orderdetail (order_id, menu_item_id, quantity, price, invoice_description) VALUES (?, ?, ?, ?, NULL)";
-    connection.query(sql, [orderId, menuId, quantity, price], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
