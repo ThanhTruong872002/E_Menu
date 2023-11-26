@@ -1,10 +1,11 @@
 import axios, { AxiosInstance } from "axios";
+console.log(process.env.REACT_BACKEND_API);
 
 class Http {
   instance: AxiosInstance;
   constructor() {
     this.instance = axios.create({
-      baseURL: "https://139.180.187.232:4000/",
+      baseURL: process.env.REACT_BACKEND_API || "https://api.auto360danang.com",
       timeout: 10000,
       httpsAgent: { rejectUnauthorized: false },
       headers: {
