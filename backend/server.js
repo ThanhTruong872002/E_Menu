@@ -25,17 +25,19 @@ if (!fs.existsSync(imageUploadPath)) {
 }
 
 const corsOptions = {
-  origin: ["https://e-menu-khaki.vercel.app",true],
+  origin: ["https://www.auto360danang.com"],
   optionsSuccessStatus: 200,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: "Content-Type,Authorization",
 };
 
 app.use(express.json());
 
 app.use((req, res, next) => {
-  console.log(req.hostname);
+  res.header("Access-Control-Allow-Origin", "https://www.auto360danang.com");
   next();
 });
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
