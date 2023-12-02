@@ -41,7 +41,7 @@ export function App() {
   const [showDetailsMenu, setShowDetailMenu] = useState<MenuData[]>(
     initialMenuContext.showDetailsMenu
   );
-  const routerElement = useRouterElement({ isLoggedIn: true });
+  const routerElement = useRouterElement({ isLoggedIn: true, loginSuccess: true });
   const [quantity, setQuantity] = useState(1);
   const [listData, setListData] = useState<PropsType[]>(initialListDataTable);
   const [filterListData, setFilterListData] = useState<PropsType[]>(listData);

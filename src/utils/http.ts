@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+console.log(process.env.REACT_BACKEND_API);
 
 class Http {
   instance: AxiosInstance;

@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useRoutes } from "react-router-dom";
+import { useRoutes, Navigate } from "react-router-dom";
 import Login from "../components/Login/login";
 import Staff from "../components/StaffAdmin/staff";
 import Menu from "../components/MenuAdmin/menu";
@@ -18,58 +18,48 @@ import CustomerAbout from "../components/CustomerAbout";
 import CustomerMenuQR from "../components/CustomerMenuQR";
 import CustomerContact from "../components/CustomerContact";
 import CustomerMenuCart from "../components/CustomerMenuCart";
-import EditMenu  from "../components/MenuAdmin/editMenu";
+import EditMenu from "../components/MenuAdmin/editMenu";
 import EditTable from "../components/TableAdmin/editTable";
 
-
-export default function useRouterElement({ 
-  isLoggedIn,
-}: {
-  isLoggedIn: boolean;
-}) {
-
+const useRouterElement = ({ isLoggedIn, loginSuccess }: { isLoggedIn: boolean; loginSuccess: boolean | null }) => {
   const routerElement = useRoutes([
-    {
-      path: "/login",
-      element: <Login />,
-    },
+    { path: "/login", element: <Login /> },
     {
       path: "/admin/staff",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<Staff />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<Staff />} />,
     },
     {
       path: "/admin/addstaff",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<AddStaff />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<AddStaff />} />,
     },
     {
       path: "/admin/menu",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<Menu />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<Menu />} />,
     },
     {
       path: "/admin/addmenu",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<AddMenu />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<AddMenu />} />,
     },
     {
       path: "/admin/editmenu/:menu_id",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditMenu />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<EditMenu />} />,
     },
     {
       path: "/admin/table",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<Table />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<Table />} />,
     },
     {
       path: "/admin/addtable",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<AddTable />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<AddTable />} />,
     },
     {
       path: "/admin/edittable/:table_id",
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditTable />} />,
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<EditTable />} />,
     },
     {
       path: "/manager",
       element: <Manager />,
     },
-
     {
       path: "/",
       element: (
@@ -79,8 +69,8 @@ export default function useRouterElement({
       ),
     },
     {
-      path: "/admin/editstaff/:username", // Định nghĩa một route mới cho EditStaff
-      element: <PrivateRoute isLoggedIn={isLoggedIn} element={<EditStaff />} />,
+      path: "/admin/editstaff/:username",
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<EditStaff />} />,
     },
     {
       path: "/customer/booktable",
@@ -114,15 +104,16 @@ export default function useRouterElement({
         </CustomerLayout>
       ),
     },
+    { path: `/customer/menuqr/:table_id`, element: <CustomerMenuQR /> },
+    { path: "/customer/menuqr/cart/:table_id", element: <CustomerMenuCart /> },
+    // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập thành công
     {
-      path: `/customer/menuqr/:table_id`,
-      element: <CustomerMenuQR />,
-    },
-    {
-      path: "/customer/menuqr/cart/:table_id",
-      element: <CustomerMenuCart />,
+      path: "*", 
+      element: <PrivateRoute isLoggedIn={isLoggedIn} loginSuccess={loginSuccess} element={<Navigate to="/login" />} />
     },
   ]);
 
   return routerElement;
-}
+};
+
+export default useRouterElement;

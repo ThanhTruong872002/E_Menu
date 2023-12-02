@@ -7,19 +7,24 @@ interface IPayPalType {
   tableId: number | null;
 }
 
+interface MenuItem {
+  name: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
 export default function PaypalStaff({ selected, tableId }: IPayPalType) {
   const [tableName, setTableName] = useState<string | null>(null);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
-    // Gọi hàm để lấy table_name dựa trên table_id
-    const fetchTableName = async () => {
+    const fetchData = async () => {
       try {
         if (tableId !== null) {
-          // Thực hiện lấy dữ liệu từ API sử dụng Axios
           const response = await axios.get(`http://localhost:4000/api/tables/${tableId}`);
           const data = response.data;
 
-          // Lấy table_name từ dữ liệu và cập nhật state
           setTableName(data.table_name);
         }
       } catch (error) {
@@ -27,89 +32,81 @@ export default function PaypalStaff({ selected, tableId }: IPayPalType) {
       }
     };
 
-    // Gọi hàm fetchTableName khi tableId thay đổi
-    fetchTableName();
-  }, [tableId]); 
+    fetchData();
+  }, [tableId]);
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        if (tableId !== null) {
+          const response = await axios.get(`http://localhost:4000/api/menu/${tableId}`);
+          const data = response.data;
+
+          setMenuItems(data);
+        }
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+      }
+    };
+
+    fetchMenuItems();
+  }, [tableId]);
 
   return (
-    <div>
-      <div className="flex gap-[3rem] justify-end mb-20 text-[1.8rem] font-[600] ">
-      <h2>{tableName}</h2>
-        <h2>Số lượng</h2>
-        <h2 className="mr-10">Đơn giá</h2>
-        <h2 className="mr-10">Thành tiền</h2>
-      </div>
-      <div className="h-[250px] overflow-y-scroll overflow-x-hidden">
-        <div>
-          <div className="flex items-center gap-20 mt-10 text-[1.8rem] font-500">
-            <h2 className="font-[600] w-[150px] text-[1.8rem]">
-              The Burger Cafe
-            </h2>
-            <h2>1</h2>
-            <h2>125.000</h2>
-            <h2>125.000</h2>
-          </div>
-          <div className="w-full h-[1px] bg-black mt-10"></div>
-        </div>
-        <div className="text-[1.8rem]">
-          <div className="flex gap-20 items-center mt-10  font-500">
-            <h2 className="font-[600] w-[150px]">The Wings Cafe</h2>
-            <h2>1</h2>
-            <h2>125.000</h2>
-            <h2>125.000</h2>
-          </div>
-          <div className="w-full h-[1px] bg-black mt-10"></div>
-        </div>
-        <div className="text-[1.8rem]">
-          <div className="flex gap-20 items-center mt-10  font-500">
-            <h2 className="font-[600] w-[150px]">The Wings Cafe</h2>
-            <h2>1</h2>
-            <h2>125.000</h2>
-            <h2>125.000</h2>
-          </div>
-          <div className="w-full h-[1px] bg-black mt-10"></div>
-        </div>{" "}
-        <div className="text-[1.8rem]">
-          <div className="flex gap-20 items-center mt-10  font-500">
-            <h2 className="font-[600] w-[150px]">The Wings Cafe</h2>
-            <h2>1</h2>
-            <h2>125.000</h2>
-            <h2>125.000</h2>
-          </div>
-          <div className="w-full h-[1px] bg-black mt-10"></div>
+    <div className="p-6 bg-white rounded-lg shadow-lg">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">{tableName ? `Tên bàn: ${tableName}` : "Chọn bàn"}</h2>
+        <div className="flex gap-4 items-center text-xl">
+          <StaffNameIcon />
+          <span className="font-semibold">Tên Nhân Viên</span>
         </div>
       </div>
 
-      <div className="flex justify-between mt-40 text-[2rem]">
-        <h2 className="font-[600]">
-          Số lượng khách: <span className="font-[500] ml-10">10</span>
-        </h2>
-        <div className="flex gap-10 font-[600]">
-          <h2>Tổng tiền:</h2>
-          <h2 className="text-red-500">650.000 VND</h2>
-        </div>
-      </div>
-      <div className="flex gap-4 items-center text-[2rem] mt-20">
-        <StaffNameIcon />
-        <h2>Tên Nhân Viên</h2>
-      </div>
-      <div className="flex text-[2rem] font-bold gap-6 mt-28">
-        {selected === "table" ? (
-          <div className="flex gap-4 items-center w-[50%] bg-[#FFB700] rounded-3xl justify-center">
-            <img src="./images/Average Price.svg" alt="" />
-            <h2>Thanh Toán</h2>
-          </div>
-        ) : (
-          <div className="flex gap-4 items-center w-[50%] bg-[#24FF00] rounded-3xl justify-center">
-            <img src="./images/Food Bar.svg" alt="" />
-            <h2>Đặt Món</h2>
-          </div>
-        )}
+      <table className="w-full mb-6">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="py-2">Tên món</th>
+            <th className="py-2">Số lượng</th>
+            <th className="py-2">Đơn giá</th>
+            <th className="py-2">Thành tiền</th>
+          </tr>
+        </thead>
+        <tbody>
+          {menuItems.map((item, index) => (
+            <tr key={index} className="border-b">
+              <td className="py-2">{item.name}</td>
+              <td className="py-2">{item.quantity}</td>
+              <td className="py-2">{item.unitPrice}</td>
+              <td className="py-2">{item.totalPrice}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-        <div className="flex gap-4 items-center w-[50%] bg-[#FF0101] rounded-3xl justify-center">
-          <NotifiIcon />
-          <h2>Thông Báo</h2>
+      <div className="flex justify-between items-center text-2xl">
+        <div className="font-bold">
+          Số lượng khách: <span className="font-semibold ml-2">10</span>
         </div>
+        <div className="flex gap-2 font-bold">
+          <span>Tổng tiền:</span>
+          <span className="text-red-500">650.000 VND</span>
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center text-2xl mt-6">
+        <button className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl">
+          <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
+          <span>Thanh Toán</span>
+        </button>
+
+        <button
+          className={`flex items-center gap-2 px-8 py-4 rounded-full ${
+            selected === "table" ? "bg-red-500" : "bg-green-500"
+          } text-white text-2xl`}
+        >
+          <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
+          <span>{selected === "table" ? "Xác Nhận" : "Thông Báo"}</span>
+        </button>
       </div>
     </div>
   );
