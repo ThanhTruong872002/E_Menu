@@ -46,7 +46,7 @@ export default function EditMenu() {
   
   useEffect(() => {
     axios
-      .get("https://139.180.187.232:4000/api/types")
+      .get("http://localhost:4000/api/types")
       .then((response) => {
         setCategories(response.data);
       })
@@ -55,7 +55,7 @@ export default function EditMenu() {
       });
 
     axios
-      .get(`https://139.180.187.232:4000/api/menu/${menu_id}`)
+      .get(`http://localhost:4000/api/menu/${menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);
@@ -64,7 +64,7 @@ export default function EditMenu() {
         setValue("Price", menuData.Price);
         setValue("category_id", menuData.category_id.toString());
         // Gán ảnh hiện tại cho hiển thị xem trước
-        setImagePreview(`https://139.180.187.232:4000/uploads${menuData.Image}`);
+        setImagePreview(`http://localhost:4000/uploads${menuData.Image}`);
       })
       .catch((error) => {
         console.error("Lỗi khi lấy thông tin món ăn:", error);
@@ -86,7 +86,7 @@ export default function EditMenu() {
       }
 
       await axios.put(
-        `https://139.180.187.232:4000/api/editDish/${menu_id}`,
+        `http://localhost:4000/api/editDish/${menu_id}`,
         formData
       );
       setSuccessMessage("Thông tin món ăn đã được cập nhật thành công.");

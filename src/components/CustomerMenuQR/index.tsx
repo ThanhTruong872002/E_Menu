@@ -183,7 +183,7 @@ export default function CustomerMenuQR() {
               key={index}
             >
               <img
-                src={`https://139.180.187.232:4000/uploads${item.Image}`}
+                src={`http://localhost:4000/uploads${item.Image}`}
                 alt=""
                 className="h-[160px] object-cover rounded-2xl w-[95%]"
               />

@@ -16,7 +16,7 @@ export default function CustomerListItem() {
           className="mt-16 w-[300px] flex flex-col gap-10 items-center justify-center border border-w-[1px] border-solid border-[#ccc] pb-4 rounded-2xl"
         >
           <img
-            src={`https://139.180.187.232:4000/uploads${item.Image}`}
+            src={`http://localhost:4000/uploads${item.Image}`}
             alt="NoImage"
             className="w-full h-[230px] object-cover rounded-2xl"
           />

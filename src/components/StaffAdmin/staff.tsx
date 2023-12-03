@@ -28,7 +28,7 @@ export default function Staff() {
   const getListUsers = async () => {
     try {
       const response = await axios.get(
-        "https://139.180.187.232:4000/api/accounts-with-roles"
+        "http://localhost:4000/api/accounts-with-roles"
       );
       if (response.data.staff) {
         setListUsers(response.data.staff);
@@ -47,8 +47,10 @@ export default function Staff() {
 
   const handleRemoveAccount = (username: string) => {
     // Confirm the deletion with a user
-    const confirmDelete = window.confirm(`Are you sure you want to delete the account "${username}"?`);
-  
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the account "${username}"?`
+    );
+
     // If the user confirms the deletion, proceed
     if (confirmDelete) {
       // Check if it's the last admin account
@@ -56,10 +58,10 @@ export default function Staff() {
         console.error("Cannot delete the last admin account.");
         return;
       }
-  
+
       // Send a DELETE request to the server
       axios
-        .delete(`https://139.180.187.232:4000/api/deleteAccount/${username}`)
+        .delete(`http://localhost:4000/api/deleteAccount/${username}`)
         .then((response) => {
           console.log("Account deleted successfully.");
           // Update the list of users after successful deletion
@@ -70,7 +72,6 @@ export default function Staff() {
         });
     }
   };
-  
 
   const handleEditAccount = (user: User) => {
     navigate(`/admin/editstaff/${user.username}`, { state: { user } });

@@ -26,18 +26,17 @@ if (!fs.existsSync(imageUploadPath)) {
 
 const corsOptions = {
   origin: ["https://www.auto360danang.com"],
-  optionsSuccessStatus: 200,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: "Content-Type,Authorization",
+  // optionsSuccessStatus: 200,
+  // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  // allowedHeaders: "Content-Type,Authorization",
 };
 
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://www.auto360danang.com");
   next();
 });
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
