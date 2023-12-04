@@ -5,11 +5,17 @@ import { useQuery } from "react-query";
 import { LocationType } from "../../types/LocationType";
 import { getLocationData } from "../../apis/location.api";
 
-export default function TableStaff() {
+
+
+interface ITableStaffProps {
+  onTableClick: (tableId: number) => void;
+}
+
+export default function TableStaff({ onTableClick }: ITableStaffProps) {
   const { setLocation, filterListData } = useContext(MenuContext);
 
   const [selected, setSelected] = useState(0);
-
+  const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [floor, setFloor] = useState<LocationType[]>();
 
   const { data: locationData, isSuccess } = useQuery({
@@ -24,7 +30,17 @@ export default function TableStaff() {
     if (isSuccess) {
       setFloor(locationData);
     }
-  });
+  }, [isSuccess]);
+
+  const handleTableClick = (tableId: number) => {
+    setSelectedTableId(tableId);
+    onTableClick(tableId); 
+    console.log(`Clicked on table_id: ${tableId}`);
+    
+  };
+
+  const totalInUseTables = filterListData?.filter((table) => table.status === 3).length || 0;
+  const totalReservedTables = filterListData?.filter((table) => table.status === 2).length || 0;
 
   return (
     <div>
@@ -47,26 +63,27 @@ export default function TableStaff() {
       <div className="w-full bg-black my-6 h-[1px]"></div>
       <div className="flex flex-col gap-4 text-[2rem] font-[600]">
         <h2>
-          In use: <span className="text-[#182FFF] ml-2">6/32</span>
+          In use: <span className="text-[#182FFF] ml-2">{`${totalInUseTables}/${filterListData?.length || 0}`}</span>
         </h2>
         <h2>
-          Reserved: <span className="text-[#24FF00] ml-2">2/32</span>
+          Reserved: <span className="text-[#24FF00] ml-2">{`${totalReservedTables}/${filterListData?.length || 0}`}</span>
         </h2>
       </div>
-      <div className="pt-10   cursor-pointer overflow-y-scroll overflow-x-hidden">
+      <div className="pt-10 cursor-pointer overflow-y-scroll overflow-x-hidden">
         <div className="grid grid-cols-8 grid-rows-4 gap-20  h-[65vh]">
           {filterListData?.map((table, index) => (
-            <div>
+            <div key={index}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="60"
                 height="60"
                 viewBox="0 0 80 80"
                 fill="none"
+                onClick={() => handleTableClick(table.table_id)}
               >
                 <path
                   d="M3.07692 30.7955L0 29.0909V21.8182L40 0L80 21.8182V29.0909L76.9231 30.7955V61.1364C76.9231 62.5758 76.4984 63.6553 75.649 64.375C74.7997 65.0947 73.6859 65.4545 72.3077 65.4545C70.9295 65.4545 69.8157 65.0947 68.9663 64.375C68.117 63.6553 67.6923 62.5758 67.6923 61.1364V35.7955L44.6154 48.4091V75.6818C44.6154 77.1212 44.1907 78.2008 43.3413 78.9205C42.492 79.6402 41.3782 80 40 80C38.6218 80 37.508 79.6402 36.6587 78.9205C35.8093 78.2008 35.3846 77.1212 35.3846 75.6818V48.4091L12.3077 35.7955V61.1364C12.3077 62.5758 11.883 63.6553 11.0337 64.375C10.1843 65.0947 9.07051 65.4545 7.69231 65.4545C6.3141 65.4545 5.20032 65.0947 4.35096 64.375C3.5016 63.6553 3.07692 62.5758 3.07692 61.1364V30.7955Z"
-                  fill={` ${
+                  fill={`${
                     table.status === 1
                       ? "#000"
                       : table.status === 2
@@ -87,3 +104,4 @@ export default function TableStaff() {
     </div>
   );
 }
+

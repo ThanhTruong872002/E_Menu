@@ -43,7 +43,7 @@ export default function EditMenu() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<FileList | null>(null);
   console.log(imagePreview);
-  
+
   useEffect(() => {
     axios
       .get("http://localhost:4000/api/types")
@@ -55,7 +55,8 @@ export default function EditMenu() {
       });
 
     axios
-      .get(`http://localhost:4000/api/menu/${menu_id}`)
+
+      .get(`http://localhost:4000/api/menu/$ {menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);

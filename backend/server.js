@@ -4,10 +4,13 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+// const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
-const axios = require("axios");
+// const axios = require("axios");
+// const dayjs = require("dayjs");
+const util = require("util");
+
 const LoginController = require("./controllers/loginController");
 const StaffController = require("./controllers/staffController");
 const AddStaffController = require("./controllers/addStaffController");
@@ -18,6 +21,8 @@ const EditMenuController = require("./controllers/editMenuController");
 const TablesController = require("./controllers/tableController");
 const locationController = require("./controllers/locationController");
 const editTableController = require("./controllers/editTableController");
+const customerMenuCartController = require("./controllers/customerMenuCartController");
+const bookTableController = require("./controllers/bookTableController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -44,10 +49,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "emenu",
+  host: process.env.MYSQL_HOST,
+  port: process.env.MYSQL_PORT,
+  database: process.env.MYSQL_DATABASE,
+  user: process.env.MYSQL_USERNAME,
+  password: process.env.MYSQL_PASSWORD,
 });
 
 connection.connect(function (err) {
@@ -69,7 +75,7 @@ function requireAuth(req, res, next) {
 // Định nghĩa lưu trữ tệp tải lên bằng multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/images/");
+    cb(null, "../uploads/images/");
   },
   filename: (req, file, cb) => {
     const extension = path.extname(file.originalname);
@@ -80,6 +86,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 // const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";
+
+const queryAsync = util.promisify(connection.query).bind(connection);
 
 //Login page
 app.post("/api/account", LoginController.login);
@@ -205,123 +213,58 @@ app.get("/api/tables/:table_id", editTableController.getTable);
 app.put("/api/tables/:table_id", editTableController.updateTable);
 
 //customerMenuCart page
-// Thêm vào phần định nghĩa tuyến đường
-app.put("/api/updateTableStatus", (req, res) => {
-  const { tableId, newStatus } = req.body;
+app.put("/api/updateTableStatus", customerMenuCartController.updateTableStatus);
+app.post("/api/createOrder", customerMenuCartController.createOrder);
 
-  // Thực hiện truy vấn cập nhật trạng thái bàn
-  const updateStatusSql = "UPDATE tableid SET status = ? WHERE table_id = ?";
-  connection.query(updateStatusSql, [newStatus, tableId], (err, result) => {
-    if (err) {
-      console.error("Lỗi khi cập nhật trạng thái bàn:", err);
-      return res.status(500).json({
+//BookTable
+app.post("/api/createReservation", bookTableController.createReservation);
+
+//Staff
+app.get("/api/tables/:table_id", async (req, res) => {
+  try {
+    const tableId = req.params.table_id;
+
+    // Kiểm tra xem tableId có phải là một số không
+    if (isNaN(tableId)) {
+      return res.status(400).json({
         success: false,
-        message: "Lỗi khi cập nhật trạng thái bàn",
-        error: err.message,
+        message: "table_id phải là một số",
       });
     }
 
-    if (result.affectedRows === 0) {
-      // Không có bàn nào được cập nhật
+    // Thực hiện truy vấn để lấy thông tin bàn
+    const sql = "SELECT * FROM tableid WHERE table_id = ?";
+    const result = await queryAsync(sql, [tableId]);
+
+    // Kiểm tra xem có bàn nào được tìm thấy hay không
+    if (result.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy bàn để cập nhật",
+        message: "Không tìm thấy thông tin bàn",
       });
     }
 
+    // Trả về thông tin bàn
     res.status(200).json({
       success: true,
-      message: "Cập nhật trạng thái bàn thành công",
-    });
-  });
-});
-
-app.post("/api/createOrder", async (req, res) => {
-  const { tableId, showDetailsMenu } = req.body;
-
-  try {
-    const existingOrder = await checkExistingOrder(tableId);
-
-    let orderId;
-
-    if (existingOrder) {
-      orderId = existingOrder.order_id;
-    } else {
-      const newOrder = await createNewOrder(tableId, 1); // status = 1
-      orderId = newOrder.insertId;
-    }
-
-    for (const item of showDetailsMenu) {
-      await addOrderDetail(orderId, item.menu_id, item.quantity, item.Price);
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Order placed successfully",
-      order_id: orderId,
+      data: result[0],
     });
   } catch (error) {
-    console.error("Error creating or using order:", error);
+    console.error("Error getting table information:", error);
     res.status(500).json({
       success: false,
-      message: "Error creating or using order",
+      message: "Lỗi khi lấy thông tin bàn",
       error: error.message,
     });
   }
 });
 
-// Function to check if there is an existing order for the table with status = 1 or 2
-async function checkExistingOrder(tableId) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "SELECT order_id FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2) LIMIT 1";
-    connection.query(sql, [tableId], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result[0]);
-      }
-    });
-  });
-}
-
-// Function to create new data for the orderid table
-async function createNewOrder(tableId, status) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "INSERT INTO orderid (table_id, order_date, status) VALUES (?, NOW(), ?)";
-    connection.query(sql, [tableId, status], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
-
-// Function to add order detail
-async function addOrderDetail(orderId, menuId, quantity, price) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "INSERT INTO orderdetail (order_id, menu_item_id, quantity, price, invoice_description) VALUES (?, ?, ?, ?, NULL)";
-    connection.query(sql, [orderId, menuId, quantity, price], (err, result) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(result);
-      }
-    });
-  });
-}
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây
 });
 
-// Lắng nghe máy chủ trên cổng 4000
 const port = 4000;
-const host = "0.0.0.0";
 app.listen(port, () => {
   console.log(`Máy chủ đang lắng nghe trên cổng ${port}`);
 });

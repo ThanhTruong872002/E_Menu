@@ -11,6 +11,7 @@ class addMenuController {
           message: "Vui lòng tải lên một tệp ảnh",
         });
       }
+
       res
         .status(200)
         .json({ success: true, message: "Tải ảnh lên thành công", imageURL });
