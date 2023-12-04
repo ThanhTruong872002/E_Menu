@@ -9,9 +9,9 @@ const connection = mysql.createConnection({
 
 connection.connect((err) => {
   if (err) {
-    console.error('Lỗi kết nối cơ sở dữ liệu:', err);
+    console.error('Lỗi kết nối cơ sở dữ liệu2 :', err);
   } else {
-    console.log('Kết nối đến cơ sở dữ liệu thành công');
+    console.log('Kết nối đến cơ sở dữ liệu thành công 2');
   }
 });
 

@@ -49,11 +49,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
-  database: process.env.MYSQL_DATABASE,
-  user: process.env.MYSQL_USERNAME,
-  password: process.env.MYSQL_PASSWORD,
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'emenu',
 });
 
 connection.connect(function (err) {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NotifiIcon, StaffNameIcon } from "../common/icons/icons";
-
 interface IPayPalType {
   selected: string;
   tableId: number | null;
@@ -17,6 +16,7 @@ interface MenuItem {
 export default function PaypalStaff({ selected, tableId }: IPayPalType) {
   const [tableName, setTableName] = useState<string | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [staffFullname, setStaffFullname] = useState<string | null>(null); // Thêm state để lưu fullname
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,7 +31,6 @@ export default function PaypalStaff({ selected, tableId }: IPayPalType) {
         console.error("Error fetching table_name:", error);
       }
     };
-
     fetchData();
   }, [tableId]);
 
@@ -52,13 +51,22 @@ export default function PaypalStaff({ selected, tableId }: IPayPalType) {
     fetchMenuItems();
   }, [tableId]);
 
+  useEffect(() => {
+    // Lấy thông tin fullname từ localStorage
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setStaffFullname(user.fullname);
+    }
+  }, []); 
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">{tableName ? `Tên bàn: ${tableName}` : "Chọn bàn"}</h2>
         <div className="flex gap-4 items-center text-xl">
           <StaffNameIcon />
-          <span className="font-semibold">Tên Nhân Viên</span>
+        <span className="font-semibold">{staffFullname}</span>
         </div>
       </div>
 
