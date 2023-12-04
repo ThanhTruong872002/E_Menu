@@ -29,12 +29,12 @@ if (!fs.existsSync(imageUploadPath)) {
   fs.mkdirSync(imageUploadPath);
 }
 
-const corsOptions = {
-  origin: ["https://www.auto360danang.com"],
-  // optionsSuccessStatus: 200,
-  // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  // allowedHeaders: "Content-Type,Authorization",
-};
+// const corsOptions = {
+//   origin: ["https://www.auto360danang.com"],
+//   // optionsSuccessStatus: 200,
+//   // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//   // allowedHeaders: "Content-Type,Authorization",
+// };
 
 app.use(express.json());
 
@@ -49,11 +49,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
-  database: process.env.MYSQL_DATABASE,
-  user: process.env.MYSQL_USERNAME,
-  password: process.env.MYSQL_PASSWORD,
+  host: "emenuqr-rds.cisxgnlvslix.us-east-1.rds.amazonaws.com",
+  port: "3306",
+  database: "emenu",
+  user: "admin",
+  password: "Thanhtruong02",
 });
 
 connection.connect(function (err) {
