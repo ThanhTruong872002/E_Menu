@@ -47,7 +47,7 @@ export default function EditTable() {
 
     // Fetch table data based on the table_id
     axios
-      .get("http://localhost:4000/api/tables/${table_id}")
+      .get(`http://localhost:4000/api/tables/${table_id}`)
       .then((response) => {
         console.log("API Response:", response.data);
         const tableData = response.data;
@@ -71,7 +71,7 @@ export default function EditTable() {
     try {
       // Send a request to update the table
       await axios.put(
-        "http://localhost:4000/api/tables/${table_id}",
+        `http://localhost:4000/api/tables/${table_id}`,
         data
       );
 

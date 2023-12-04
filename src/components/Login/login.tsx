@@ -19,6 +19,7 @@ export default function Login() {
 
   const [loginSuccess, setLoginSuccess] = useState<boolean | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
+  
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -26,7 +27,12 @@ export default function Login() {
       const response = await axios.post('http://localhost:4000/api/account', formLogin);
       console.log("Response from server:", response.data); 
       if (response.data.success) {
+        const userInformation = {
+          fullname: response.data.fullname,
+        };
         const userRole = response.data.role;
+        localStorage.setItem('user', JSON.stringify(userInformation));
+        
         console.log("User Role:", userRole); // In ra giá trị role để kiểm tra
         if (userRole === 1) {
           // Đăng nhập thành công và có vai trò ADMIN, thực hiện chuyển hướng

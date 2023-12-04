@@ -56,7 +56,7 @@ export default function EditMenu() {
 
     axios
 
-      .get(`http://localhost:4000/api/menu/$ {menu_id}`)
+      .get(`http://localhost:4000/api/menu/${menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);
