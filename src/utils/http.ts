@@ -4,7 +4,7 @@ class Http {
   instance: AxiosInstance;
   constructor() {
     this.instance = axios.create({
-      baseURL: "http://localhost:4000/",
+      baseURL: "https://34.125.202.124/4000/",
       timeout: 10000,
       httpsAgent: { rejectUnauthorized: false },
       headers: {
