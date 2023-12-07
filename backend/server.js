@@ -258,6 +258,133 @@ app.get("/api/tables/:table_id", async (req, res) => {
   }
 });
 
+// Thêm vào cuối file
+// Thêm vào cuối file
+app.get("/api/orders/:table_id", async (req, res) => {
+  try {
+    const tableId = req.params.table_id;
+
+    // Kiểm tra xem tableId có phải là một số không
+    if (isNaN(tableId)) {
+      return res.status(400).json({
+        success: false,
+        message: "table_id phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để kiểm tra bảng orderid với Table_id và status
+    const sql = "SELECT order_id FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
+    const result = await queryAsync(sql, [tableId]);
+
+    // Kiểm tra xem có bảng orderid nào tương ứng hay không
+    if (result.length === 0) {
+      console.log(`Bàn đang rảnh, không có order_id tương ứng.`);
+      return res.status(200).json({
+        success: true,
+        message: "Bàn đang rảnh, không có order_id tương ứng",
+      });
+    }
+
+    const orderIds = result.map((order) => order.order_id);
+
+    console.log(`Đã tìm thấy order_id tương ứng: ${orderIds.join(', ')}`);
+
+    // Trả về danh sách order_id
+    res.status(200).json({
+      success: true,
+      data: orderIds,
+    });
+  } catch (error) {
+    console.error("Error checking order status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi kiểm tra trạng thái đơn đặt hàng",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/orderdetails/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Kiểm tra xem orderId có phải là một số không
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "order_id phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để lấy chi tiết đơn hàng từ bảng orderdetail
+    const sql = "SELECT * FROM orderdetail WHERE order_id = ?";
+    const result = await queryAsync(sql, [orderId]);
+
+    // Kiểm tra xem có chi tiết đơn hàng nào tương ứng hay không
+    if (result.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy chi tiết đơn hàng",
+      });
+    }
+
+    // Trả về danh sách chi tiết đơn hàng
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error getting order details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi lấy chi tiết đơn hàng",
+      error: error.message,
+    });
+  }
+});
+
+// Add this endpoint at the end of your file
+app.put("/api/updateorderstatus/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const newStatus = req.body.status;
+
+    // Kiểm tra xem orderId có phải là một số không
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "order_id phải là một số",
+      });
+    }
+
+    // Kiểm tra xem newStatus có phải là một số không
+    if (isNaN(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "status phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để cập nhật trạng thái đơn hàng trong bảng orderid
+    const updateOrderStatusSql = "UPDATE orderid SET status = ? WHERE order_id = ?";
+    await queryAsync(updateOrderStatusSql, [newStatus, orderId]);
+
+    // Trả về thông báo thành công
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật trạng thái đơn hàng thành công",
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật trạng thái đơn hàng",
+      error: error.message,
+    });
+  }
+});
+
+
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
   // Xử lý trang quản trị ở đây

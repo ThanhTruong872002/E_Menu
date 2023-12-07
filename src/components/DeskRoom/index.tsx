@@ -2,26 +2,32 @@ import React, { useState } from "react";
 import MenuStaff from "../MenuStaff";
 import PaypalStaff from "../PaypalStaff";
 import ReportStaff from "../ReportStaff";
+import Notify from "../Notify";
+import TableStaff from "../TableStaff";
 import {
   DeskRoomIcon,
   FoodIcon,
   NotifiIcon,
   ReportIcon,
 } from "../common/icons/icons";
-import TableStaff from "../TableStaff";
-import Notify from "../Notify";
 
 export default function DeskRoom() {
   const [selected, setSelected] = useState("table");
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
 
-  const handleTableClick = (tableId: number) => {
+
+  const handleTableClick = (tableId: number, orderId?: string | null, status?: number | null) => {
     setSelectedTableId(tableId);
+    setSelectedOrderId(orderId || null);
+    setSelectedStatus(status || null); // Thêm dòng này
   };
-
+  
   const handleClick = (item: string) => {
     setSelected(item);
   };
+
 
   return (
     <div className="flex p-10 bg-blue-900 h-screen gap-6">
@@ -83,9 +89,9 @@ export default function DeskRoom() {
           </div>
         </div>
         <div className="bg-white h-5/6 rounded-b-3xl rounded-tr-3xl p-10 mt-4">
-          {selected === "table" && (
-            <TableStaff onTableClick={handleTableClick} />
-          )}
+        {selected === "table" && (
+          <TableStaff onTableClick={handleTableClick} />
+        )}
 
           {selected === "menu" && <MenuStaff />}
 
@@ -96,12 +102,17 @@ export default function DeskRoom() {
       </div>
       {selected !== "report" && (
         <div className="w-2/5 bg-white h-5/6 mt-20 rounded-3xl p-10">
-          {/* Pass selectedTableId down to PaypalStaff */}
+          {/* Pass selectedTableId and selectedOrderId down to PaypalStaff */}
           {selected !== "report" && (
-            <PaypalStaff selected={selected} tableId={selectedTableId} />
-          )}
-        </div>
-      )}
+            <PaypalStaff
+              selected={selected}
+              tableId={selectedTableId}
+              orderId={selectedOrderId}
+              
+            />
+        )}
+      </div>
+    )}
     </div>
   );
 }

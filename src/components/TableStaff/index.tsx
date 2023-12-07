@@ -5,11 +5,10 @@ import { useQuery } from "react-query";
 import { LocationType } from "../../types/LocationType";
 import { getLocationData } from "../../apis/location.api";
 
-
-
 interface ITableStaffProps {
-  onTableClick: (tableId: number) => void;
+  onTableClick: (tableId: number, orderId?: string | null, status?: number | null) => void;
 }
+
 
 export default function TableStaff({ onTableClick }: ITableStaffProps) {
   const { setLocation, filterListData } = useContext(MenuContext);
@@ -17,6 +16,7 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
   const [selected, setSelected] = useState(0);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [floor, setFloor] = useState<LocationType[]>();
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
 
   const { data: locationData, isSuccess } = useQuery({
     queryKey: ["api/locations"],
@@ -31,12 +31,31 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
       setFloor(locationData);
     }
   }, [isSuccess]);
+  
+  const handleTableClick = async (tableId: number) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/api/orders/${tableId}`);
+      const orderData = response.data;
 
-  const handleTableClick = (tableId: number) => {
-    setSelectedTableId(tableId);
-    onTableClick(tableId); 
-    console.log(`Clicked on table_id: ${tableId}`);
-    
+      if (orderData.success) {
+        if (orderData.data && orderData.data.length > 0) {
+          console.log(`Đã tìm thấy order_id tương ứng: ${orderData.data.join(', ')}, ${orderData.status}`);
+
+          // Lấy trạng thái từ dữ liệu đơn hàng
+          const status = orderData.data[0].status;
+          onTableClick(tableId, orderData.data.join(', '), orderData.status);
+        } else {
+          console.log(`Bàn đang rảnh, không có order_id tương ứng.`);
+          // Nếu không có đơn hàng, trạng thái là null
+          onTableClick(tableId, null, null);
+        }
+      } else {
+        console.log("Có lỗi khi kiểm tra trạng thái đơn đặt hàng");
+        onTableClick(tableId, null, null);
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra trạng thái đơn hàng:", error);
+    }
   };
 
   const totalInUseTables = filterListData?.filter((table) => table.status === 3).length || 0;
@@ -104,4 +123,3 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
     </div>
   );
 }
-
