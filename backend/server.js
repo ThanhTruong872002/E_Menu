@@ -273,7 +273,7 @@ app.get("/api/orders/:table_id", async (req, res) => {
     }
 
     // Thực hiện truy vấn để kiểm tra bảng orderid với Table_id và status
-    const sql = "SELECT order_id FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
+    const sql = "SELECT order_id, status FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
     const result = await queryAsync(sql, [tableId]);
 
     // Kiểm tra xem có bảng orderid nào tương ứng hay không
@@ -284,15 +284,11 @@ app.get("/api/orders/:table_id", async (req, res) => {
         message: "Bàn đang rảnh, không có order_id tương ứng",
       });
     }
-
-    const orderIds = result.map((order) => order.order_id);
-
-    console.log(`Đã tìm thấy order_id tương ứng: ${orderIds.join(', ')}`);
-
-    // Trả về danh sách order_id
+    const ordersData = result.map((order) => ({ order_id: order.order_id, status: order.status }));
+    // Trả về danh sách order_id và status
     res.status(200).json({
       success: true,
-      data: orderIds,
+      data: ordersData,
     });
   } catch (error) {
     console.error("Error checking order status:", error);
@@ -303,6 +299,7 @@ app.get("/api/orders/:table_id", async (req, res) => {
     });
   }
 });
+
 
 app.get("/api/orderdetails/:orderId", async (req, res) => {
   try {

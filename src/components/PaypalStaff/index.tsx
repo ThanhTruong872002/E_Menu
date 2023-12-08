@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NotifiIcon, StaffNameIcon } from "../common/icons/icons";
 
+
 interface IPayPalType {
   selected: string;
   tableId: number | null;
   orderId?: string | null | undefined;
+  status?: number | null | undefined;
 }
 
 interface OrderDetailItem {
@@ -14,12 +16,13 @@ interface OrderDetailItem {
   price: number;
 }
 
-export default function PaypalStaff({ selected, tableId, orderId }: IPayPalType) {
+export default function PaypalStaff({ selected, tableId, orderId, status }: IPayPalType) {
   const [tableName, setTableName] = useState<string | null>(null);
   const [menuItems, setMenuItems] = useState<OrderDetailItem[]>([]);
   const [staffFullname, setStaffFullname] = useState<string | null>(null);
   const [discount, setDiscount] = useState<number>(0);
   const [guestCount, setGuestCount] = useState<number | null>(null);
+  const [orderStatus, setOrderStatus] = useState<number | null>(status ?? null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,6 +117,32 @@ export default function PaypalStaff({ selected, tableId, orderId }: IPayPalType)
     setDiscount(newDiscount);
   };
 
+  const handleConfirmationClick = async () => {
+    try {
+        // Gọi API để cập nhật trạng thái
+        const response = await axios.put(`http://localhost:4000/api/updateorderstatus/${orderId}`, {
+          status: 2, // Đặt trạng thái mới là 2 khi xác nhận
+        });
+
+        if (response.data.success) {
+          setOrderStatus(2);
+          // Cập nhật trạng thái trong ứng dụng của bạn
+          // Bạn có thể sử dụng setStatus hoặc một hàm tương tự để cập nhật trạng thái mà không làm mới toàn bộ trang
+          console.log("Xác nhận thành công!");
+
+          // Hiển thị thông báo thành công (nếu cần)
+          alert("Xác nhận thành công!");
+        } else {
+          console.error("Error updating order status:", response.data.message);
+          // Hiển thị thông báo lỗi (nếu cần)
+          alert("Lỗi khi cập nhật trạng thái đơn hàng");
+        }
+      
+    } catch (error) {
+      console.error("Error handling confirmation click:", error);
+    }
+  };
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
@@ -172,19 +201,30 @@ export default function PaypalStaff({ selected, tableId, orderId }: IPayPalType)
         </div>
       </div>
       <div className="flex justify-between items-center text-2xl mt-6">
-        <button className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl">
-          <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
-          <span>Thanh Toán</span>
-        </button>
-
-        <button
-          className={`flex items-center gap-2 px-8 py-4 rounded-full ${
-            selected === "table" ? "bg-red-500" : "bg-green-500"
-          } text-white text-2xl`}
-        >
-          <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
-          <span>{selected === "table" ? "Xác Nhận" : "Thông Báo"}</span>
-        </button>
+        {status === 1 || status === 2 ? (
+          <>
+            <button className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl">
+              <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
+              <span>Thanh Toán</span>
+            </button>
+            <button
+              onClick={() => {
+                if (status === 1) {
+                  handleConfirmationClick();
+                }
+              }}
+              disabled={status !== 1}
+              className={`flex items-center gap-2 px-8 py-4 rounded-full ${
+                status === 1 ? "bg-red-500" : "bg-green-500"
+              } text-white text-2xl`}
+            >
+              <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
+              <span>
+                {status === 1 ? "Xác Nhận" : status === 2 ? "Đã Xác Nhận" : ""}
+              </span>
+            </button>
+          </>
+        ) : null}
       </div>
     </div>
   );

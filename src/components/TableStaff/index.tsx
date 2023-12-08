@@ -36,14 +36,16 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
     try {
       const response = await axios.get(`http://localhost:4000/api/orders/${tableId}`);
       const orderData = response.data;
-
+  
       if (orderData.success) {
         if (orderData.data && orderData.data.length > 0) {
-          console.log(`Đã tìm thấy order_id tương ứng: ${orderData.data.join(', ')}, ${orderData.status}`);
-
-          // Lấy trạng thái từ dữ liệu đơn hàng
-          const status = orderData.data[0].status;
-          onTableClick(tableId, orderData.data.join(', '), orderData.status);
+          // Extract order_id and status from the first item in the array
+          const { order_id, status } = orderData.data[0];
+  
+          console.log(`Đã tìm thấy order_id: ${order_id}, status: ${status}`);
+  
+          // Pass order_id and status to onTableClick
+          onTableClick(tableId, order_id.toString(), status);
         } else {
           console.log(`Bàn đang rảnh, không có order_id tương ứng.`);
           // Nếu không có đơn hàng, trạng thái là null
@@ -57,6 +59,7 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
       console.error("Lỗi khi kiểm tra trạng thái đơn hàng:", error);
     }
   };
+  
 
   const totalInUseTables = filterListData?.filter((table) => table.status === 3).length || 0;
   const totalReservedTables = filterListData?.filter((table) => table.status === 2).length || 0;

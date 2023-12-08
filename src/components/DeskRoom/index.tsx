@@ -4,6 +4,7 @@ import PaypalStaff from "../PaypalStaff";
 import ReportStaff from "../ReportStaff";
 import Notify from "../Notify";
 import TableStaff from "../TableStaff";
+
 import {
   DeskRoomIcon,
   FoodIcon,
@@ -108,7 +109,7 @@ export default function DeskRoom() {
               selected={selected}
               tableId={selectedTableId}
               orderId={selectedOrderId}
-              
+              status={selectedStatus}
             />
         )}
       </div>
