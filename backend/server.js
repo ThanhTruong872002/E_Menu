@@ -258,8 +258,7 @@ app.get("/api/tables/:table_id", async (req, res) => {
   }
 });
 
-// Thêm vào cuối file
-// Thêm vào cuối file
+
 app.get("/api/orders/:table_id", async (req, res) => {
   try {
     const tableId = req.params.table_id;
@@ -381,6 +380,48 @@ app.put("/api/updateorderstatus/:orderId", async (req, res) => {
   }
 });
 
+// Delete a specific menu item from order details
+app.delete("/api/orderdetails/:orderId/:menuItemId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const menuItemId = req.params.menuItemId;
+
+    // Validate orderId and menuItemId to ensure they are numbers
+    if (isNaN(orderId) || isNaN(menuItemId)) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId and menuItemId must be numbers",
+      });
+    }
+
+    // Check if the order exists
+    const orderExistQuery = "SELECT * FROM orderid WHERE order_id = ?";
+    const orderExistResult = await queryAsync(orderExistQuery, [orderId]);
+
+    if (orderExistResult.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Delete the menu item from order details
+    const deleteMenuItemQuery = "DELETE FROM orderdetail WHERE order_id = ? AND menu_item_id = ?";
+    await queryAsync(deleteMenuItemQuery, [orderId, menuItemId]);
+
+    res.status(200).json({
+      success: true,
+      message: "Menu item removed from order details successfully",
+    });
+  } catch (error) {
+    console.error("Error removing menu item from order details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error removing menu item from order details",
+      error: error.message,
+    });
+  }
+});
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {

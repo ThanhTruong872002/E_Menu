@@ -35,6 +35,7 @@
     "react-router-dom": "^6.16.0",
     "react-scripts": "5.0.1",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.7.2",
     "sweetalert2": "^11.9.0",
     "typescript": "^4.9.5",
     "unidecode": "^0.1.8",
@@ -68,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "@types/socket.io-client": "^3.0.0",
     "@types/unidecode": "^0.1.2",
     "@types/uuid": "^9.0.6",
     "concurrently": "^8.2.2",
