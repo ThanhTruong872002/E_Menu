@@ -17,12 +17,19 @@ export default function DeskRoom() {
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
+  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(null);
 
 
-  const handleTableClick = (tableId: number, orderId?: string | null, status?: number | null) => {
+  const handleTableClick = (
+    tableId: number,
+    orderId?: string | null,
+    status?: number | null,
+    orderDate?: string | null
+  ) => {
     setSelectedTableId(tableId);
     setSelectedOrderId(orderId || null);
-    setSelectedStatus(status || null); // Thêm dòng này
+    setSelectedStatus(status || null);
+    setSelectedOrderDate(orderDate || null);
   };
   
   const handleClick = (item: string) => {
@@ -113,6 +120,7 @@ export default function DeskRoom() {
               tableId={selectedTableId}
               orderId={selectedOrderId}
               status={selectedStatus}
+              orderDate={selectedOrderDate}
             />
         )}
       </div>

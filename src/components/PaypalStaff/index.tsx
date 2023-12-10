@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NotifiIcon, StaffNameIcon } from "../common/icons/icons";
 
@@ -11,6 +11,7 @@ const styles = `
     padding: 8px 12px;
     font-size: 16px;
     cursor: pointer;
+    display: none; /* hide quantity buttons */
   }
 
   .quantity-text {
@@ -25,25 +26,25 @@ interface IPayPalType {
   tableId: number | null;
   orderId?: string | null | undefined;
   status?: number | null | undefined;
+  orderDate?: string | null | undefined;
 }
 
 interface OrderDetailItem {
+  order_detail_id: number;
   menu_item_id: number;
   menu_item_name: string;
   quantity: number;
   price: number;
 }
 
-export default function PaypalStaff({ selected, tableId, orderId, status }: IPayPalType) {
+export default function PaypalStaff({ selected, tableId, orderId, status, orderDate }: IPayPalType) {
   const [tableName, setTableName] = useState<string | null>(null);
   const [menuItems, setMenuItems] = useState<OrderDetailItem[]>([]);
   const [staffFullname, setStaffFullname] = useState<string | null>(null);
   const [discount, setDiscount] = useState<number>(0);
   const [guestCount, setGuestCount] = useState<number | null>(null);
   const [orderStatus, setOrderStatus] = useState<number | null>(status ?? null);
-  const [quantityChanges, setQuantityChanges] = useState<{ [key: number]: number }>({});
 
- 
   useEffect(() => {
     if (status !== null && status !== undefined) {
       setOrderStatus(status);
@@ -74,25 +75,23 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
         if (orderId) {
           const response = await axios.get(`http://localhost:4000/api/orderdetails/${orderId}`);
           const data = response.data;
-  
+
           const orderDetails = data.data;
-  
+
           if (Array.isArray(orderDetails)) {
             const menuItemsResponse = await axios.get("http://localhost:4000/api/menu");
             const menuItemsData = menuItemsResponse.data;
-  
+
             const menuItemsMap = new Map(menuItemsData.map((item: { menu_id: number, menu_item_name: string }) => [item.menu_id, item.menu_item_name]));
-  
+
             const updatedOrderDetails = orderDetails.map(item => {
-              const quantityFromDB = item.quantity;
-              const orderDetailId = item.order_detail_id;
               return {
                 ...item,
-                quantity: quantityFromDB,
+                order_detail_id: item.order_detail_id,
                 menu_item_name: menuItemsMap.get(item.menu_item_id) || 'Unknown Item',
               };
             });
-  
+
             setMenuItems(updatedOrderDetails);
           } else {
             console.error("Fetched data is not an array:", orderDetails);
@@ -104,7 +103,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
         console.error("Error fetching order details:", error);
       }
     };
-  
+
     fetchOrderDetails();
   }, [orderId]);
 
@@ -116,25 +115,22 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
     }
   }, []);
 
-
   const numberWithCommas = (x: number) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const calculateTotalWithDiscount = () => {
     const totalBeforeDiscount = menuItems.reduce(
-      (total, item) =>
-        total + (item.quantity + (quantityChanges[item.menu_item_id] || 0)) * item.price,
+      (total, item) => total + item.quantity * item.price,
       0
     );
-  
+
     const totalAfterDiscount = totalBeforeDiscount - (totalBeforeDiscount * discount) / 100;
-  
+
     const totalAfterDiscountNumber = Number(totalAfterDiscount.toFixed(2));
-  
+
     return numberWithCommas(totalAfterDiscountNumber);
   };
-  
 
   const setDiscountValue = (value: string) => {
     const parsedValue = parseFloat(value.replace(/^0+/, ''));
@@ -144,48 +140,14 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
     setDiscount(newDiscount);
   };
 
-  const incrementQuantity = async (menuItemId: number) => {
-    setQuantityChanges((prevChanges) => ({
-      ...prevChanges,
-      [menuItemId]: (prevChanges[menuItemId] || 0) + 1,
-    }));
-
-    await updateOrderStatus();
-  };
-  
-
-  const decrementQuantity = async (menuItemId: number, decrementValue: number = 1) => {
-    setQuantityChanges((prevChanges) => {
-      const currentQuantity = prevChanges[menuItemId] || 1;
-      const newQuantity = Math.max(0, currentQuantity - decrementValue);
-      return {
-        ...prevChanges,
-        [menuItemId]: newQuantity,
-      };
-    });
-  
-    const updatedItems = menuItems.map((item) => {
-      if (item.menu_item_id === menuItemId) {
-        const newQuantity = Math.max(1, item.quantity - decrementValue);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    });
-  
-    setMenuItems(updatedItems);
-  
-    // Call the API to update the order status
-    await updateOrderStatus();
-  };
-
   const updateOrderStatus = async () => {
-    setOrderStatus(1);
     try {
       const response = await axios.put(`http://localhost:4000/api/updateorderstatus/${orderId}`, {
-        status: 1, // Assuming you want to update the status to 1 when quantity changes
+        status: 1,
       });
-  
+
       if (response.data.success) {
+        setOrderStatus(1);
         console.log("Order status updated successfully!");
       } else {
         console.error("Error updating order status:", response.data.message);
@@ -194,17 +156,23 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
       console.error("Error updating order status:", error);
     }
   };
-  
+
   const handleConfirmationClick = async () => {
     try {
+      await Promise.all(
+        menuItems.map(async (item) => {
+          await axios.put(`http://localhost:4000/api/updatequantity/${item.order_detail_id}`, {
+            quantity: item.quantity,
+          });
+        })
+      );
+  
       const response = await axios.put(`http://localhost:4000/api/updateorderstatus/${orderId}`, {
         status: 2,
       });
   
       if (response.data.success) {
-        // Update the local orderStatus state
         setOrderStatus(2);
-  
         console.log("Xác nhận thành công!");
         alert("Xác nhận thành công!");
       } else {
@@ -215,26 +183,19 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
       console.error("Lỗi xử lý click xác nhận:", error);
     }
   };
-  
-  
-  
+
   const removeMenuItem = async (menuItemId: number) => {
     const userConfirmed = window.confirm("Bạn có muốn xóa món ăn này không?");
-  
+
     if (userConfirmed) {
       try {
         // Make an HTTP DELETE request to remove the order detail from the server
         await axios.delete(`http://localhost:4000/api/orderdetails/${orderId}/${menuItemId}`);
-  
+
         // Update the local state to reflect the removal
         const updatedItems = menuItems.filter((item) => item.menu_item_id !== menuItemId);
         setMenuItems(updatedItems);
-  
-        // Remove the quantity changes for the deleted item
-        const updatedChanges = { ...quantityChanges };
-        delete updatedChanges[menuItemId];
-        setQuantityChanges(updatedChanges);
-  
+
         console.log("Món ăn đã được xóa thành công!");
         alert("Món ăn đã được xóa thành công!");
       } catch (error) {
@@ -244,21 +205,40 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
     }
   };
 
+  const handleQuantityChange = (index: number, newQuantity: number) => {
+    const clampedQuantity = Math.max(1, newQuantity); // Ensure the quantity is at least 1
+    const updatedItems = menuItems.map((menuItem, i) =>
+      i === index ? { ...menuItem, quantity: clampedQuantity } : menuItem
+    );
+    setMenuItems(updatedItems);
+    updateOrderStatus(); // Call the function to update the order status when quantity changes
+  };
+  
+
   console.log("Received status:", status);
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{tableName ? `Tên bàn: ${tableName}` : "Chọn bàn"}</h2>
+        <h2 className="text-2xl font-bold">
+          {tableName ? `Tên bàn: ${tableName}` : "Chọn bàn"}
+        </h2>
         <div className="flex gap-4 items-center text-xl">
           <StaffNameIcon />
           <span className="font-semibold">{staffFullname}</span>
         </div>
       </div>
-      {orderId && (
-        <div className="mb-4">
-          <strong>Order ID:</strong> {orderId}
-        </div>
-      )}
+      <div className="flex justify-between">
+        {orderId && (
+          <div className="mb-4">
+            <strong>Order ID:</strong> {orderId}
+          </div>
+        )}
+        {orderDate && (
+          <div className="font-semibold ml-4">
+            <strong>Checkin:</strong> {new Date(orderDate).toLocaleString()}
+          </div>
+        )}
+      </div>
       <div className="table-container" style={{ overflowX: 'auto' }}>
         <table className="w-full mb-6" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
@@ -267,30 +247,31 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
               <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Số lượng</th>
               <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Đơn giá</th>
               <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Thành tiền</th>
-              <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Xóa</th>
+              <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}></th>
             </tr>
           </thead>
-          <tbody>
-            {menuItems && menuItems.map((item, index) => (
-              <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.menu_item_name}</td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-                  <div className="flex items-center">
-                    <button className="quantity-btn" onClick={() => decrementQuantity(item.menu_item_id)}>-</button>
-                    <span className="quantity-text">{item.quantity + (quantityChanges[item.menu_item_id] || 0)}</span>
-                    <button className="quantity-btn" onClick={() => incrementQuantity(item.menu_item_id)}>+</button>
-                  </div>
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{numberWithCommas(item.price)}</td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-                  {numberWithCommas((item.quantity + (quantityChanges[item.menu_item_id] || 0)) * item.price)}
-                </td>
-                <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-                  <button className="quantity-btn" onClick={() => removeMenuItem(item.menu_item_id)}>Xóa</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+         <tbody>
+  {menuItems && menuItems.map((item, index) => (
+    <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
+      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.menu_item_name}</td>
+      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+        <input
+          type="number"
+          value={item.quantity}
+          onChange={(e) => handleQuantityChange(index, parseInt(e.target.value, 10))}
+          className="border px-2 py-1 w-20"
+        />
+      </td>
+      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{numberWithCommas(item.price)}</td>
+      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+        {numberWithCommas(item.quantity * item.price)}
+      </td>
+      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+        <button onClick={() => removeMenuItem(item.menu_item_id)}>Xóa</button>
+      </td>
+    </tr>
+  ))}
+</tbody>
         </table>
       </div>
       <div className="flex justify-between items-center text-2xl">
@@ -333,7 +314,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status }: IPay
             >
               <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
               <span>
-                {orderStatus === 1 ? "Xác Nhận" :"Đã Xác Nhận"}
+                {orderStatus === 1 ? "Xác Nhận" : "Đã Xác Nhận"}
               </span>
             </button>
           </>

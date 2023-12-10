@@ -271,7 +271,7 @@ app.get("/api/orders/:table_id", async (req, res) => {
     }
 
     // Thực hiện truy vấn để kiểm tra bảng orderid với Table_id và status
-    const sql = "SELECT order_id, status FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
+    const sql = "SELECT order_id, status, order_date FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
     const result = await queryAsync(sql, [tableId]);
 
     // Kiểm tra xem có bảng orderid nào tương ứng hay không
@@ -282,7 +282,7 @@ app.get("/api/orders/:table_id", async (req, res) => {
         message: "Bàn đang rảnh, không có order_id tương ứng",
       });
     }
-    const ordersData = result.map((order) => ({ order_id: order.order_id, status: order.status }));
+    const ordersData = result.map((order) => ({ order_id: order.order_id, status: order.status, order_date: order.order_date}));
     // Trả về danh sách order_id và status
     res.status(200).json({
       success: true,
@@ -420,6 +420,50 @@ app.delete("/api/orderdetails/:orderId/:menuItemId", async (req, res) => {
     });
   }
 });
+
+// Update quantity in orderdetail table
+app.put("/api/updatequantity/:orderDetailId", async (req, res) => {
+  try {
+    const orderDetailId = req.params.orderDetailId;
+    const newQuantity = req.body.quantity;
+
+    // Validate orderDetailId and newQuantity to ensure they are numbers
+    if (isNaN(orderDetailId) || isNaN(newQuantity)) {
+      return res.status(400).json({
+        success: false,
+        message: "orderDetailId and quantity must be numbers",
+      });
+    }
+
+    // Check if the order detail exists
+    const orderDetailExistQuery = "SELECT * FROM orderdetail WHERE order_detail_id = ?";
+    const orderDetailExistResult = await queryAsync(orderDetailExistQuery, [orderDetailId]);
+
+    if (orderDetailExistResult.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order detail not found",
+      });
+    }
+
+    // Update the quantity in orderdetail table
+    const updateQuantityQuery = "UPDATE orderdetail SET quantity = ? WHERE order_detail_id = ?";
+    await queryAsync(updateQuantityQuery, [newQuantity, orderDetailId]);
+
+    res.status(200).json({
+      success: true,
+      message: "Quantity updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating quantity:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error updating quantity",
+      error: error.message,
+    });
+  }
+});
+
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
