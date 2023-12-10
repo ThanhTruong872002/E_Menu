@@ -61,8 +61,10 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
   };
   
 
-  const totalInUseTables = filterListData?.filter((table) => table.status === 3).length || 0;
-  const totalReservedTables = filterListData?.filter((table) => table.status === 2).length || 0;
+  const totalInUseTables =
+    filterListData?.filter((table) => table.status === 3).length || 0;
+  const totalReservedTables =
+    filterListData?.filter((table) => table.status === 2).length || 0;
 
   return (
     <div>
@@ -85,10 +87,16 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
       <div className="w-full bg-black my-6 h-[1px]"></div>
       <div className="flex flex-col gap-4 text-[2rem] font-[600]">
         <h2>
-          In use: <span className="text-[#182FFF] ml-2">{`${totalInUseTables}/${filterListData?.length || 0}`}</span>
+          In use:{" "}
+          <span className="text-[#182FFF] ml-2">{`${totalInUseTables}/${
+            filterListData?.length || 0
+          }`}</span>
         </h2>
         <h2>
-          Reserved: <span className="text-[#24FF00] ml-2">{`${totalReservedTables}/${filterListData?.length || 0}`}</span>
+          Reserved:{" "}
+          <span className="text-[#24FF00] ml-2">{`${totalReservedTables}/${
+            filterListData?.length || 0
+          }`}</span>
         </h2>
       </div>
       <div className="pt-10 cursor-pointer overflow-y-scroll overflow-x-hidden">
@@ -97,8 +105,8 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
             <div key={index}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="60"
-                height="60"
+                width="55"
+                height="55"
                 viewBox="0 0 80 80"
                 fill="none"
                 onClick={() => handleTableClick(table.table_id)}

@@ -258,7 +258,6 @@ app.get("/api/tables/:table_id", async (req, res) => {
   }
 });
 
-
 app.get("/api/orders/:table_id", async (req, res) => {
   try {
     const tableId = req.params.table_id;
@@ -298,7 +297,6 @@ app.get("/api/orders/:table_id", async (req, res) => {
     });
   }
 });
-
 
 app.get("/api/orderdetails/:orderId", async (req, res) => {
   try {

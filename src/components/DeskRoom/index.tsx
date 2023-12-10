@@ -32,10 +32,14 @@ export default function DeskRoom() {
 
   return (
     <div className="flex p-10 bg-blue-900 h-screen gap-6">
-      <div className={`${selected === "report" ? "w-full" : "w-3/5"}`}>
+      <div
+        className={`${
+          selected === "report" || selected === "notify" ? "w-full" : "w-3/5"
+        }`}
+      >
         <div className="flex gap-2">
           <div
-            className={`flex w-1/4 h-16 pl-2 items-center gap-2 ${
+            className={`flex w-[170px] h-[50px] pl-2 items-center gap-2 ${
               selected === "table"
                 ? "bg-blue-100 text-blue-900 rounded-tr-3xl rounded-tl-3xl"
                 : "text-white"
@@ -51,7 +55,7 @@ export default function DeskRoom() {
           </div>
           <div
             onClick={() => handleClick("menu")}
-            className={`flex w-1/4 h-16 pl-2 items-center gap-2 ${
+            className={`flex w-[170px] h-[50px] pl-2 items-center gap-2 ${
               selected === "menu"
                 ? "bg-blue-100 text-blue-900 rounded-tr-3xl rounded-tl-3xl"
                 : "text-white"
@@ -63,8 +67,21 @@ export default function DeskRoom() {
             </h2>
           </div>
           <div
+            onClick={() => handleClick("notify")}
+            className={`flex w-[170px] h-[50px] pl-2 items-center gap-2 ${
+              selected === "notify"
+                ? "bg-white text-blue-900 rounded-tr-xl rounded-tl-xl"
+                : "text-white"
+            }`}
+          >
+            <NotifiIcon />
+            <h2 className="text-2xl font-[600] cursor-pointer transition-all">
+              Notification
+            </h2>
+          </div>
+          <div
             onClick={() => handleClick("report")}
-            className={`flex w-1/4 h-16 pl-2 items-center gap-2 ${
+            className={`flex w-[170px] h-[50px] pl-2 items-center gap-2 ${
               selected === "report"
                 ? "bg-blue-100 text-blue-900 rounded-tr-3xl rounded-tl-3xl"
                 : "text-white"
@@ -75,21 +92,8 @@ export default function DeskRoom() {
               Report
             </h2>
           </div>
-          <div
-            onClick={() => handleClick("notify")}
-            className={`flex w-[170px] h-[50px] pl-2 items-center gap-2 ${
-              selected === "notify"
-                ? "bg-white text-[#182FFF] rounded-tr-xl rounded-tl-xl"
-                : "text-white"
-            }`}
-          >
-            <NotifiIcon />
-            <h2 className="text-[1.8rem] font-[600] cursor-pointer transition-all">
-              Notification
-            </h2>
-          </div>
         </div>
-        <div className="bg-white h-5/6 rounded-b-3xl rounded-tr-3xl p-10 mt-4">
+        <div className="bg-white h-[92%] rounded-b-3xl rounded-tr-3xl p-10 mt-4">
         {selected === "table" && (
           <TableStaff onTableClick={handleTableClick} />
         )}
@@ -102,8 +106,7 @@ export default function DeskRoom() {
         </div>
       </div>
       {selected !== "report" && (
-        <div className="w-2/5 bg-white h-5/6 mt-20 rounded-3xl p-10">
-          {/* Pass selectedTableId and selectedOrderId down to PaypalStaff */}
+        <div className="w-2/5 bg-white h-[92%] mt-24 rounded-3xl p-10">
           {selected !== "report" && (
             <PaypalStaff
               selected={selected}

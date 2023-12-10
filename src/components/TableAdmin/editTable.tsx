@@ -98,7 +98,7 @@ export default function EditTable() {
                 <Input
                   className="ml-8 w-[720px]"
                   placeholder="Table Name"
-                  value={tableData?.table_name || ''} 
+                  value={tableData?.table_name || ""}
                   disabled
                 />
               </label>
