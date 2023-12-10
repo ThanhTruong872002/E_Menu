@@ -4,20 +4,44 @@ import { NotifiIcon, StaffNameIcon } from "../common/icons/icons";
 
 // CSS styles
 const styles = `
-  .quantity-btn {
+  /* Thêm kiểu cho cửa sổ hóa đơn */
+  .invoice-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .invoice-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .payment-button,
+  .cancel-button {
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .payment-button {
     background-color: #4caf50;
     color: white;
     border: none;
-    padding: 8px 12px;
-    font-size: 16px;
-    cursor: pointer;
-    display: none; /* hide quantity buttons */
+    border-radius: 5px;
   }
 
-  .quantity-text {
-    margin: 0 10px;
-    font-size: 18px;
-    font-weight: bold;
+  .cancel-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
   }
 `;
 
@@ -37,6 +61,11 @@ interface OrderDetailItem {
   price: number;
 }
 
+interface TransactionType {
+  type_id: number;
+  type_name: string;
+}
+
 export default function PaypalStaff({ selected, tableId, orderId, status, orderDate }: IPayPalType) {
   const [tableName, setTableName] = useState<string | null>(null);
   const [menuItems, setMenuItems] = useState<OrderDetailItem[]>([]);
@@ -44,6 +73,39 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
   const [discount, setDiscount] = useState<number>(0);
   const [guestCount, setGuestCount] = useState<number | null>(null);
   const [orderStatus, setOrderStatus] = useState<number | null>(status ?? null);
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [orderCreationTime, setOrderCreationTime] = useState<Date | null>(null);
+  const [transactionTypes, setTransactionTypes] = useState<TransactionType[]>([]);
+  const [selectedTransactionType, setSelectedTransactionType] = useState(1);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string | null>("Tiền mặt");
+  const [userAccountId, setUserAccountId] = useState<number | null>(null);
+
+  
+  useEffect(() => {
+    const fetchTransactionTypes = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/transactiontypes");
+        const data = response.data;
+  
+        // Handle the case where data is null or undefined
+        if (data) {
+          setTransactionTypes(data.data); // Assuming the transaction types are inside the "data" property
+          console.log("Transaction types:", data.data); // Log the transaction types
+        }
+      } catch (error) {
+        console.error("Error fetching transaction types:", error);
+      }
+    };
+  
+    fetchTransactionTypes();
+  }, []);
+
+
+  useEffect(() => {
+    const currentDateTime = new Date();
+    setOrderCreationTime(currentDateTime);
+  }, []);
+  
 
   useEffect(() => {
     if (status !== null && status !== undefined) {
@@ -112,6 +174,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
     if (storedUser) {
       const user = JSON.parse(storedUser);
       setStaffFullname(user.fullname);
+      setUserAccountId(user.account_id);
     }
   }, []);
 
@@ -211,11 +274,79 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
       i === index ? { ...menuItem, quantity: clampedQuantity } : menuItem
     );
     setMenuItems(updatedItems);
-    updateOrderStatus(); // Call the function to update the order status when quantity changes
+    updateOrderStatus(); 
+  };
+
+  const handlePayment = () => {
+    setShowInvoice(true);
+  };
+
+  const handlePaymentMethodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedValue = Number(e.target.value);
+    setSelectedTransactionType(selectedValue);
+    const selectedType = transactionTypes.find((type) => type.type_id === selectedValue);
+    if (selectedType) {
+      setSelectedPaymentMethod(selectedType.type_name);
+    } else {
+      console.warn("Selected type_id not found.");
+    }
+  };
+
+  const handlePaymentConfirmation = async () => {
+    try {
+      // Tính tổng số tiền trước khi áp dụng giảm giá
+      const totalBeforeDiscount = menuItems.reduce(
+        (total, item) => total + item.quantity * item.price,
+        0
+      );
+  
+      // Tính số tiền được giảm giá
+      const discountAmount = (totalBeforeDiscount * discount) / 100;
+  
+      // Tính tổng số tiền sau khi áp dụng giảm giá
+      const totalAfterDiscount = totalBeforeDiscount - discountAmount;
+  
+      const totalAfterDiscountNumber = Number(totalAfterDiscount.toFixed(2));
+  
+      // Chuỗi chứa thông tin chi tiết hóa đơn
+      const transactionDescription = menuItems.map(item => `${item.menu_item_name}\t${item.quantity}\t${item.price}\t${item.quantity * item.price}`).join('\n');
+  
+      // Thêm thông tin giảm giá vào chuỗi
+      const discountInfo = `\nDiscount Percentage: ${discount}%\nDiscount Amount: ${discountAmount}\nTotal Before Discount: ${totalBeforeDiscount}\nTotal After Discount: ${totalAfterDiscountNumber}`;
+      const transactionDescriptionWithDiscount = `${discountInfo}\n${transactionDescription}`;
+  
+      // Assuming transaction_type is already defined
+      const transactionData = {
+        account_id: userAccountId, // Assuming userAccountId is available in the component state
+        transaction_type: selectedTransactionType,
+        amount: totalAfterDiscountNumber,
+        transaction_date: orderCreationTime, // Assuming orderCreationTime is available in the component state
+        transaction_description: discountInfo,
+      };
+  
+      // Make an HTTP POST request to add transaction data to the "transactions" table
+      const response = await axios.post("http://localhost:4000/api/transactions", transactionData);
+  
+      if (response.data.success) {
+        await axios.delete(`http://localhost:4000/api/orderdetails/${orderId}`);
+        await axios.delete(`http://localhost:4000/api/orders/${orderId}`);
+        await axios.put(`http://localhost:4000/api/tablesStaff/${tableId}`, {
+          status: 1, 
+        });
+        console.log("Transaction data added successfully!");
+        alert("Thanh toán thành công!");
+        setShowInvoice(false);
+      } else {
+        console.error("Error adding transaction data:", response.data.message);
+        // Handle error as needed
+      }
+    } catch (error) {
+      console.error("Error handling payment confirmation:", error);
+      // Handle error as needed
+    }
   };
   
-
-  console.log("Received status:", status);
+  
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
       <div className="flex justify-between items-center mb-6">
@@ -251,27 +382,27 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
             </tr>
           </thead>
          <tbody>
-  {menuItems && menuItems.map((item, index) => (
-    <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
-      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.menu_item_name}</td>
-      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-        <input
-          type="number"
-          value={item.quantity}
-          onChange={(e) => handleQuantityChange(index, parseInt(e.target.value, 10))}
-          className="border px-2 py-1 w-20"
-        />
-      </td>
-      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{numberWithCommas(item.price)}</td>
-      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-        {numberWithCommas(item.quantity * item.price)}
-      </td>
-      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
-        <button onClick={() => removeMenuItem(item.menu_item_id)}>Xóa</button>
-      </td>
-    </tr>
-  ))}
-</tbody>
+          {menuItems && menuItems.map((item, index) => (
+            <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
+              <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.menu_item_name}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+                <input
+                  type="number"
+                  value={item.quantity}
+                  onChange={(e) => handleQuantityChange(index, parseInt(e.target.value, 10))}
+                  className="border px-2 py-1 w-20"
+                />
+              </td>
+              <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{numberWithCommas(item.price)}</td>
+              <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+                {numberWithCommas(item.quantity * item.price)}
+              </td>
+              <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+                <button onClick={() => removeMenuItem(item.menu_item_id)}>Xóa</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
         </table>
       </div>
       <div className="flex justify-between items-center text-2xl">
@@ -295,17 +426,97 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
           </span>
         </div>
       </div>
+      <br></br>
+      <div>
+        <label className="mr-2">Phương thức thanh toán:</label>
+        <select
+          value={selectedTransactionType}
+          onChange={handlePaymentMethodChange}
+          className="border px-2 py-1 mr-2"
+        >
+          {transactionTypes.length > 0 &&
+            transactionTypes.map((type) => (
+              <option key={type.type_id} value={type.type_id}>
+                {type.type_name}
+              </option>
+            ))}
+        </select>
+      </div>
       <div className="flex justify-between items-center text-2xl mt-6">
         {status === 1 || status === 2 ? (
           <>
-            <button className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl">
+            <button className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl" onClick={handlePayment}>
               <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
               <span>Thanh Toán</span>
             </button>
             <button className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full text-2xl">
               <span>Hủy</span>
             </button>
-            <button
+            {showInvoice && (
+              <div className="invoice-modal">
+              <h2 className="text-xl font-bold">Hóa Đơn</h2>
+              {/* Hiển thị thông tin hóa đơn */}
+              <p><strong>Tên bàn:</strong> {tableName}</p>
+              <p><strong>Nhân viên:</strong> {staffFullname}</p>
+              <p><strong>Order ID:</strong> {orderId}</p>
+              <p> </p>
+              {orderDate && (
+                <div>
+                  <strong>In:</strong> {new Date(orderDate).toLocaleString()}
+                </div>
+              )}
+              {orderCreationTime && (
+                <div>
+                 <strong>Out:</strong> {orderCreationTime.toLocaleString()}
+                </div>
+              )}
+              {/* Hiển thị thông tin chi tiết hóa đơn */}
+              <table className="w-full mb-6" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#f2f2f2' }}>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Tên món</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Số lượng</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Đơn giá</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>Thành tiền</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {menuItems && menuItems.map((item, index) => (
+                    <tr key={index} style={{ borderBottom: '1px solid #ddd' }}>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.menu_item_name}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{item.quantity}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>{numberWithCommas(item.price)}</td>
+                      <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'left' }}>
+                        {numberWithCommas(item.quantity * item.price)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div>
+                <span>{selectedPaymentMethod}</span>
+              </div>
+              <div className="flex justify-between items-center text-2xl mt-6">
+                <div className="flex gap-2 font-bold">
+                  <label className="mr-2">Giảm giá (%):</label>
+                  <span>{discount}</span>
+                </div>
+                <div className="flex gap-2 font-bold">
+                  <span>Tổng tiền:</span>
+                  <span className="text-red-500">{calculateTotalWithDiscount()} VND</span>
+                </div>
+              </div>
+              <div className="invoice-buttons">
+              <button className="payment-button" onClick={() => { handlePayment(); handlePaymentConfirmation(); }}>
+                Thanh Toán
+              </button>
+                <button className="cancel-button" onClick={() => setShowInvoice(false)}>
+                  Hủy
+                </button>
+              </div>
+            </div>
+                  )}
+              <button
               onClick={handleConfirmationClick}
               disabled={orderStatus !== 1}
               className={`flex items-center gap-2 px-8 py-4 rounded-full ${

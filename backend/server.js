@@ -464,6 +464,197 @@ app.put("/api/updatequantity/:orderDetailId", async (req, res) => {
   }
 });
 
+app.get("/api/transactiontypes", async (req, res) => {
+  try {
+    const transactionTypes = await getTransactionTypes();
+    res.status(200).json({
+      success: true,
+      data: transactionTypes,
+    });
+  } catch (error) {
+    console.error("Error fetching transaction types:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching transaction types",
+      error: error.message,
+    });
+  }
+});
+
+// Điểm cuối để xử lý giao dịch
+app.post("/api/transactions", async (req, res) => {
+  try {
+    // Trích xuất dữ liệu giao dịch từ phần thân yêu cầu
+    const { account_id, transaction_type, amount, transaction_date, transaction_description } = req.body;
+
+    // Xác nhận rằng các trường bắt buộc đã được điền
+    if (!account_id || !transaction_type || !amount || !transaction_date || !transaction_description) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu các trường bắt buộc cho giao dịch",
+      });
+    }
+
+    // Lưu trữ dữ liệu giao dịch trong cơ sở dữ liệu cục bộ (thay thế bằng logic của bạn)
+    const saveTransactionSql = "INSERT INTO transactionid (account_id, transaction_type, amount, transaction_date, transaction_description) VALUES (?, ?, ?, ?, ?)";
+    await queryAsync(saveTransactionSql, [account_id, transaction_type, amount, transaction_date, transaction_description]);
+
+    // Bạn cũng có thể thực hiện các logic bổ sung ở đây nếu cần
+
+    // Trả về thành công
+    res.status(200).json({
+      success: true,
+      message: "Dữ liệu giao dịch đã được xử lý thành công",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xử lý giao dịch:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi xử lý giao dịch",
+      error: error.message,
+    });
+  }
+});
+
+
+// Hàm để lấy danh sách các loại giao dịch từ cơ sở dữ liệu
+async function getTransactionTypes() {
+  const sql = "SELECT type_id, type_name FROM transactiontype";
+  const result = await queryAsync(sql);
+  return result;
+}
+
+// Xóa chi tiết đơn hàng dựa trên orderId
+app.delete("/api/orderdetails/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Kiểm tra xem orderId có phải là một số không
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để xóa chi tiết đơn hàng từ bảng orderdetail
+    const deleteOrderDetailsSql = "DELETE FROM orderdetail WHERE order_id = ?";
+    const result = await queryAsync(deleteOrderDetailsSql, [orderId]);
+
+    // Kiểm tra xem có chi tiết đơn hàng nào bị xóa hay không
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy chi tiết đơn hàng để xóa",
+      });
+    }
+
+    // Trả về thông báo thành công
+    res.status(200).json({
+      success: true,
+      message: "Xóa chi tiết đơn hàng thành công",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xóa chi tiết đơn hàng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi xóa chi tiết đơn hàng",
+      error: error.message,
+    });
+  }
+});
+
+// Xóa đơn hàng dựa trên orderId
+app.delete("/api/orders/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+
+    // Kiểm tra xem orderId có phải là một số không
+    if (isNaN(orderId)) {
+      return res.status(400).json({
+        success: false,
+        message: "orderId phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để xóa đơn hàng từ bảng orderid
+    const deleteOrderSql = "DELETE FROM orderid WHERE order_id = ?";
+    const result = await queryAsync(deleteOrderSql, [orderId]);
+
+    // Kiểm tra xem có đơn hàng nào bị xóa hay không
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy đơn hàng để xóa",
+      });
+    }
+
+    // Trả về thông báo thành công
+    res.status(200).json({
+      success: true,
+      message: "Xóa đơn hàng thành công",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xóa đơn hàng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi xóa đơn hàng",
+      error: error.message,
+    });
+  }
+});
+
+// Cập nhật trạng thái của bàn dựa trên tableId
+app.put("/api/tablesStaff/:tableId", async (req, res) => {
+  try {
+    const tableId = req.params.tableId;
+    const { status } = req.body;
+
+    // Kiểm tra xem tableId có phải là một số không
+    if (isNaN(tableId)) {
+      return res.status(400).json({
+        success: false,
+        message: "tableId phải là một số",
+      });
+    }
+
+    // Kiểm tra xem status có phải là một số không
+    if (isNaN(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "status phải là một số",
+      });
+    }
+
+    // Thực hiện truy vấn để cập nhật trạng thái của bàn trong bảng tableid
+    const updateTableStatusSql =
+      "UPDATE tableid SET status = ? WHERE table_id = ?";
+    const result = await queryAsync(updateTableStatusSql, [status, tableId]);
+
+    // Kiểm tra xem có bàn nào được cập nhật hay không
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy thông tin bàn để cập nhật",
+      });
+    }
+
+    // Trả về thông báo thành công
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật trạng thái bàn thành công",
+    });
+  } catch (error) {
+    console.error("Error updating table status:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi khi cập nhật trạng thái bàn",
+      error: error.message,
+    });
+  }
+});
+
+
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {

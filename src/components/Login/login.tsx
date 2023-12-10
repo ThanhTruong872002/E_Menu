@@ -28,6 +28,7 @@ export default function Login() {
       console.log("Response from server:", response.data); 
       if (response.data.success) {
         const userInformation = {
+          account_id: response.data.account_id,
           fullname: response.data.fullname,
         };
         const userRole = response.data.role;
