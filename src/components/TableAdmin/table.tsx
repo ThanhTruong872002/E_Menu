@@ -26,7 +26,7 @@ interface TableData {
 const Table: React.FC = () => {
   const navigate = useNavigate();
   const [tableData, setTableData] = useState<TableData[]>([]);
-  const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
+  // const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   useEffect(() => {

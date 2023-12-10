@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { Input, Select, Space, message } from "antd";
 import axios from "axios";
 import QRCode from "qrcode.react";
-import { toPng } from "html-to-image"; // Thêm import này
+import { toPng } from "html-to-image"; 
 
 interface ILocation {
   location_id: number;

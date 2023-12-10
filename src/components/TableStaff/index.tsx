@@ -5,10 +5,12 @@ import { useQuery } from "react-query";
 import { LocationType } from "../../types/LocationType";
 import { getLocationData } from "../../apis/location.api";
 
-
-
 interface ITableStaffProps {
-  onTableClick: (tableId: number) => void;
+  onTableClick: (
+    tableId: number,
+    orderId?: string | null,
+    status?: number | null
+  ) => void;
 }
 
 export default function TableStaff({ onTableClick }: ITableStaffProps) {
@@ -17,6 +19,7 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
   const [selected, setSelected] = useState(0);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [floor, setFloor] = useState<LocationType[]>();
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
 
   const { data: locationData, isSuccess } = useQuery({
     queryKey: ["api/locations"],
@@ -32,15 +35,40 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
     }
   }, [isSuccess]);
 
-  const handleTableClick = (tableId: number) => {
-    setSelectedTableId(tableId);
-    onTableClick(tableId); 
-    console.log(`Clicked on table_id: ${tableId}`);
-    
+  const handleTableClick = async (tableId: number) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:4000/api/orders/${tableId}`
+      );
+      const orderData = response.data;
+
+      if (orderData.success) {
+        if (orderData.data && orderData.data.length > 0) {
+          // Extract order_id and status from the first item in the array
+          const { order_id, status } = orderData.data[0];
+
+          console.log(`Đã tìm thấy order_id: ${order_id}, status: ${status}`);
+
+          // Pass order_id and status to onTableClick
+          onTableClick(tableId, order_id.toString(), status);
+        } else {
+          console.log(`Bàn đang rảnh, không có order_id tương ứng.`);
+          // Nếu không có đơn hàng, trạng thái là null
+          onTableClick(tableId, null, null);
+        }
+      } else {
+        console.log("Có lỗi khi kiểm tra trạng thái đơn đặt hàng");
+        onTableClick(tableId, null, null);
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra trạng thái đơn hàng:", error);
+    }
   };
 
-  const totalInUseTables = filterListData?.filter((table) => table.status === 3).length || 0;
-  const totalReservedTables = filterListData?.filter((table) => table.status === 2).length || 0;
+  const totalInUseTables =
+    filterListData?.filter((table) => table.status === 3).length || 0;
+  const totalReservedTables =
+    filterListData?.filter((table) => table.status === 2).length || 0;
 
   return (
     <div>
@@ -63,10 +91,16 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
       <div className="w-full bg-black my-6 h-[1px]"></div>
       <div className="flex flex-col gap-4 text-[2rem] font-[600]">
         <h2>
-          In use: <span className="text-[#182FFF] ml-2">{`${totalInUseTables}/${filterListData?.length || 0}`}</span>
+          In use:{" "}
+          <span className="text-[#182FFF] ml-2">{`${totalInUseTables}/${
+            filterListData?.length || 0
+          }`}</span>
         </h2>
         <h2>
-          Reserved: <span className="text-[#24FF00] ml-2">{`${totalReservedTables}/${filterListData?.length || 0}`}</span>
+          Reserved:{" "}
+          <span className="text-[#24FF00] ml-2">{`${totalReservedTables}/${
+            filterListData?.length || 0
+          }`}</span>
         </h2>
       </div>
       <div className="pt-10 cursor-pointer overflow-y-scroll overflow-x-hidden">
@@ -75,8 +109,8 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
             <div key={index}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="60"
-                height="60"
+                width="55"
+                height="55"
                 viewBox="0 0 80 80"
                 fill="none"
                 onClick={() => handleTableClick(table.table_id)}
@@ -104,4 +138,3 @@ export default function TableStaff({ onTableClick }: ITableStaffProps) {
     </div>
   );
 }
-

@@ -47,7 +47,7 @@ export default function EditTable() {
 
     // Fetch table data based on the table_id
     axios
-      .get("http://localhost:4000/api/tables/${table_id}")
+      .get(`http://localhost:4000/api/tables/${table_id}`)
       .then((response) => {
         console.log("API Response:", response.data);
         const tableData = response.data;
@@ -70,10 +70,7 @@ export default function EditTable() {
   const onSubmit: SubmitHandler<IEditTableForm> = async (data) => {
     try {
       // Send a request to update the table
-      await axios.put(
-        "http://localhost:4000/api/tables/${table_id}",
-        data
-      );
+      await axios.put(`http://localhost:4000/api/tables/${table_id}`, data);
 
       message.success("Table information has been updated successfully.");
       // Redirect to the table management page or another appropriate page
@@ -98,7 +95,7 @@ export default function EditTable() {
                 <Input
                   className="ml-8 w-[720px]"
                   placeholder="Table Name"
-                  value={tableData?.table_name || ''} 
+                  value={tableData?.table_name || ""}
                   disabled
                 />
               </label>
