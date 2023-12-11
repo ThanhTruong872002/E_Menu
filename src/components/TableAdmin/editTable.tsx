@@ -112,22 +112,22 @@ export default function EditTable() {
               </label>
             </div>
             <div className="flex items-center mt-4">
-  <h2 className="w-[170px]">Location :</h2>
-  <label className="mt-4">
-    <Select
-      className="ml-8 w-[720px]"
-      placeholder="Select Location"
-      value={selectedLocation}
-      onChange={(value) => setSelectedLocation(value)}
-    >
-      {locations.map((location) => (
-        <Select.Option key={location.location_id} value={location.location_id}>
-          {location.location_name}
-        </Select.Option>
-      ))}
-    </Select>
-  </label>
-</div>
+              <h2 className="w-[170px]">Location :</h2>
+              <label className="mt-4">
+                <Select
+                  className="ml-8 w-[720px]"
+                  placeholder="Select Location"
+                  value={selectedLocation}
+                  onChange={(value) => setSelectedLocation(value)}
+                >
+                  {locations.map((location) => (
+                    <Select.Option key={location.location_id} value={location.location_id}>
+                      {location.location_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </label>
+            </div>
             <div className="flex items-center mt-4">
               <h2 className="w-[170px]">Seat Capacity :</h2>
               <label className="mt-4">

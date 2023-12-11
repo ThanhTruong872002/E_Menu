@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Admin from "../../pages/admin";
 
@@ -14,7 +14,7 @@ interface IMenuItem {
   Description: string;
   Price: string;
   category_id: number;
-  image: string;
+  Image: string;
 }
 
 interface IEditMenuForm {
@@ -22,14 +22,12 @@ interface IEditMenuForm {
   Description: string;
   Price: string;
   category_id: number;
-  image: FileList;
 }
 
 export default function EditMenu() {
   const { menu_id } = useParams();
-  useEffect(() => {
-    console.log("menu_id received:", menu_id);
-  }, [menu_id]);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -42,62 +40,49 @@ export default function EditMenu() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<FileList | null>(null);
-  console.log(imagePreview);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:4000/api/types")
-      .then((response) => {
-        setCategories(response.data);
-      })
-      .catch((error) => {
-        console.error("Lỗi khi lấy danh sách loại món ăn:", error);
-      });
+    axios.get("http://localhost:4000/api/types").then((response) => {
+      setCategories(response.data);
+    });
 
     axios
-
       .get(`http://localhost:4000/api/menu/${menu_id}`)
       .then((response) => {
         const menuData = response.data;
         setMenuItemData(menuData);
+
         setValue("menu_item_name", menuData.menu_item_name);
         setValue("Description", menuData.Description);
         setValue("Price", menuData.Price);
         setValue("category_id", menuData.category_id.toString());
-        // Gán ảnh hiện tại cho hiển thị xem trước
+
         setImagePreview(`http://localhost:4000/uploads${menuData.Image}`);
       })
       .catch((error) => {
-        console.error("Lỗi khi lấy thông tin món ăn:", error);
+        console.error("Error fetching menu item details:", error);
       });
   }, [menu_id, setValue]);
 
   const onSubmit: SubmitHandler<IEditMenuForm> = async (data) => {
-    console.log("category_id:", data.category_id);
-    const category_id = data.category_id.toString();
     try {
-      const formData = new FormData();
-      formData.append("menu_item_name", data.menu_item_name);
-      formData.append("Description", data.Description);
-      formData.append("Price", data.Price.toString());
-      formData.append("category_id", category_id.toString()); // Sử dụng giá trị kiểu số
+      console.log("Form Input Values:", data);
 
-      if (selectedImage) {
-        formData.append("image", selectedImage[0]);
-      }
+      const url = `http://localhost:4000/api/editDish/${menu_id}`;
+      await axios.put(url, data, { headers: { 'Content-Type': 'application/json' } });
+      
 
-      await axios.put(
-        `http://localhost:4000/api/editDish/${menu_id}`,
-        formData
-      );
       setSuccessMessage("Thông tin món ăn đã được cập nhật thành công.");
+
+      // Redirect back to the menu page or another appropriate location
+      navigate("/admin/menu");
     } catch (error) {
-      console.error("Lỗi khi cập nhật món ăn:", error);
+      console.error("Error updating menu item:", error);
     }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files;
       setSelectedImage(selectedFile);
 
@@ -171,17 +156,18 @@ export default function EditMenu() {
                 </select>
               </label>
             </div>
-            <div className="flex items-center mt-10">
+            {/* <div className="flex items-center mt-10">
               <h2 className="w-[170px]">Image:</h2>
               <label className="mt-8 ml-8">
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageUpload}
+                  name="image"
                 />
               </label>
-            </div>
-            {imagePreview && (
+            </div> */}
+            {/* {imagePreview && (
               <div className="flex items-center mt-10">
                 <h2 className="w-[170px]">Preview Image:</h2>
                 <label className="mt-8 ml-8">
@@ -191,15 +177,19 @@ export default function EditMenu() {
                     style={{ maxWidth: "200px" }}
                   />
                 </label>
-              </div>
-            )}
+              </div> */}
+            {/* )} */}
             <div className="flex items-center justify-center mt-20">
               <label>
-                <button className="border-[1px] border-solid bg-[#1890ff] text-white w-[250px] h-[50px]  rounded-md">
+                <button
+                  className="border-[1px] border-solid bg-[#1890ff] text-white w-[250px] h-[50px] rounded-md"
+                  type="submit"
+                >
                   Update
                 </button>
               </label>
             </div>
+
             {successMessage && (
               <div className="text-red-600 font-bold text-xl mt-4">
                 {successMessage}

@@ -13,9 +13,14 @@ class EditMenuModel {
   }
 
   static updateDishById(dishId, updatedData, callback) {
-    const sql = "UPDATE menu SET ? WHERE menu_id = ?";
-    connection.query(sql, [updatedData, dishId], (err, result) => {
+    const { menu_item_name, Description, Price, category_id } = updatedData;
+  
+    const sql =
+      "UPDATE menu SET menu_item_name = ?, Description = ?, Price = ?, category_id = ? WHERE menu_id = ?";
+  
+    connection.query(sql, [menu_item_name, Description, Price, category_id, dishId], (err, result) => {
       if (err) {
+        console.error("Error in updateDishById:", err);
         callback(err);
       } else {
         callback(null, result);
