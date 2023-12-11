@@ -8,7 +8,10 @@ const Login = {
       }
       if (results.length > 0) {
         const userRole = results[0].role;
-        return callback(null, { success: true, message: "Đăng nhập thành công", role: userRole });
+        const fullname = results[0].fullname;
+        const account_id = results[0].account_id;
+        
+        return callback(null, { success: true, message: "Đăng nhập thành công", role: userRole, fullname: fullname, account_id: account_id });
       } else {
         return callback(null, { success: false, message: "Đăng nhập thất bại" });
       }

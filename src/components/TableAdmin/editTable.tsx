@@ -70,7 +70,10 @@ export default function EditTable() {
   const onSubmit: SubmitHandler<IEditTableForm> = async (data) => {
     try {
       // Send a request to update the table
-      await axios.put(`http://localhost:4000/api/tables/${table_id}`, data);
+      await axios.put(
+        `http://localhost:4000/api/tables/${table_id}`,
+        data
+      );
 
       message.success("Table information has been updated successfully.");
       // Redirect to the table management page or another appropriate page
