@@ -3,36 +3,37 @@ import { CallIcon, LetterIcon, LocationIcon } from "../common/icons/icons";
 
 export default function CustomerContent() {
   return (
-    <div className="py-[100px] w-[90%] mx-auto ">
-      <div className="flex justify-between items-center  gap-20">
+    <div className="py-[100px] w-[90%] mx-auto px-8">
+      <div className="flex flex-col lg:flex-row justify-between items-center  gap-20">
         <div className="mb-[100px] ">
           <img
             src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=1980&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             alt="no img"
             className="w-[500px] h-[500px] object-cover rounded-2xl"
           />
-          <div className="absolute -bottom-[20%] left-[20%] xl:bottom-[10%]  w-[411px] h-[321px] bg-[#474747] rounded-xl p-[50px]">
-            <h2 className="font-sans text-[2.4rem] font-bold mb-[45px] text-white">
+          <div className="absolute bottom-[10%] left-[26%] w-[260px] h-[300px] lg:-bottom-10 lg:left-[20%]  lg:w-[350px] lg:h-[280px] bg-[#474747] rounded-xl p-[40px]">
+            <h2 className="font-sans text-[1.8rem] lg:text-[2.4rem] font-bold mb-[45px] text-white">
               Come and visit us
             </h2>
-            <div className=" flex flex-col gap-8 text-[2rem] font-sans font-[400] text-white">
-              <div className="flex gap-[20px]">
+            <div className=" flex flex-col gap-8 text-[1.6rem] lg:text-[2rem] font-sans font-[400] text-white">
+              <div className="flex gap-[14px]">
                 <CallIcon />
                 <p>(+84) 236.3650403</p>
               </div>
-              <div className="flex gap-[20px]">
+              <div className="flex gap-[14px] w-[267px]">
                 <LetterIcon />
                 <p>foodeats@restaurant.com</p>
               </div>
-              <div className="flex gap-[20px] w-[267px]">
+              <div className="flex gap-[14px] w-[267px]">
                 <LocationIcon />
                 <p>foodeats@restaurant.com</p>
               </div>
             </div>
           </div>
         </div>
-        <div className="w-[50%] mb-32 pl-28">
-          <h2 className="font-playfair text-[6rem] font-[500] max-w-[557px] text-[#2C2F24]">
+
+        <div className="lg:w-[50%] mb-32 lg:pl-28">
+          <h2 className="font-playfair w-[334px] text-[4rem] lg:text-[6rem] font-[500] lg:w-[557px] text-[#2C2F24]">
             We provide healthy food for your family.
           </h2>
           <h3 className="text-[2rem] font-sans font-[500] max-w-[557px] my-6 text-[#2C2F24] leading-[2.8rem]">
@@ -48,9 +49,9 @@ export default function CustomerContent() {
           </h4>
         </div>
       </div>
-      <div className="mt-[120px] flex justify-between xl:justify-around items-center  gap-20">
+      <div className="mt-[120px] flex flex-col lg:flex-row justify-between xl:justify-around items-center  gap-20">
         <div>
-          <h2 className="font-playfair text-[4rem] font-[500] max-w-[557px] text-[#2C2F24]">
+          <h2 className="font-playfair text-[4rem] lg:text-[6rem] font-[500] max-w-[557px] text-[#2C2F24]">
             A little information for our valuable guest
           </h2>
           <h4 className="mt-6 font-sans font-normal text-[#414536] text-[1.8rem] max-w-[557px] leading-10">
@@ -58,8 +59,8 @@ export default function CustomerContent() {
             about the overall experience. Our staff, renowned for their warmth
             and dedication, strives to make every visit an unforgettable event.
           </h4>
-          <div className="mt-[60px] grid grid-cols-2 gap-10">
-            <div className="w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl text-center">
+          <div className="mt-[60px] lg:grid lg:grid-cols-2 lg:gap-10 ">
+            <div className="mb-10 w-[293px] h-[174px] py-[35px] px-[105px] border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl text-center">
               <h2 className="font-playfair text-[5.5rem] font-medium text-[#2C2F24]">
                 3
               </h2>
@@ -67,7 +68,7 @@ export default function CustomerContent() {
                 Locations
               </p>
             </div>
-            <div className="w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl text-center">
+            <div className="mb-10 w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl text-center">
               <h2 className="font-playfair text-[5.5rem] font-medium text-[#2C2F24]">
                 2023
               </h2>
@@ -75,7 +76,7 @@ export default function CustomerContent() {
                 Founded
               </p>
             </div>{" "}
-            <div className="w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl ">
+            <div className="mb-10 w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl ">
               <h2 className="font-playfair text-[5.5rem] font-medium text-[#2C2F24]">
                 65+
               </h2>
@@ -83,7 +84,7 @@ export default function CustomerContent() {
                 Staff Members
               </p>
             </div>{" "}
-            <div className="w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl ">
+            <div className="mb-10 w-[293px] h-[174px] py-[35px] px-[105px]  border-[1px] border-solid border-[#DBDFD0] bg-white rounded-2xl ">
               <h2 className="font-playfair text-[5.5rem] font-medium text-[#2C2F24]">
                 100%
               </h2>
@@ -102,10 +103,10 @@ export default function CustomerContent() {
         </div>
       </div>
       <div className="mt-[120px] flex flex-col justify-between items-center  gap-20">
-        <h2 className="font-playfair text-[5.5rem] font-[500] max-w-[626px] text-[#2C2F24]">
+        <h2 className="font-playfair mx-auto text-[4rem] text-center lg:text-[6rem] font-[500] w-[334px] lg:w-[626px] text-[#2C2F24]">
           What Our Customers Say
         </h2>
-        <div className="flex gap-10">
+        <div className="flex flex-col lg:flex-row gap-20">
           <div className="w-[300px] h-[400px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[35px] ">
             <h2 className="text-[#AD343E] font-bold text-[1.8rem]">
               “The best restaurant”
@@ -129,7 +130,7 @@ export default function CustomerContent() {
           </div>
           <div className="w-[300px] h-[408px] bg-[#e8e8e5] rounded-2xl shadow-lg py-[45px] px-[30px] ">
             <h2 className="text-[#AD343E] font-bold text-[1.8rem] ">
-              “One  a kind restaurant”
+              “One a kind restaurant”
             </h2>
             <p className="font-sans text-[1.6rem] font-[400] leading-10 my-10">
               The culinary experience at place is first to none. The atmosphere

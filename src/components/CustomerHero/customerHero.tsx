@@ -10,7 +10,7 @@ export default function CustomerHero() {
       <img
         src="./images/bg.svg"
         alt=""
-        className="w-full mx-auto text-center "
+        className="object-center w-[full] h-[full] lg:w-full lg:mx-auto lg:text-center  "
       />
       <img
         src="./images/title.svg"

@@ -86,10 +86,10 @@ export default function BookTable() {
 
   return (
     <div className="bg-[#F9F9F7] pb-[226px]">
-      <h2 className="font-sans font-semibold text-5xl lg:text-8xl text-center pt-[100px] ">
+      <h2 className="font-sans font-medium text-[54px] lg:text-8xl text-center pt-[100px] ">
         Book A Table
       </h2>
-      <p className="lg:text-[1.8rem] text-[1.8rem] px-2 font-[400] font-sans lg:w-[545px] text-center mx-auto mt-4 leading-10">
+      <p className="text-[1.8rem] w-[90%] px-2 font-normal text-[#2C2F24] font-sans text-center mx-auto mt-4 leading-[3rem] lg:text-[1.8rem] lg:w-[545px] ">
         We consider all the drivers of change gives you the components you need
         to change to create a truly happens.
       </p>
@@ -103,7 +103,7 @@ export default function BookTable() {
                   <DatePicker
                     onChange={onChangeDate}
                     size="large"
-                    className="w-[80%]"
+                    className="px-8 py-2 w-[320px] lg:w-[80%] min-h-[60px] outline-none border border-gray-500 focus:border-gray-500  focus:shadow-sm placeholder:text-[1.4rem] rounded-[72px]"
                     disabledDate={(current) => {
                       return (
                         current &&
@@ -122,7 +122,7 @@ export default function BookTable() {
                   <TimePicker
                     onChange={onChangeTime}
                     size="large"
-                    className="w-[80%]"
+                    className="px-8 py-2 w-[320px] lg:w-[80%] min-h-[60px] outline-none border border-gray-500 focus:border-gray-500  focus:shadow-sm placeholder:text-[1.4rem] rounded-[72px]"
                     disabledHours={() => {
                       const disabledHours = [];
                       for (let i = 0; i < 6; i++) {

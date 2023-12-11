@@ -17,8 +17,9 @@ export default function DeskRoom() {
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
-  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(null);
-
+  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(
+    null
+  );
 
   const handleTableClick = (
     tableId: number,
@@ -31,11 +32,10 @@ export default function DeskRoom() {
     setSelectedStatus(status || null);
     setSelectedOrderDate(orderDate || null);
   };
-  
+
   const handleClick = (item: string) => {
     setSelected(item);
   };
-
 
   return (
     <div className="flex p-10 bg-blue-900 h-screen gap-6">
@@ -71,7 +71,7 @@ export default function DeskRoom() {
             <FoodIcon />
             <h2 className="text-2xl font-semibold cursor-pointer transition-all">
               Menu
-            </h2> 
+            </h2>
           </div>
           <div
             onClick={() => handleClick("notify")}
@@ -100,10 +100,10 @@ export default function DeskRoom() {
             </h2>
           </div>
         </div>
-        <div className="bg-white h-[92%] rounded-b-3xl rounded-tr-3xl p-10 mt-4">
-        {selected === "table" && (
-          <TableStaff onTableClick={handleTableClick} />
-        )}
+        <div className="bg-white h-[92%] rounded-3xl p-10 mt-4">
+          {selected === "table" && (
+            <TableStaff onTableClick={handleTableClick} />
+          )}
 
           {selected === "menu" && <MenuStaff />}
 
@@ -112,7 +112,7 @@ export default function DeskRoom() {
           {selected === "notify" && <Notify />}
         </div>
       </div>
-      {selected !== "report" && (
+      {selected !== "report" && selected !== "notify" && (
         <div className="w-2/5 bg-white h-[92%] mt-24 rounded-3xl p-10">
           {selected !== "report" && (
             <PaypalStaff
@@ -122,9 +122,9 @@ export default function DeskRoom() {
               status={selectedStatus}
               orderDate={selectedOrderDate}
             />
-        )}
-      </div>
-    )}
+          )}
+        </div>
+      )}
     </div>
   );
 }

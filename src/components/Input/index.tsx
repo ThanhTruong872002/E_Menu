@@ -30,12 +30,16 @@ export default function Input({
   };
 
   return (
-    <div className={className}>
+    <div >
       <input
         placeholder={placeholder}
         type={type}
         autoComplete={autoComplete}
-        className="p-3 w-[80%] outline-none border border-gray-300 focus:border-gray-500 rounded-xl focus:shadow-sm placeholder:text-[1.4rem]"
+        className={` px-8 py-2 w-[320px] lg:w-[80%] min-h-[60px] outline-none border border-gray-500 focus:border-gray-500  focus:shadow-sm placeholder:text-[1.4rem] ${
+          className
+            ? className
+            : "rounded-[72px]"
+        }  `}
         {...register(name, type === "tel" ? phoneValidationRule : rules)}
       />
       <div className="mt-1 text-red-600 text-sm min-h-[1.4rem]">

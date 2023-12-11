@@ -62,7 +62,7 @@ export default function MenuStaff() {
   };
   return (
     <div>
-      <div className="flex gap-6 text-[2rem] font-[500] items-center">
+      <div className="flex gap-6 text-[1.8rem] font-[500] items-center">
         <div className="flex gap-10">
           <h2
             className={`${
