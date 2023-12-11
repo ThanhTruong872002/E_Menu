@@ -71,7 +71,7 @@ export default function DeskRoom() {
             <FoodIcon />
             <h2 className="text-2xl font-semibold cursor-pointer transition-all">
               Menu
-            </h2>
+            </h2> 
           </div>
           <div
             onClick={() => handleClick("notify")}

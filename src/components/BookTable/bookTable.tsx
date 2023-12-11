@@ -32,9 +32,8 @@ export default function BookTable() {
   }
 `;
 
-
-const styleSheet = document.styleSheets[0];
-styleSheet.insertRule(styles, styleSheet.cssRules.length);
+  const styleSheet = document.styleSheets[0];
+  styleSheet.insertRule(styles, styleSheet.cssRules.length);
   const onChangeDate: DatePickerProps["onChange"] = (date, dateString) => {
     setDate(dateString);
   };
@@ -50,8 +49,11 @@ styleSheet.insertRule(styles, styleSheet.cssRules.length);
   const onSubmit = handleSubmit(async (data) => {
     try {
       // Combine date and time to create reservation_date
-      const reservationDate = dayjs(`${date} ${time}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-  
+      const reservationDate = dayjs(
+        `${date} ${time}`,
+        "YYYY-MM-DD HH:mm:ss"
+      ).format("YYYY-MM-DD HH:mm:ss");
+
       const reservationData = {
         name: data.name,
         phone_number: data.phone_number,
@@ -61,16 +63,20 @@ styleSheet.insertRule(styles, styleSheet.cssRules.length);
         reservation_date: reservationDate,
         status: 1,
       };
-  
-      const response = await axios.post("http://localhost:4000/api/createReservation", reservationData);
-  
+
+      const response = await axios.post(
+        "http://localhost:4000/api/createReservation",
+        reservationData
+      );
+
       if (response.status === 200) {
         console.log(response.data);
-        alert('Đặt bàn thành công!');
+        alert("Đặt bàn thành công!");
         window.location.href = "http://localhost:3000";
       } else {
-        console.error('Failed to create reservation:', response.statusText);
-        const errorMessage = response.data.message || 'Failed to create reservation';
+        console.error("Failed to create reservation:", response.statusText);
+        const errorMessage =
+          response.data.message || "Failed to create reservation";
         alert(errorMessage);
       }
     } catch (error) {
@@ -99,7 +105,11 @@ styleSheet.insertRule(styles, styleSheet.cssRules.length);
                     size="large"
                     className="w-[80%]"
                     disabledDate={(current) => {
-                      return current && (current < dayjs().startOf('day') || current > dayjs().add(3, 'months').endOf('day'));
+                      return (
+                        current &&
+                        (current < dayjs().startOf("day") ||
+                          current > dayjs().add(3, "months").endOf("day"))
+                      );
                     }}
                   />
                 </div>
