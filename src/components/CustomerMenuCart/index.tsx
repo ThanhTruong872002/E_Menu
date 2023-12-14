@@ -146,7 +146,9 @@ export default function CustomerMenuCart() {
     <div>
       <header className="py-[16px] px-[20px] flex items-center gap-[16px] h-[50px] shadow-lg">
         <div
-          onClick={() => navigate(`/customer/menuqr/${table_id}`)}
+          onClick={() => {navigate(`/customer/menuqr/${table_id}`)
+          
+        }}
           className="cursor-pointer"
         >
           <ArrowBack />

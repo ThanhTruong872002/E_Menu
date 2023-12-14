@@ -74,7 +74,8 @@ function requireAuth(req, res, next) {
 // Định nghĩa lưu trữ tệp tải lên bằng multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "../uploads/images/");
+    const uploadPath = path.join(__dirname, "uploads", "images");
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     const extension = path.extname(file.originalname);
@@ -82,6 +83,7 @@ const storage = multer.diskStorage({
     cb(null, `image${uniqueSuffix}${extension}`);
   },
 });
+
 
 const upload = multer({ storage });
 // const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";

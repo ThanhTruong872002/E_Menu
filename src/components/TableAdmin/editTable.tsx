@@ -23,7 +23,7 @@ export default function EditTable() {
   const navigate = useNavigate();
   const [locations, setLocations] = useState<ILocation[]>([]);
   const [tableData, setTableData] = useState<ITableData | null>(null);
-  console.log(locations);
+  const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
   console.log(tableData);
 
   const {
@@ -53,6 +53,7 @@ export default function EditTable() {
         console.log("API Response:", response.data);
         const tableData = response.data;
         if (tableData) {
+          setSelectedLocation(tableData.location);
           console.log("Table Data:", tableData);
           setTableData(tableData);
           // Set form values using setValue
@@ -70,6 +71,11 @@ export default function EditTable() {
 
   const onSubmit: SubmitHandler<IEditTableForm> = async (data) => {
     try {
+      // Include the selected location in the data if it's not null
+      if (selectedLocation !== null) {
+        data.location = selectedLocation;
+      }
+
       // Send a request to update the table
       await axios.put(`http://localhost:4000/api/tables/${table_id}`, data);
 
@@ -101,7 +107,26 @@ export default function EditTable() {
                 />
               </label>
             </div>
-
+            <div className="flex items-center mt-4">
+              <h2 className="w-[170px]">Location :</h2>
+              <label className="mt-4">
+                <Select
+                  className="ml-8 w-[720px]"
+                  placeholder="Select Location"
+                  value={selectedLocation}
+                  onChange={(value) => setSelectedLocation(value)}
+                >
+                  {locations.map((location) => (
+                    <Select.Option
+                      key={location.location_id}
+                      value={location.location_id}
+                    >
+                      {location.location_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </label>
+            </div>
             <div className="flex items-center mt-4">
               <h2 className="w-[170px]">Seat Capacity :</h2>
               <label className="mt-4">
@@ -116,39 +141,11 @@ export default function EditTable() {
                       message: "Seat Capacity must be at least 1",
                     },
                   })}
-                  value={tableData?.seat_capacity || ""} // Sử dụng giá trị từ tableData
+                  value={tableData?.seat_capacity || ""}
                 />
                 <div className="mt-4 text-red-600 min-h-[1.25rem] text-[1.4rem] text-center">
                   {errors.seat_capacity?.message}
                 </div>
-              </label>
-            </div>
-
-            <div className="flex items-center mt-4">
-              <h2 className="w-[170px]">Location :</h2>
-              <label className="mt-4">
-                <Select
-                  style={{ width: 200, marginLeft: "20px" }}
-                  placeholder="Select Location"
-                  {...register("location")}
-                  value={
-                    tableData?.location !== undefined
-                      ? {
-                          target: { value: tableData.location },
-                          type: "number",
-                        }
-                      : undefined
-                  }
-                >
-                  {locations.map((location) => (
-                    <Select.Option
-                      key={location.location_id}
-                      value={location.location_id}
-                    >
-                      {location.location_name}
-                    </Select.Option>
-                  ))}
-                </Select>
               </label>
             </div>
             <div className="flex items-center mt-10">

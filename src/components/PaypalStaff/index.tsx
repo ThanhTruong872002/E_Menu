@@ -121,7 +121,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
           const data = response.data;
 
           setTableName(data.table_name);
-          setGuestCount(data.seat_capacity); // Assuming seat_capacity is the correct property
+          setGuestCount(data.seat_capacity);
         }
       } catch (error) {
         console.error("Error fetching table_name:", error);

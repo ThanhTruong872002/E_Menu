@@ -8,11 +8,11 @@ export default function CustomerMenu() {
 
   return (
     <div className="bg-[#F9F9F7] pb-[100px]">
-      <h2 className="font-playfair text-5xl font-semibold lg:text-[8rem] text-center pt-[100px] ">
+      <h2 className="font-sans font-medium text-[54px] lg:text-8xl text-center pt-[100px] ">
         Our Menu
       </h2>
 
-      <p className="lg:text-[1.8rem] text-[1.8rem] px-2 font-[400] font-sans lg:w-[545px] text-center mx-auto mt-4 leading-10">
+      <p className="text-[1.8rem] w-[90%] px-2 font-normal text-[#2C2F24] font-sans text-center mx-auto mt-4 leading-[3rem] lg:text-[1.8rem] lg:w-[545px]">
         We consider all the drivers of change gives you the components you need
         to change to create a truly happens.
       </p>
@@ -62,7 +62,7 @@ export default function CustomerMenu() {
         </div>
       </div>
       <CustomerListItem />
-        <PaginationMenuCustomer/>    
+      <PaginationMenuCustomer />
     </div>
   );
 }
