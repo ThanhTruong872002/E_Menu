@@ -335,7 +335,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
         });
         console.log("Transaction data added successfully!");
         alert("Thanh toán thành công!");
-        setShowInvoice(false);
+        resetDisplayedData();
       } else {
         console.error("Error adding transaction data:", response.data.message);
         // Handle error as needed
@@ -345,7 +345,38 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
       // Handle error as needed
     }
   };
+
+  const handleCancellation = async () => {
+    try {
+      console.log("Cancelling order...");
   
+      // Call the necessary APIs to handle cancellation
+      await axios.delete(`http://localhost:4000/api/orderdetails/${orderId}`);
+      await axios.delete(`http://localhost:4000/api/orders/${orderId}`);
+      await axios.put(`http://localhost:4000/api/tablesStaff/${tableId}`, {
+        status: 1,
+      });
+  
+      // Display a success message
+      console.log("Hủy bàn thành công!");
+      alert("Hủy bàn thành công!");
+      resetDisplayedData();
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      alert("Lỗi khi hủy bàn");
+    }
+  };
+
+  const resetDisplayedData = () => {
+    setMenuItems([]);
+    setTableName(null);
+    setGuestCount(null);
+    setDiscount(0);
+    setOrderStatus(null);
+    setOrderCreationTime(null);
+    setStaffFullname(null);
+    setUserAccountId(null);
+  };
   
   return (
     <div className="p-6 bg-white rounded-lg shadow-lg">
@@ -449,8 +480,11 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
               <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
               <span>Thanh Toán</span>
             </button>
-            <button className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full text-2xl">
-              <span>Hủy</span>
+            <button
+              className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full text-2xl"
+              onClick={handleCancellation}
+            >
+              <span>Hủy Bàn</span>
             </button>
             {showInvoice && (
               <div className="invoice-modal">
