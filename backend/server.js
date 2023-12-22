@@ -23,6 +23,8 @@ const locationController = require("./controllers/locationController");
 const editTableController = require("./controllers/editTableController");
 const customerMenuCartController = require("./controllers/customerMenuCartController");
 const bookTableController = require("./controllers/bookTableController");
+const dashboardController = require('./controllers/DashboardController');
+
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -221,45 +223,6 @@ app.post("/api/createOrder", customerMenuCartController.createOrder);
 app.post("/api/createReservation", bookTableController.createReservation);
 
 //Staff
-app.get("/api/tables/:table_id", async (req, res) => {
-  try {
-    const tableId = req.params.table_id;
-
-    // Kiểm tra xem tableId có phải là một số không
-    if (isNaN(tableId)) {
-      return res.status(400).json({
-        success: false,
-        message: "table_id phải là một số",
-      });
-    }
-
-    // Thực hiện truy vấn để lấy thông tin bàn
-    const sql = "SELECT * FROM tableid WHERE table_id = ?";
-    const result = await queryAsync(sql, [tableId]);
-
-    // Kiểm tra xem có bàn nào được tìm thấy hay không
-    if (result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Không tìm thấy thông tin bàn",
-      });
-    }
-
-    // Trả về thông tin bàn
-    res.status(200).json({
-      success: true,
-      data: result[0],
-    });
-  } catch (error) {
-    console.error("Error getting table information:", error);
-    res.status(500).json({
-      success: false,
-      message: "Lỗi khi lấy thông tin bàn",
-      error: error.message,
-    });
-  }
-});
-
 app.get("/api/orders/:table_id", async (req, res) => {
   try {
     const tableId = req.params.table_id;
