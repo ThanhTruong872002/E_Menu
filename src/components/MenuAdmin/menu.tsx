@@ -31,7 +31,7 @@ const Menu: React.FC = () => {
   useEffect(() => {
     const fetchMenuData = async () => {
       try {
-        const response = await axios.get("http://192.168.1.91:4000/api/menu");
+        const response = await axios.get("http://localhost:4000/api/menu");
         setMenuData(response.data);
         setFilteredMenuData(response.data);
         setLoading(false);
@@ -55,10 +55,7 @@ const Menu: React.FC = () => {
     setFilteredMenuData(filteredMenuData);
   };
 
-  const handleDeleteMenuItem = async (
-    menuItemId: string,
-    menuItemName: string
-  ) => {
+  const handleDeleteMenuItem = async (menuItemId: string, menuItemName: string) => {
     // Confirm the deletion with the user
     const confirmDelete = window.confirm(
       `Are you sure you want to delete the item "${menuItemName}"?`
@@ -68,9 +65,7 @@ const Menu: React.FC = () => {
     if (confirmDelete) {
       try {
         // Send a DELETE request to the server
-        await axios.delete(
-          `http://localhost:4000/api/deleteDish/${menuItemId}`
-        );
+        await axios.delete(`http://localhost:4000/api/deleteDish/${menuItemId}`);
 
         // Update both menuData and filteredMenuData after successful deletion
         const updatedMenuData = menuData.filter(
@@ -186,19 +181,14 @@ const Menu: React.FC = () => {
                         <div className="flex gap-6">
                           <span
                             className="text-[#1890ff] cursor-pointer"
-                            onClick={() =>
-                              navigate(`/admin/editmenu/${menuItem.menu_id}`)
-                            }
+                            onClick={() => navigate(`/admin/editmenu/${menuItem.menu_id}`)}
                           >
                             Edit
                           </span>
                           <span
                             className="text-[#ff4f4f] cursor-pointer"
                             onClick={() =>
-                              handleDeleteMenuItem(
-                                menuItem.menu_id,
-                                menuItem.menu_item_name
-                              )
+                              handleDeleteMenuItem(menuItem.menu_id, menuItem.menu_item_name)
                             }
                           >
                             Delete

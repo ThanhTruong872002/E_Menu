@@ -47,11 +47,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
-  host: "emenuqr-rds.cisxgnlvslix.us-east-1.rds.amazonaws.com",
-  port: "3306",
-  user: "admin",
-  password: "Thanhtruong02",
-  database: "emenuqr-rds",
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "emenu",
 });
 
 connection.connect(function (err) {
