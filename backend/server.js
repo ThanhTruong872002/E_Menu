@@ -1,14 +1,11 @@
 const express = require("express");
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
-// const { v4: uuidv4 } = require("uuid");
 const app = express();
 const fs = require("fs");
-// const axios = require("axios");
-// const dayjs = require("dayjs");
 const util = require("util");
 
 const LoginController = require("./controllers/loginController");
@@ -49,10 +46,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Kết nối đến cơ sở dữ liệu MySQL
 const connection = mysql.createConnection({
-  host: "localhost",
+  host: "viaduct.proxy.rlwy.net",
   user: "root",
-  password: "",
-  database: "emenu",
+  password: "-5eg1Dc54aef2Ddg1dChGdAGD2C5DF3f",
+  database: "railway",
 });
 
 connection.connect(function (err) {
@@ -83,7 +80,6 @@ const storage = multer.diskStorage({
     cb(null, `image${uniqueSuffix}${extension}`);
   },
 });
-
 
 const upload = multer({ storage });
 // const appDomain = "https://e-menu-ihdypnfgx-thanhtruong872002.vercel.app/menu";
@@ -273,7 +269,8 @@ app.get("/api/orders/:table_id", async (req, res) => {
     }
 
     // Thực hiện truy vấn để kiểm tra bảng orderid với Table_id và status
-    const sql = "SELECT order_id, status, order_date FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
+    const sql =
+      "SELECT order_id, status, order_date FROM orderid WHERE table_id = ? AND (status = 1 OR status = 2)";
     const result = await queryAsync(sql, [tableId]);
 
     // Kiểm tra xem có bảng orderid nào tương ứng hay không
@@ -284,7 +281,11 @@ app.get("/api/orders/:table_id", async (req, res) => {
         message: "Bàn đang rảnh, không có order_id tương ứng",
       });
     }
-    const ordersData = result.map((order) => ({ order_id: order.order_id, status: order.status, order_date: order.order_date}));
+    const ordersData = result.map((order) => ({
+      order_id: order.order_id,
+      status: order.status,
+      order_date: order.order_date,
+    }));
     // Trả về danh sách order_id và status
     res.status(200).json({
       success: true,
@@ -362,7 +363,8 @@ app.put("/api/updateorderstatus/:orderId", async (req, res) => {
     }
 
     // Thực hiện truy vấn để cập nhật trạng thái đơn hàng trong bảng orderid
-    const updateOrderStatusSql = "UPDATE orderid SET status = ? WHERE order_id = ?";
+    const updateOrderStatusSql =
+      "UPDATE orderid SET status = ? WHERE order_id = ?";
     await queryAsync(updateOrderStatusSql, [newStatus, orderId]);
 
     // Trả về thông báo thành công
@@ -406,7 +408,8 @@ app.delete("/api/orderdetails/:orderId/:menuItemId", async (req, res) => {
     }
 
     // Delete the menu item from order details
-    const deleteMenuItemQuery = "DELETE FROM orderdetail WHERE order_id = ? AND menu_item_id = ?";
+    const deleteMenuItemQuery =
+      "DELETE FROM orderdetail WHERE order_id = ? AND menu_item_id = ?";
     await queryAsync(deleteMenuItemQuery, [orderId, menuItemId]);
 
     res.status(200).json({
@@ -438,8 +441,11 @@ app.put("/api/updatequantity/:orderDetailId", async (req, res) => {
     }
 
     // Check if the order detail exists
-    const orderDetailExistQuery = "SELECT * FROM orderdetail WHERE order_detail_id = ?";
-    const orderDetailExistResult = await queryAsync(orderDetailExistQuery, [orderDetailId]);
+    const orderDetailExistQuery =
+      "SELECT * FROM orderdetail WHERE order_detail_id = ?";
+    const orderDetailExistResult = await queryAsync(orderDetailExistQuery, [
+      orderDetailId,
+    ]);
 
     if (orderDetailExistResult.length === 0) {
       return res.status(404).json({
@@ -449,7 +455,8 @@ app.put("/api/updatequantity/:orderDetailId", async (req, res) => {
     }
 
     // Update the quantity in orderdetail table
-    const updateQuantityQuery = "UPDATE orderdetail SET quantity = ? WHERE order_detail_id = ?";
+    const updateQuantityQuery =
+      "UPDATE orderdetail SET quantity = ? WHERE order_detail_id = ?";
     await queryAsync(updateQuantityQuery, [newQuantity, orderDetailId]);
 
     res.status(200).json({
@@ -487,10 +494,22 @@ app.get("/api/transactiontypes", async (req, res) => {
 app.post("/api/transactions", async (req, res) => {
   try {
     // Trích xuất dữ liệu giao dịch từ phần thân yêu cầu
-    const { account_id, transaction_type, amount, transaction_date, transaction_description } = req.body;
+    const {
+      account_id,
+      transaction_type,
+      amount,
+      transaction_date,
+      transaction_description,
+    } = req.body;
 
     // Xác nhận rằng các trường bắt buộc đã được điền
-    if (!account_id || !transaction_type || !amount || !transaction_date || !transaction_description) {
+    if (
+      !account_id ||
+      !transaction_type ||
+      !amount ||
+      !transaction_date ||
+      !transaction_description
+    ) {
       return res.status(400).json({
         success: false,
         message: "Thiếu các trường bắt buộc cho giao dịch",
@@ -498,8 +517,15 @@ app.post("/api/transactions", async (req, res) => {
     }
 
     // Lưu trữ dữ liệu giao dịch trong cơ sở dữ liệu cục bộ (thay thế bằng logic của bạn)
-    const saveTransactionSql = "INSERT INTO transactionid (account_id, transaction_type, amount, transaction_date, transaction_description) VALUES (?, ?, ?, ?, ?)";
-    await queryAsync(saveTransactionSql, [account_id, transaction_type, amount, transaction_date, transaction_description]);
+    const saveTransactionSql =
+      "INSERT INTO transactionid (account_id, transaction_type, amount, transaction_date, transaction_description) VALUES (?, ?, ?, ?, ?)";
+    await queryAsync(saveTransactionSql, [
+      account_id,
+      transaction_type,
+      amount,
+      transaction_date,
+      transaction_description,
+    ]);
 
     // Bạn cũng có thể thực hiện các logic bổ sung ở đây nếu cần
 
@@ -517,7 +543,6 @@ app.post("/api/transactions", async (req, res) => {
     });
   }
 });
-
 
 // Hàm để lấy danh sách các loại giao dịch từ cơ sở dữ liệu
 async function getTransactionTypes() {
@@ -655,8 +680,6 @@ app.put("/api/tablesStaff/:tableId", async (req, res) => {
     });
   }
 });
-
-
 
 // Bảo vệ tuyến đường /admin bằng middleware requireAuth
 app.get("/admin", requireAuth, (req, res) => {
