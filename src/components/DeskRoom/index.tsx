@@ -17,9 +17,8 @@ export default function DeskRoom() {
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
-  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(
-    null
-  );
+  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   const handleTableClick = (
     tableId: number,
@@ -36,6 +35,7 @@ export default function DeskRoom() {
   const handleClick = (item: string) => {
     setSelected(item);
   };
+  
 
   return (
     <div className="flex p-10 bg-blue-900 h-screen gap-6">

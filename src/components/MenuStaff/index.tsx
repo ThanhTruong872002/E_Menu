@@ -16,6 +16,7 @@ export default function MenuStaff() {
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFood, setTypeFood] = useState("all");
   const [selected, setSelected] = useState(0);
+  
 
   const { data, isSuccess } = useQuery({
     queryKey: ["api/menu"],
@@ -59,6 +60,11 @@ export default function MenuStaff() {
       )
     );
     setFilteredMenuData(filteredMenuData);
+  };
+
+  const handleMenuItemClick = (menuItem: MenuData) => {
+    console.log("Selected Menu Item:", menuItem.menu_item_name);
+    console.log("Price:", menuItem.Price.toLocaleString() + "VND");
   };
   return (
     <div>
@@ -137,6 +143,7 @@ export default function MenuStaff() {
             <div
               key={item.menu_id}
               className="border-[1px] border-solid border-[#ccc] rounded-xl"
+              onClick={() => handleMenuItemClick(item)}
             >
               <img
                 src={`http://localhost:4000/uploads${item.Image}`}

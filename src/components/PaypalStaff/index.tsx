@@ -335,7 +335,12 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
         });
         console.log("Transaction data added successfully!");
         alert("Thanh toán thành công!");
-        resetDisplayedData();
+        setMenuItems([]);
+        setTableName(null);
+        setGuestCount(null);
+        setDiscount(0);
+        setOrderStatus(null);
+        setShowInvoice(false);
       } else {
         console.error("Error adding transaction data:", response.data.message);
         // Handle error as needed
@@ -459,7 +464,7 @@ export default function PaypalStaff({ selected, tableId, orderId, status, orderD
       </div>
       <br></br>
       <div>
-        <label className="mr-2">Phương thức thanh toán:</label>
+        <label className="mr-2">Phương thức thanh toán: </label>
         <select
           value={selectedTransactionType}
           onChange={handlePaymentMethodChange}
