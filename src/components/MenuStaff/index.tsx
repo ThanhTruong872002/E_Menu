@@ -1,22 +1,25 @@
 import { Input } from "antd";
 import { SearchProps } from "antd/lib/input";
 import { MenuData } from "../../types/MenuType";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect, useContext } from "react";
 import unidecode from "unidecode";
 import { useQuery } from "react-query";
 import { getMenuData } from "../../apis/menu.api";
+import { MenuContext } from "../../App";
 
 export default function MenuStaff() {
   const { Search } = Input;
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) => console.log(info?.source, value);
+  const { addDishStaff, setAddDishStaff, quantity } = useContext(MenuContext);
+
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
+    console.log(info?.source, value);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
-  const [filteredMenuData, setFilteredMenuData] = useState<MenuData[]>(listMenuItem);
+  const [filteredMenuData, setFilteredMenuData] =
+    useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFood, setTypeFood] = useState("all");
   const [selected, setSelected] = useState(0);
-  
 
   const { data, isSuccess } = useQuery({
     queryKey: ["api/menu"],
@@ -62,10 +65,25 @@ export default function MenuStaff() {
     setFilteredMenuData(filteredMenuData);
   };
 
-  const handleMenuItemClick = (menuItem: MenuData) => {
-    console.log("Selected Menu Item:", menuItem.menu_item_name);
-    console.log("Price:", menuItem.Price.toLocaleString() + "VND");
-  };
+const handleMenuItemClick = (menuItem: MenuData) => {
+  if (menuItem) {
+    const checkedItemIndex = addDishStaff.findIndex(
+      (item) => item.menu_id === menuItem.menu_id
+    );
+
+    if (checkedItemIndex !== -1) {
+      // Nếu món đã tồn tại, xóa nó khỏi danh sách
+      const updatedMenuItems = [...addDishStaff];
+      updatedMenuItems.splice(checkedItemIndex, 1);
+      setAddDishStaff(updatedMenuItems);
+    } else {
+      // Nếu món chưa tồn tại, xóa hết và thêm món mới
+      setAddDishStaff([{ ...menuItem }]);
+    }
+  }
+
+  console.log(addDishStaff);
+};
   return (
     <div>
       <div className="flex gap-6 text-[1.8rem] font-[500] items-center">
@@ -142,7 +160,7 @@ export default function MenuStaff() {
           {filteredMenuData.map((item) => (
             <div
               key={item.menu_id}
-              className="border-[1px] border-solid border-[#ccc] rounded-xl"
+              className="border-[1px] border-solid border-[#ccc] rounded-xl cursor-pointer"
               onClick={() => handleMenuItemClick(item)}
             >
               <img

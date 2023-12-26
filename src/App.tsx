@@ -20,6 +20,8 @@ interface MenuContextData {
   setFilterListData: React.Dispatch<React.SetStateAction<PropsType[]>>;
   location: number;
   setLocation: React.Dispatch<React.SetStateAction<number>>;
+  addDishStaff: MenuData[];
+  setAddDishStaff: Dispatch<SetStateAction<MenuData[]>>;
 }
 
 const initialMenuContext: MenuContextData = {
@@ -33,6 +35,8 @@ const initialMenuContext: MenuContextData = {
   setFilterListData: () => null,
   location: 0,
   setLocation: () => null,
+  addDishStaff: initialDetailsMenu,
+  setAddDishStaff: () => null
 };
 
 export const MenuContext = createContext<MenuContextData>(initialMenuContext);
@@ -41,11 +45,17 @@ export function App() {
   const [showDetailsMenu, setShowDetailMenu] = useState<MenuData[]>(
     initialMenuContext.showDetailsMenu
   );
-  const routerElement = useRouterElement({ isLoggedIn: true, loginSuccess: true });
+  const routerElement = useRouterElement({
+    isLoggedIn: true,
+    loginSuccess: true,
+  });
+
   const [quantity, setQuantity] = useState(1);
   const [listData, setListData] = useState<PropsType[]>(initialListDataTable);
   const [filterListData, setFilterListData] = useState<PropsType[]>(listData);
   const [location, setLocation] = useState(0);
+  const [addDishStaff, setAddDishStaff] = useState<MenuData[]>([]);
+
 
   const {
     data: tableData,
@@ -86,6 +96,8 @@ export function App() {
         setFilterListData,
         location,
         setLocation,
+        addDishStaff,
+        setAddDishStaff,
       }}
     >
       <div>{routerElement}</div>

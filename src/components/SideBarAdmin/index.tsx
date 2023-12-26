@@ -58,7 +58,7 @@ export default function SideBar({
         </div>
       )}
       {changeWidthTable && (
-        <div className='w-[5%]  flex flex-col justify-between bg-[url("https://www.bhdstar.vn/wp-content/themes/bhd/assets/images/movie-details-bg.jpg")] py-10'>
+        <div className='w-[5%]  flex flex-col justify-between bg-[#1A1D29] py-10'>
           <div>
             <div
               onClick={() => navigate("/admin")}

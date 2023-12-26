@@ -21,3 +21,11 @@ export interface Category {
   category_id: number;
   category_name: string;
 }
+
+export interface OrderDetailItem {
+  order_detail_id: number;
+  menu_item_id: number;
+  menu_item_name: string;
+  quantity: number;
+  price: number;
+}

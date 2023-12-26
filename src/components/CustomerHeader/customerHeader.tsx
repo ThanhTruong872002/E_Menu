@@ -21,8 +21,8 @@ export default function CustomerHeader() {
             className="pl-10 w-[140px] h-[40px] lg:w-[170px] lg:h-full"
           />
         </div>
-        <div className="mb-4 md:mb-0 hidden md:flex text-[2.2rem]">
-          <ul className="flex gap-10 font-semibold font-playfair ">
+        <div className="mb-4 md:mb-0 hidden md:flex text-[2rem]">
+          <ul className="flex gap-10 font-semibold  ">
             <li className="cursor-pointer" onClick={() => navigate("/")}>
               Home
             </li>
