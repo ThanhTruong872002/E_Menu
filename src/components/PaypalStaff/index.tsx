@@ -100,25 +100,25 @@ export default function PaypalStaff({
   const convertedDishStaff = addDishStaff.map(convertToOrderDetailItem);
 
   useEffect(() => {
-    // const updateOrderStatus = async () => {
-    //   try {
-    //     const response = await axios.put(
-    //       `http://localhost:4000/api/updateorderstatus/${orderId}`,
-    //       {
-    //         status: 1,
-    //       }
-    //     );
-    //     console.log(response.data);
-    //   } catch (error) {
-    //     console.error("Error updating order status:", error);
-    //   }
-    // };
+    const updateOrderStatus = async () => {
+      try {
+        const response = await axios.put(
+          `http://localhost:4000/api/updateorderstatus/${orderId}`,
+          {
+            status: 1,
+          }
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error updating order status:", error);
+      }
+    };
 
     setMenuItems((prevMenuItems) => [...prevMenuItems, ...convertedDishStaff]);
 
-    // updateOrderStatus();
+    updateOrderStatus();
     // handleConfirmationClick()
-  }, [addDishStaff, orderId]);
+  }, [addDishStaff]);
 
   useEffect(() => {
     const fetchTransactionTypes = async () => {
@@ -278,16 +278,6 @@ export default function PaypalStaff({
   };
 
   const handleConfirmationClick = async () => {
-
-    // const orderResponse = await axios.post(
-    //   "http://localhost:4000/api/createOrder",
-    //   {
-    //     tableId: tableId,
-    //     status: 1,
-    //     showDetailsMenu: convertedDishStaff,
-    //   }
-    // );
-
     try {
       await Promise.all(
         menuItems.map(async (item) => {
@@ -656,7 +646,6 @@ export default function PaypalStaff({
         </select>
       </div>
       <div className="flex justify-between items-center text-2xl mt-6">
-        {status === 1 || status === 2 ? (
           <>
             <button
               className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl"
@@ -833,10 +822,9 @@ export default function PaypalStaff({
               } text-white text-2xl`}
             >
               <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
-              <span>{orderStatus === 1 ? "Xác Nhận" : "Đã Xác Nhận"}</span>
+              <span>{orderStatus === 1 ? "Xác Nhận" :  "Đã Xác Nhận"}</span>
             </button>
           </>
-        ) : null}
       </div>
       <style>{styles}</style>
     </div>

@@ -6,20 +6,26 @@ import unidecode from "unidecode";
 import { useQuery } from "react-query";
 import { getMenuData } from "../../apis/menu.api";
 import { MenuContext } from "../../App";
+import axios from "axios";
 
-export default function MenuStaff() {
+interface IMenuStaff {
+  tableId?: number | null;
+}
+
+export default function MenuStaff({ tableId }: IMenuStaff) {
   const { Search } = Input;
 
-  const { addDishStaff, setAddDishStaff, quantity } = useContext(MenuContext);
+  const { addDishStaff, setAddDishStaff } = useContext(MenuContext);
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
-    console.log(info?.source, value);
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) => console.log(info?.source, value);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
   const [filteredMenuData, setFilteredMenuData] =
     useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFood, setTypeFood] = useState("all");
   const [selected, setSelected] = useState(0);
+
+  console.log(addDishStaff);
 
   const { data, isSuccess } = useQuery({
     queryKey: ["api/menu"],
@@ -65,25 +71,54 @@ export default function MenuStaff() {
     setFilteredMenuData(filteredMenuData);
   };
 
-const handleMenuItemClick = (menuItem: MenuData) => {
-  if (menuItem) {
-    const checkedItemIndex = addDishStaff.findIndex(
-      (item) => item.menu_id === menuItem.menu_id
-    );
+  const handleMenuItemClick = async (menuItem: MenuData) => {
+    try {
+      if (menuItem) {
+        const checkedItemIndex = addDishStaff.findIndex(
+          (item) => item.menu_id === menuItem.menu_id
+        );
 
-    if (checkedItemIndex !== -1) {
-      // Nếu món đã tồn tại, xóa nó khỏi danh sách
-      const updatedMenuItems = [...addDishStaff];
-      updatedMenuItems.splice(checkedItemIndex, 1);
-      setAddDishStaff(updatedMenuItems);
-    } else {
-      // Nếu món chưa tồn tại, xóa hết và thêm món mới
-      setAddDishStaff([{ ...menuItem }]);
+        if (checkedItemIndex !== -1) {
+          // Nếu món đã tồn tại, xóa nó khỏi danh sách
+          const updatedMenuItems = [...addDishStaff];
+          updatedMenuItems.splice(checkedItemIndex, 1);
+          setAddDishStaff(updatedMenuItems);
+        } else
+          setAddDishStaff([
+            {
+              ...menuItem,
+              quantity: 1,
+            },
+          ]);
+      }
+      const response = await axios.put(
+        "http://localhost:4000/api/updateTableStatus",
+        {
+          tableId: tableId,
+          newStatus: 3,
+        }
+      );
+      if (response.status !== 200) {
+        console.log("Error updating table status");
+        return;
+      }
+      const orderResponse = await axios.post(
+        "http://localhost:4000/api/createOrder",
+        {
+          tableId: tableId,
+          status: 1,
+          showDetailsMenu: addDishStaff,
+        }
+      );
+      if (orderResponse.status === 200) {
+        console.log("Order placed successfully");
+      } else {
+        console.log("Error creating order");
+      }
+    } catch (error) {
+      console.error("Error performing the request:", error);
     }
-  }
-
-  console.log(addDishStaff);
-};
+  };
   return (
     <div>
       <div className="flex gap-6 text-[1.8rem] font-[500] items-center">

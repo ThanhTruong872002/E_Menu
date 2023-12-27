@@ -54,7 +54,7 @@ export default function CustomerMenuQR() {
   }, [isSuccess, data]);
 
   useEffect(() => {
-    console.log("Received table_id:", table_id);
+    // console.log("Received table_id:", table_id);
     const filterTypeFood = () => {
       if (typeFood === "all") {
         setFilteredMenuData(listMenuItem);

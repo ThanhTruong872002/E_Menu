@@ -105,7 +105,7 @@ export default function DeskRoom() {
             <TableStaff onTableClick={handleTableClick} />
           )}
 
-          {selected === "menu" && <MenuStaff />}
+          {selected === "menu" && <MenuStaff tableId={selectedTableId} />}
 
           {selected === "report" && <ReportStaff />}
 

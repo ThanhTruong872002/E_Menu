@@ -6,6 +6,7 @@ import { PropsType } from "./types/TableType";
 import axios from "axios";
 import { useQuery } from "react-query";
 import { getTableData } from "./apis/table.api";
+import { getMenuData } from "./apis/menu.api";
 
 const initialDetailsMenu: MenuData[] = [];
 const initialListDataTable: PropsType[] = [];
@@ -22,6 +23,12 @@ interface MenuContextData {
   setLocation: React.Dispatch<React.SetStateAction<number>>;
   addDishStaff: MenuData[];
   setAddDishStaff: Dispatch<SetStateAction<MenuData[]>>;
+  // listMenuItem: MenuData[];
+  // setListMenuItem: Dispatch<SetStateAction<MenuData[]>>;
+  filteredMenuData: MenuData[];
+  // setFilteredMenuData: Dispatch<SetStateAction<MenuData[]>>;
+  // typeFood: string;
+  setTypeFood: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const initialMenuContext: MenuContextData = {
@@ -36,7 +43,13 @@ const initialMenuContext: MenuContextData = {
   location: 0,
   setLocation: () => null,
   addDishStaff: initialDetailsMenu,
-  setAddDishStaff: () => null
+  setAddDishStaff: () => null,
+  // listMenuItem: initialDetailsMenu,
+  // setListMenuItem: () => null,
+  filteredMenuData: initialDetailsMenu,
+  // setFilteredMenuData: () => null,
+  // typeFood: "",
+  setTypeFood: () => null
 };
 
 export const MenuContext = createContext<MenuContextData>(initialMenuContext);
@@ -56,6 +69,14 @@ export function App() {
   const [location, setLocation] = useState(0);
   const [addDishStaff, setAddDishStaff] = useState<MenuData[]>([]);
 
+  const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
+  const [filteredMenuData, setFilteredMenuData] =
+    useState<MenuData[]>(listMenuItem);
+
+  const [typeFood, setTypeFood] = useState("appetizer");
+
+
+  // List Table 
 
   const {
     data: tableData,
@@ -76,12 +97,56 @@ export function App() {
     }
   }, [isSuccess, tableData]);
 
+    useEffect(() => {
+      const filterData = () => {
+        setFilterListData(
+          listData?.filter((data) => data.location === location)
+        );
+      };
+      filterData();
+    }, [location]);
+
+
+
+
+
+
+    // List Item Menu 
+
+  const { data: ListMenuData, isSuccess: MenuSucces } = useQuery({
+    queryKey: ["api/menu"],
+    queryFn: async () => {
+      try {
+        const res = await getMenuData();
+        return res.data;
+      } catch (error) {
+        console.log("Error fetching menu data:", error);
+        throw error;
+      }
+    },
+  });
+
   useEffect(() => {
-    const filterData = () => {
-      setFilterListData(listData?.filter((data) => data.location === location));
+    if (MenuSucces) {
+      setListMenuItem(ListMenuData);
+      setFilteredMenuData(ListMenuData);
+    }
+  }, [isSuccess, ListMenuData]);
+
+  useEffect(() => {
+    const filterTypeFood = () => {
+      if (typeFood === "all") {
+        setFilteredMenuData(listMenuItem);
+      } else {
+        setFilteredMenuData(() =>
+          listMenuItem.filter((data) => data.category_name === typeFood)
+        );
+      }
     };
-    filterData();
-  }, [location]);
+    filterTypeFood();
+  }, [typeFood]);
+
+
 
   return (
     <MenuContext.Provider
@@ -98,6 +163,8 @@ export function App() {
         setLocation,
         addDishStaff,
         setAddDishStaff,
+        filteredMenuData,
+        setTypeFood,
       }}
     >
       <div>{routerElement}</div>
