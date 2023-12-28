@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import Header from "../../components/Header";
+import Header from "../../components/HeaderAdmin";
 import SideBar from "../../components/SideBarAdmin";
 
 interface AdminProps {

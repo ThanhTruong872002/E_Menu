@@ -7,23 +7,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import PopupMenu from "./popupMenu";
 import unidecode from "unidecode";
 import { MenuContext } from "../../App";
-import { useQuery } from "react-query";
-import { getMenuData } from "../../apis/menu.api";
+
 
 export default function CustomerMenuQR() {
   const { table_id } = useParams();
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState("all");
   const [showPopup, setShowPopup] = useState(false);
   const [listMenuItem, setListMenuItem] = useState<MenuData[]>([]);
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuData | null>(
     null
   );
-  const [filteredMenuData, setFilteredMenuData] =
-    useState<MenuData[]>(listMenuItem);
   const [searchTerm, setSearchTerm] = useState("");
-  const [typeFood, setTypeFood] = useState("appetizer");
-  const popupRef = useRef<HTMLDivElement>(null);
+  // const popupRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const { setTypeFood, filteredMenuData, setFilteredMenuData } =
+    useContext(MenuContext);
 
   const togglePopup = (menuItem: any) => {
     setShowPopup(!showPopup);
@@ -34,38 +33,6 @@ export default function CustomerMenuQR() {
     setSelectedMenuItem(newItem);
   };
 
-  const { data, isSuccess } = useQuery({
-    queryKey: ["api/menu"],
-    queryFn: async () => {
-      try {
-        const res = await getMenuData();
-        return res.data;
-      } catch (error) {
-        console.log("Error fetching menu data:", error);
-        throw error;
-      }
-    },
-  });
-  useEffect(() => {
-    if (isSuccess) {
-      setListMenuItem(data);
-      setFilteredMenuData(data);
-    }
-  }, [isSuccess, data]);
-
-  useEffect(() => {
-    // console.log("Received table_id:", table_id);
-    const filterTypeFood = () => {
-      if (typeFood === "all") {
-        setFilteredMenuData(listMenuItem);
-      } else {
-        setFilteredMenuData(() =>
-          listMenuItem.filter((data) => data.category_name === typeFood)
-        );
-      }
-    };
-    filterTypeFood();
-  }, [typeFood]);
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchTerm = event.target.value;
@@ -79,9 +46,9 @@ export default function CustomerMenuQR() {
     setFilteredMenuData(filteredMenuData);
   };
 
-  const handleShowPopup = () => {
-    setShowPopup(false);
-  };
+  // const handleShowPopup = () => {
+  //   setShowPopup(false);
+  // };
   return (
     <div
       className="relative"
@@ -89,7 +56,7 @@ export default function CustomerMenuQR() {
     >
       <header className="w-full bg-[#FFFAE3] h-[70px] p-[18px] flex justify-between">
         <img src="/images/Logo.svg" alt="" className="w-[140px]" />
-        <div onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)}>
+        <div onClick={() => navigate(`/customer/menuqr/cart/${table_id}`)} className="cursor-pointer p-2">
           <CartIcon />
         </div>
       </header>

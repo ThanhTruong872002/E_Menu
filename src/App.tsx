@@ -26,7 +26,7 @@ interface MenuContextData {
   // listMenuItem: MenuData[];
   // setListMenuItem: Dispatch<SetStateAction<MenuData[]>>;
   filteredMenuData: MenuData[];
-  // setFilteredMenuData: Dispatch<SetStateAction<MenuData[]>>;
+  setFilteredMenuData: Dispatch<SetStateAction<MenuData[]>>;
   // typeFood: string;
   setTypeFood: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -47,7 +47,7 @@ const initialMenuContext: MenuContextData = {
   // listMenuItem: initialDetailsMenu,
   // setListMenuItem: () => null,
   filteredMenuData: initialDetailsMenu,
-  // setFilteredMenuData: () => null,
+  setFilteredMenuData: () => null,
   // typeFood: "",
   setTypeFood: () => null
 };
@@ -164,6 +164,7 @@ export function App() {
         addDishStaff,
         setAddDishStaff,
         filteredMenuData,
+        setFilteredMenuData,
         setTypeFood,
       }}
     >

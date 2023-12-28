@@ -11,13 +11,16 @@ import {
   NotifiIcon,
   ReportIcon,
 } from "../common/icons/icons";
+import { useNavigate } from "react-router-dom";
 
 export default function DeskRoom() {
   const [selected, setSelected] = useState("table");
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number | null>(null);
-  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(null);
+  const [selectedOrderDate, setSelectedOrderDate] = useState<string | null>(
+    null
+  );
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
 
   const handleTableClick = (
@@ -35,7 +38,8 @@ export default function DeskRoom() {
   const handleClick = (item: string) => {
     setSelected(item);
   };
-  
+
+  const navigate = useNavigate();
 
   return (
     <div className="flex p-10 bg-blue-900 h-screen gap-6">
@@ -125,6 +129,14 @@ export default function DeskRoom() {
           )}
         </div>
       )}
+      <div
+        onClick={() => navigate("/login")}
+        className="absolute right-[40px] cursor-pointer pl-4 top-[40px] w-[100px] h-[40px] bg-white border-[1px] border-black flex justify-center items-center rounded-3xl"
+      >
+        <h2 className="text-[1.6rem] text-blue-900 w-[80px] font-semibold ">
+          Log out
+        </h2>
+      </div>
     </div>
   );
 }

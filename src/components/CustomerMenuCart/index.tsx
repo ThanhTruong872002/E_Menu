@@ -12,7 +12,7 @@ export default function CustomerMenuCart() {
 
   let { table_id } = useParams();
 
-  const { showDetailsMenu, setShowDetailMenu } = useContext(MenuContext);
+  const { showDetailsMenu, setShowDetailMenu, } = useContext(MenuContext);
   console.log(showDetailsMenu);
 
   const [total, setTotal] = useState(0);
