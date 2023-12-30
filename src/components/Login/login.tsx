@@ -1,9 +1,9 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent } from "react";
 import Button from "../common/butoons/button";
 import { BagIcon } from "../common/icons/icons";
 import Input from "../common/input/input";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 interface IFormLogin {
   username: string;
@@ -13,49 +13,52 @@ interface IFormLogin {
 export default function Login() {
   const navigate = useNavigate();
   const [formLogin, setFormLogin] = useState<IFormLogin>({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
 
   const [loginSuccess, setLoginSuccess] = useState<boolean | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
-  
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:4000/api/account', formLogin);
-      console.log("Response from server:", response.data); 
+      const response = await axios.post(
+        "http://localhost:4000/api/account",
+        formLogin
+      );
+      console.log("Response from server:", response.data);
       if (response.data.success) {
         const userInformation = {
           account_id: response.data.account_id,
           fullname: response.data.fullname,
         };
         const userRole = response.data.role;
-        localStorage.setItem('user', JSON.stringify(userInformation));
-        
+        localStorage.setItem("user", JSON.stringify(userInformation));
+
         console.log("User Role:", userRole); // In ra giá trị role để kiểm tra
         if (userRole === 1) {
           // Đăng nhập thành công và có vai trò ADMIN, thực hiện chuyển hướng
           setLoginSuccess(true);
           navigate("/admin/staff");
-        } else if(userRole === 2) {
+        } else if (userRole === 2) {
           // Đăng nhập thành công và có vai trò là cashier, thực hiện chuyển hướng
           setLoginSuccess(true);
-          navigate("/cashier")
-        }
-        else{
+          navigate("/manager");
+        } else {
           // Đăng nhập thành công và có vai trò là manager, thực hiện chuyển hướng
           setLoginSuccess(true);
-          navigate("/manager")
+          navigate("/manager");
         }
       } else {
         // Đăng nhập thất bại
         setLoginSuccess(false);
-        setLoginError("Đăng nhập thất bại. Vui lòng kiểm tra tên người dùng và mật khẩu của bạn.");
+        setLoginError(
+          "Đăng nhập thất bại. Vui lòng kiểm tra tên người dùng và mật khẩu của bạn."
+        );
       }
     } catch (error) {
-      console.error('Lỗi khi gửi yêu cầu đăng nhập:', error);
+      console.error("Lỗi khi gửi yêu cầu đăng nhập:", error);
     }
   };
 
@@ -78,18 +81,25 @@ export default function Login() {
             your previously saved all information.
           </p>
         </div>
-        <form className="mt-[60px] flex flex-col gap-12" onSubmit={handleSubmit}>
+        <form
+          className="mt-[60px] flex flex-col gap-12"
+          onSubmit={handleSubmit}
+        >
           <Input
             type="text"
             placeholder="Username"
             value={formLogin.username}
-            onChange={(e) => setFormLogin({ ...formLogin, username: e.target.value })}
+            onChange={(e) =>
+              setFormLogin({ ...formLogin, username: e.target.value })
+            }
           />
           <Input
             type="password"
             placeholder="Password"
             value={formLogin.password}
-            onChange={(e) => setFormLogin({ ...formLogin, password: e.target.value })}
+            onChange={(e) =>
+              setFormLogin({ ...formLogin, password: e.target.value })
+            }
           />
           {loginSuccess === false && (
             <p className="text-red-600 min-h-[1.25rem] text-lg">{loginError}</p>

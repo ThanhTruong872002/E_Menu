@@ -1,98 +1,65 @@
 import { Table } from "antd";
-import React from "react";
+import moment from "moment";
+import ExportTable from "antd-export-table";
 
-export default function TableReport() {
-  const dataSource = [
-    {
-      key: "1",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "2",
-      name: "John",
-      age: 42,
-      address: "10 Downing Street",
-    },
-    {
-      key: "3",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "Mike",
-      age: 32,
-      address: "10 Downing Street",
-    },
-  ];
-
+export default function TableReport({ listDataTransaction, filteredData }: any) {
   const columns = [
     {
-      title: "Mã đơn",
-      dataIndex: "name",
-      key: "name",
+      title: "Transaction Type",
+      dataIndex: "type_name",
+      key: "type_name",
     },
     {
-      title: "Nhân viên phụ trách",
-      dataIndex: "age",
-      key: "age",
+      title: "Account ID",
+      dataIndex: "account_id",
+      key: "account_id",
     },
     {
-      title: "Phương thức thanh toán ",
-      dataIndex: "address",
-      key: "address",
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
     },
     {
-      title: "Tổng tiền ",
-      dataIndex: "address",
-      key: "address",
+      title: "Transaction Date",
+      dataIndex: "transaction_date",
+      key: "transaction_date",
+      align: "center" as const,
+      render: (text: string) => moment(text).format("DD/MM/YYYY"),
     },
     {
-      title: "Thời gian giao dịch ",
-      dataIndex: "address",
-      key: "address",
+      title: "Transaction Description",
+      dataIndex: "transaction_description",
+      key: "transaction_description",
+      align: "center" as const,
     },
   ];
+
+  const processedData = filteredData.map((transaction: any) => ({
+    ...transaction,
+    transaction_date: moment(transaction.transaction_date).format("DD/MM/YYYY"),
+  }));
+
+  const { onPdfPrint } = ExportTable({
+    columns,
+    data: processedData,
+    fileName: "Report_Transaction",
+  });
+
   return (
     <div>
+      <button
+        className="flex justify-center text-end rounded-xl items-center text-white gap-4 w-[150px] h-[48px] bg-red-500 font-[600] text-[1.6rem]"
+        onClick={onPdfPrint}
+      >
+        Export PDF
+      </button>
       <Table
-        dataSource={dataSource}
+        dataSource={filteredData}
         columns={columns}
         style={{ flex: "1", flexGrow: "1" }}
         size="middle"
+        pagination={{ pageSize: 8 }}
+        rowClassName="text-center align-middle"
       />
       ;
     </div>

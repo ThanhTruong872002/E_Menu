@@ -21,6 +21,8 @@ const editTableController = require("./controllers/editTableController");
 const customerMenuCartController = require("./controllers/customerMenuCartController");
 const bookTableController = require("./controllers/bookTableController");
 const dashboardController = require("./controllers/DashboardController");
+const transactionController = require("./controllers/transactionController");
+const TransactionController = require("./controllers/transactionController");
 
 const imageUploadPath = path.join(__dirname, "images");
 if (!fs.existsSync(imageUploadPath)) {
@@ -128,6 +130,9 @@ app.put("/api/editDish/:menu_id", EditMenuController.updateDish);
 //table page
 app.get("/api/tables", TablesController.getAllTables);
 app.delete("/api/tables/:table_id", TablesController.deleteTable);
+
+//transaction
+app.get("/api/transactions", TransactionController.getTransactionItems);
 
 //addTable page
 app.get("/api/locations", locationController.getLocations);
@@ -638,6 +643,22 @@ app.put("/api/tablesStaff/:tableId", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Lỗi khi cập nhật trạng thái bàn",
+      error: error.message,
+    });
+  }
+});
+
+// Get Data Account
+app.get("/api/accounts", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM account";
+    const accounts = await queryAsync(sql);
+
+    res.status(200).json(accounts);
+  } catch (error) {
+    console.error("Error fetching accounts:", error);
+    res.status(500).json({
+      message: "Error fetching accounts",
       error: error.message,
     });
   }
