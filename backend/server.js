@@ -480,12 +480,11 @@ app.post("/api/transactions", async (req, res) => {
 
     // Lưu trữ dữ liệu giao dịch trong cơ sở dữ liệu cục bộ (thay thế bằng logic của bạn)
     const saveTransactionSql =
-      "INSERT INTO transactionid (account_id, transaction_type, amount, transaction_date, transaction_description) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO transactionid (account_id, transaction_type, amount, transaction_date, transaction_description) VALUES (?, ?, ?, NOW(), ?)";
     await queryAsync(saveTransactionSql, [
       account_id,
       transaction_type,
       amount,
-      transaction_date,
       transaction_description,
     ]);
 
@@ -638,6 +637,48 @@ app.put("/api/tablesStaff/:tableId", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Lỗi khi cập nhật trạng thái bàn",
+      error: error.message,
+    });
+  }
+});
+
+//Notify
+app.get("/api/tables/status/1", async (req, res) => {
+  try {
+    // Fetch tables with status 1 from the orderid table
+    const sql = "SELECT table_id, status, DATE_FORMAT(order_date, '%H:%i') AS order_time FROM orderid WHERE status = 1";
+    const result = await queryAsync(sql);
+
+    // Respond with the fetched data
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error fetching tables:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching tables",
+      error: error.message,
+    });
+  }
+});
+
+app.get("/api/reservations", async (req, res) => {
+  try {
+    const sql = "SELECT * FROM reservation";
+    const result = await queryAsync(sql);
+
+    // Respond with the fetched data
+    res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error fetching reservations:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching reservations",
       error: error.message,
     });
   }
