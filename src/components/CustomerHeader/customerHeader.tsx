@@ -96,18 +96,11 @@ export default function CustomerHeader() {
             </div>
           )}
         </div>
-        <div className="lg:flex hidden  md:block gap-10 items-center">
-          <div onClick={() => navigate("/login")}>
-            <h2 className="text-[1.8rem] hidden md:block font-semibold cursor-pointer">
-              Log out
-            </h2>
-          </div>
-          <div
-            className="hidden md:block"
-            onClick={() => navigate("/customer/booktable")}
-          >
-            <Button bookTable="bookTable">Book A Table</Button>
-          </div>
+        <div
+          className="hidden md:block"
+          onClick={() => navigate("/customer/booktable")}
+        >
+          <Button bookTable="bookTable">Book A Table</Button>
         </div>
       </div>
     </div>
