@@ -156,7 +156,7 @@ app.post("/api/tables", async (req, res) => {
     const tableId = result.insertId;
 
     // Tạo đường dẫn URL (QR code) từ ID bàn
-    const qrCode = `https://e-menu-khaki.vercel.app/customer/menuqr/${tableId}`;
+    const qrCode = `http://localhost:3000/customer/menuqr/${tableId}`;
 
     // Cập nhật bàn với mã QR code mới được tạo
     const updateQrCodeSql = "UPDATE tableid SET qr_code = ? WHERE table_id = ?";
