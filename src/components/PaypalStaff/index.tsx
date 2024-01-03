@@ -117,7 +117,6 @@ export default function PaypalStaff({
     setMenuItems((prevMenuItems) => [...prevMenuItems, ...convertedDishStaff]);
 
     updateOrderStatus();
-    // handleConfirmationClick()
   }, [addDishStaff]);
 
   useEffect(() => {
@@ -646,185 +645,208 @@ export default function PaypalStaff({
         </select>
       </div>
       <div className="flex justify-between items-center text-2xl mt-6">
-          <>
-            <button
-              className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl"
-              onClick={handlePayment}
+        <>
+          <button
+            className="flex items-center gap-2 px-8 py-4 bg-blue-500 text-white rounded-full text-2xl"
+            onClick={handlePayment}
+          >
+            <img className="w-8 h-8" src="./images/Average Price.svg" alt="" />
+            <span>Thanh Toán</span>
+          </button>
+          <button
+            className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full text-2xl"
+            onClick={handleCancellation}
+          >
+            <span>Hủy Bàn</span>
+          </button>
+          {showInvoice && (
+            <div
+              className="invoice-modal text-2xl shadow-2xl"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                padding: "20px",
+              }}
             >
-              <img
-                className="w-8 h-8"
-                src="./images/Average Price.svg"
-                alt=""
-              />
-              <span>Thanh Toán</span>
-            </button>
-            <button
-              className="flex items-center gap-2 px-8 py-4 bg-red-500 text-white rounded-full text-2xl"
-              onClick={handleCancellation}
-            >
-              <span>Hủy Bàn</span>
-            </button>
-            {showInvoice && (
-              <div className="invoice-modal">
-                <h2 className="text-xl font-bold">Hóa Đơn</h2>
-                {/* Hiển thị thông tin hóa đơn */}
-                <p>
-                  <strong>Tên bàn:</strong> {tableName}
-                </p>
-                <p>
-                  <strong>Nhân viên:</strong> {staffFullname}
-                </p>
-                <p>
-                  <strong>Order ID:</strong> {orderId}
-                </p>
-                <p> </p>
-                {orderDate && (
-                  <div>
-                    <strong>In:</strong> {new Date(orderDate).toLocaleString()}
-                  </div>
-                )}
-                {orderCreationTime && (
-                  <div>
-                    <strong>Out:</strong> {orderCreationTime.toLocaleString()}
-                  </div>
-                )}
-                {/* Hiển thị thông tin chi tiết hóa đơn */}
-                <table
-                  className="w-full mb-6"
-                  style={{ width: "100%", borderCollapse: "collapse" }}
-                >
-                  <thead>
-                    <tr style={{ backgroundColor: "#f2f2f2" }}>
-                      <th
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          textAlign: "left",
-                        }}
+              <h2 className="text-3xl font-semibold text-center ">
+                Invoice details
+              </h2>
+              {/* Hiển thị thông tin hóa đơn */}
+              <div className="mt-8 font-semibold text-[1.6rem]">
+                Tên bàn:{" "}
+                <span className="ml-10 font-semibold text-red-600">
+                  {tableName}
+                </span>
+              </div>
+              <div className="my-4 font-semibold text-[1.6rem]">
+                Nhân viên:{" "}
+                <span className="ml-4 font-semibold text-red-600">
+                  {staffFullname}
+                </span>
+              </div>
+              <div className=" font-semibold text-[1.6rem]">
+                Order ID:{" "}
+                <span className="ml-[2.8rem] font-semibold text-red-600">
+                  {orderId}
+                </span>
+              </div>
+              {orderDate && (
+                <div className="my-4 font-semibold text-[1.6rem]">
+                  Check In:
+                  <span className="ml-10 font-semibold text-red-600">
+                    {new Date(orderDate).toLocaleString()}
+                  </span>
+                </div>
+              )}
+              {orderCreationTime && (
+                <div className="mb-4 font-semibold text-[1.6rem]">
+                  Check Out:
+                  <span className="ml-5 font-semibold text-red-600">
+                    {orderCreationTime.toLocaleString()}
+                  </span>
+                </div>
+              )}
+              {/* Hiển thị thông tin chi tiết hóa đơn */}
+              <table
+                className="w-full mb-6 mt-10 "
+                style={{ width: "100%", borderCollapse: "collapse" }}
+              >
+                <thead>
+                  <tr style={{ backgroundColor: "#f2f2f2" }}>
+                    <th
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "8px",
+                        textAlign: "left",
+                      }}
+                    >
+                      Tên món
+                    </th>
+                    <th
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "8px",
+                        textAlign: "left",
+                      }}
+                    >
+                      Số lượng
+                    </th>
+                    <th
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "8px",
+                        textAlign: "left",
+                      }}
+                    >
+                      Đơn giá
+                    </th>
+                    <th
+                      style={{
+                        border: "1px solid #ddd",
+                        padding: "8px",
+                        textAlign: "left",
+                      }}
+                    >
+                      Thành tiền
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {menuItems &&
+                    menuItems.map((item, index) => (
+                      <tr
+                        key={index}
+                        style={{ borderBottom: "1px solid #ddd" }}
                       >
-                        Tên món
-                      </th>
-                      <th
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          textAlign: "left",
-                        }}
-                      >
-                        Số lượng
-                      </th>
-                      <th
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          textAlign: "left",
-                        }}
-                      >
-                        Đơn giá
-                      </th>
-                      <th
-                        style={{
-                          border: "1px solid #ddd",
-                          padding: "8px",
-                          textAlign: "left",
-                        }}
-                      >
-                        Thành tiền
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {menuItems &&
-                      menuItems.map((item, index) => (
-                        <tr
-                          key={index}
-                          style={{ borderBottom: "1px solid #ddd" }}
+                        <td
+                          style={{
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                            textAlign: "left",
+                          }}
                         >
-                          <td
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "8px",
-                              textAlign: "left",
-                            }}
-                          >
-                            {item.menu_item_name}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "8px",
-                              textAlign: "left",
-                            }}
-                          >
-                            {item.quantity}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "8px",
-                              textAlign: "left",
-                            }}
-                          >
-                            {numberWithCommas(item.price)}
-                          </td>
-                          <td
-                            style={{
-                              border: "1px solid #ddd",
-                              padding: "8px",
-                              textAlign: "left",
-                            }}
-                          >
-                            {numberWithCommas(item.quantity * item.price)}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-                <div>
-                  <span>{selectedPaymentMethod}</span>
+                          {item.menu_item_name}
+                        </td>
+                        <td
+                          style={{
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                            textAlign: "left",
+                          }}
+                        >
+                          {item.quantity}
+                        </td>
+                        <td
+                          style={{
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                            textAlign: "left",
+                          }}
+                        >
+                          {numberWithCommas(item.price)}
+                        </td>
+                        <td
+                          style={{
+                            border: "1px solid #ddd",
+                            padding: "8px",
+                            textAlign: "left",
+                          }}
+                        >
+                          {numberWithCommas(item.quantity * item.price)}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              <div className="flex justify-between mt-4">
+                <h2 className="font-bold text-2xl">Phương thức thanh toán:</h2>
+                <span className="font-semibold text-red-600 text-2xl">
+                  {" "}
+                  {selectedPaymentMethod}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-2xl mt-6">
+                <div className="flex gap-2 font-bold">
+                  <label className="mr-2">Giảm giá (%):</label>
+                  <span>{discount}</span>
                 </div>
-                <div className="flex justify-between items-center text-2xl mt-6">
-                  <div className="flex gap-2 font-bold">
-                    <label className="mr-2">Giảm giá (%):</label>
-                    <span>{discount}</span>
-                  </div>
-                  <div className="flex gap-2 font-bold">
-                    <span>Tổng tiền:</span>
-                    <span className="text-red-500">
-                      {calculateTotalWithDiscount()} VND
-                    </span>
-                  </div>
-                </div>
-                <div className="invoice-buttons">
-                  <button
-                    className="payment-button"
-                    onClick={() => {
-                      handlePayment();
-                      handlePaymentConfirmation();
-                    }}
-                  >
-                    Thanh Toán
-                  </button>
-                  <button
-                    className="cancel-button"
-                    onClick={() => setShowInvoice(false)}
-                  >
-                    Hủy
-                  </button>
+                <div className="flex gap-2 font-bold">
+                  <span>Tổng tiền:</span>
+                  <span className="text-red-500 text-2xl ml-4">
+                    {calculateTotalWithDiscount()} VND
+                  </span>
                 </div>
               </div>
-            )}
-            <button
-              onClick={handleConfirmationClick}
-              disabled={orderStatus !== 1}
-              className={`flex items-center gap-2 px-8 py-4 rounded-full ${
-                orderStatus === 1 ? "bg-red-500" : "bg-green-500"
-              } text-white text-2xl`}
-            >
-              <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
-              <span>{orderStatus === 1 ? "Xác Nhận" :  "Đã Xác Nhận"}</span>
-            </button>
-          </>
+              <div className="invoice-buttons">
+                <button
+                  className="payment-button"
+                  onClick={() => {
+                    handlePayment();
+                    handlePaymentConfirmation();
+                  }}
+                >
+                  Thanh Toán
+                </button>
+                <button
+                  className="cancel-button"
+                  onClick={() => setShowInvoice(false)}
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
+          )}
+          <button
+            onClick={handleConfirmationClick}
+            disabled={orderStatus !== 1}
+            className={`flex items-center gap-2 px-8 py-4 rounded-full ${
+              orderStatus === 1 ? "bg-red-500" : "bg-green-500"
+            } text-white text-2xl`}
+          >
+            <img className="w-8 h-8" src="./images/Food Bar.svg" alt="" />
+            <span>{orderStatus === 1 ? "Xác Nhận" : "Đã Xác Nhận"}</span>
+          </button>
+        </>
       </div>
       <style>{styles}</style>
     </div>
